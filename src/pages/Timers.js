@@ -5,16 +5,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
 import { totalTime, simpleDate, sumProjectTimers } from '../constants/Functions'
 import * as Data from '../data/Data'
-import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
+import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler, timersHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
+import { FlatList } from 'react-native-gesture-handler';
 
 const debug = false
 const test = false
 
 
 
-export default function Timeline() {
+export default function Timers() {
 
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
@@ -40,32 +41,16 @@ export default function Timeline() {
     }, [])
 
     useEffect(() => {
-        messenger.addListener(chain.timerDates(), event => timerDatesHandler(event, { days, setDays }))
+        messenger.addListener(chain.timers(), event => timersHandler(event, { timers, setTimers, running }))
         return () => {
             messenger.removeAllListeners(chain.timerDates())
         }
     }, [online])
 
-    useEffect(() => {
-        days.forEach(day => {
-            let chained = `date/timers/${day}`
-            messenger.addListener(chained, event => {
-                console.log('timer event: ', event)
-                timersForDateHandler(event, { day, timers, setTimers, running })
-            })
-            Data.getTimersForDate(day)
-        })
-        return () => {
-            days.forEach(day => {
-                let chained = `date/timers/${day}`
-                messenger.removeAllListeners(chained)
-            })
-        }
-    }, [online, days])
 
     useEffect(() => {
         console.log('Get timers...')
-        Data.getTimerDates()
+        Data.getTimers()
     }, [online])
 
     // useEffect(() => {
@@ -75,15 +60,14 @@ export default function Timeline() {
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10 }}>
-
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.project}</Text>
+                    <Text style={{ color: 'red' }}>{item.id}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.total}</Text>
+                    <Text style={{ color: 'red' }}>{JSON.stringify(item.project)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-
+                    <Text style={{ color: 'red' }}>{totalTime(item.started, item.ended)}</Text>
                 </View>
             </View>
         );
@@ -133,16 +117,14 @@ export default function Timeline() {
 
             <RunningTimer />
 
-            <Text>Timeline: </Text>
+            <Text>Timers: </Text>
             <View style={styles.list}>
-                <SectionList
-                    sections={timers.length > 0 ? sumProjectTimers(timers) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
-                    renderSectionHeader={({ section: { title } }) => {
-                        return (<Text>{title}</Text>)
-                    }}
+                {/* {timers.length > 0 && typeof timers[0] === 'object' ? Object.keys(timers[0]).forEach(key => <View>{key}</View>) : null} */}
+                <FlatList
+                    data={timers}
                     style={{ height: 500 }}
                     renderItem={renderTimer}
-                    keyExtractor={(item, index) => item.project }
+                    keyExtractor={(item, index) => item.id}
                 />
             </View>
         </SafeAreaView>

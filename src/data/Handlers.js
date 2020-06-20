@@ -18,7 +18,7 @@ export const runningHandler = (event, state) => {
         if (state.setMood) state.setMood(item.mood)
         if (state.setEnergy) state.setEnergy(item.energy)
     }
-    console.log('[react] running', state.running.current)
+    debug && console.log('[react] running', state.running.current)
 
 }
 
@@ -131,10 +131,10 @@ export const timersDeletedHandler = (event, state) => {
 export const timerDatesHandler = (event, state) => {
     if (!event) return
     let item = parse(event)
-    console.log('get dates ' + typeof item, item)
+    debug && console.log('get dates ' + typeof item, item)
     if (item && typeof item === 'object') {
         let found = Object.keys(item)
-        console.log('found dates: ', found)
+        debug && console.log('found dates: ', found)
         state.setDays(found)
     }
 }
