@@ -185,7 +185,7 @@ export const getTimerDates = () => {
 }
 
 export const getTimersForDate = (date) => {
-    store.get(chain.dateTimer(date))
+    store.get(`date/timers/${date}`)
 }
 
 export const getProjectTimers = projectId => {

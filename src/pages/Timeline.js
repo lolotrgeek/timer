@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import { totalTime, simpleDate } from '../constants/Functions'
+import { totalTime, simpleDate, sumProjectTimers } from '../constants/Functions'
 import * as Data from '../data/Data'
 import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
@@ -41,11 +41,6 @@ export default function Timeline() {
 
     useEffect(() => {
         messenger.addListener(chain.timerDates(), event => timerDatesHandler(event, { days, setDays }))
-        days.forEach(day => {
-            messenger.addListener(chain.dateTimer(day), event => timersForDateHandler(event, { timers, setTimers, running }))
-            Data.getTimersForDate(day)
-        })
-
         return () => {
             messenger.removeAllListeners(chain.timerDates())
             days.forEach(day => {
@@ -55,22 +50,35 @@ export default function Timeline() {
     }, [online])
 
     useEffect(() => {
+        days.forEach(day => {
+            let chained = `date/timers/${day}`
+            console.log('timer chain: ' + chained)
+            messenger.addListener(chained, event => timersForDateHandler(event, { day, timers, setTimers, running }))
+            Data.getTimersForDate(day)
+        })
+    }, [online, days])
+
+    useEffect(() => {
         console.log('Get timers...')
         Data.getTimerDates()
     }, [online])
 
+    useEffect(() => {
+        console.log('timers: ', timers)
+    }, [timers])
 
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10 }}>
+
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.id}</Text>
+                    <Text style={{ color: 'red' }}>{item.project}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{JSON.stringify(item.project)}</Text>
+                    <Text style={{ color: 'red' }}>{item.total}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{totalTime(item.started, item.ended)}</Text>
+
                 </View>
             </View>
         );
@@ -123,10 +131,13 @@ export default function Timeline() {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
-                    data={timers}
-                    style={{ height: 150 }}
+                    sections={timers.length > 0 ? sumProjectTimers(timers) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
+                    renderSectionHeader={({ section: { title } }) => {
+                        return (<Text>{title}</Text>)
+                    }}
+                    style={{ height: 500 }}
                     renderItem={renderTimer}
-                    keyExtractor={timer => timer.id}
+                    keyExtractor={(item, index) => item.project }
                 />
             </View>
         </SafeAreaView>

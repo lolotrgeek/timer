@@ -43,6 +43,7 @@ export const timerParse = (found, state) => {
     else if (alreadyInTimers && found.status === 'deleted' || 'moved') {
         debug && console.log('Updating Removed Timer', found)
         state.setTimers(timers => timers.filter(timer => timer.id === found.id))
+
     }
     else {
         debug && console.log(' Found Timer with No Changes', found)
@@ -128,10 +129,10 @@ export const timersDeletedHandler = (event, state) => {
 }
 
 export const timerDatesHandler = (event, state) => {
-    if(!event) return
+    if (!event) return
     let item = parse(event)
     console.log('get dates ' + typeof item, item)
-    if (typeof item === 'object') {
+    if (item && typeof item === 'object') {
         let found = Object.keys(item)
         console.log('found dates: ', found)
         state.setDays(found)
@@ -142,21 +143,36 @@ export const timersForDateHandler = (event, state) => {
     if (!event) return
     debug && console.log('[react] msg timers get.')
     let item = parse(event)
-    console.log('timers get ' + typeof item, item)
-    if (Array.isArray(item)) {
-        item.map(found => {
-            if (found.type === 'timer') {
-                timerParse(parse(found), state)
-            }
-        })
-    }
-    else if (typeof item === 'object') {
-        debug && console.log('timers get ' + typeof item + ' ', item)
+    debug && console.log('timers get ' + typeof item, item)
+    if (typeof item === 'object') {
+        let section = { title: state.day, data: [] }
+        let filtered = state.timers.filter(timer => timer.title === section.title ? true : false)
+        state.setTimers(filtered)
         let id; for (id in item) {
             let found = parse(item[id])
+            debug && console.log('timers get ' + typeof found + ' ', found)
             if (found.type === 'timer') {
-                timerParse(parse(found), state)
+                // duplicate/edit check
+                let alreadyInSection = section.data.some(timer => timer.id === found.id)
+                if (!alreadyInSection && found.status === 'done') {
+                    console.log('Listing Timer', found)
+                    section.data.push(found)
+                }
+                // running check
+                else if (found.status === 'running') {
+                    state.running.current = found
+                }
+                else if (found.status === 'done' && found.id === state.running.current.id) {
+                    debug && console.log('[react] Setting last run Timer.')
+                    debug && console.log(found)
+                    state.running.current = found
+                }
+
             }
+        }
+        let alreadyInTimers = state.timers.some(timer => timer.title === section.title)
+        if (!alreadyInTimers) {
+            state.setTimers(timers => [...timers, section])
         }
     }
 }
@@ -196,7 +212,7 @@ export const projectHandler = (event, state) => {
         state.project.current = found
 
     }
-    console.log(typeof state.project.current , state.project.current)
+    console.log(typeof state.project.current, state.project.current)
 
 }
 
