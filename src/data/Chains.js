@@ -11,5 +11,5 @@ export const timerHistory = timerId => `history/timers/${timerId}`
 export const projectTimer = (projectId, timerId) => `project/${projectId}/timers/${timerId}`
 export const dateTimer = (date, timerId) => `date/timers/${dateSimple(date)}`
 export const projectTimers = projectId => `project/${projectId}/timers`
-export const dateTimers = () => `date/timers`
+export const timerDates = () => `date/timers`
 

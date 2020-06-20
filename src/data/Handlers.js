@@ -10,6 +10,18 @@ export const putHandler = (event, state) => {
     debug && console.log('put ' + typeof item + ' ', item)
 }
 
+export const runningHandler = (event, state) => {
+    if (!event) return
+    let item = JSON.parse(event)
+    if (item && typeof item === 'object' && item.status === 'running') {
+        state.running.current = item
+        if (state.setMood) state.setMood(item.mood)
+        if (state.setEnergy) state.setEnergy(item.energy)
+    }
+    console.log('[react] running', state.running.current)
+
+}
+
 ///////////////////// TIMERS \\\\\\\\\\\\\\\\\\\\\\\
 export const timerParse = (found, state) => {
     // duplicate/edit parsing
@@ -28,7 +40,7 @@ export const timerParse = (found, state) => {
             return timer
         }))
     }
-    else if (alreadyInTimers && found.status === 'deleted') {
+    else if (alreadyInTimers && found.status === 'deleted' || 'moved') {
         debug && console.log('Updating Removed Timer', found)
         state.setTimers(timers => timers.filter(timer => timer.id === found.id))
     }
@@ -46,19 +58,6 @@ export const timerParse = (found, state) => {
     }
 }
 
-export const runningHandler = (event, state) => {
-    if (!event) return
-    let item = JSON.parse(event)
-    if (item && typeof item === 'object' && item.status === 'running') {
-        state.running.current = item
-        if (state.setMood) state.setMood(item.mood)
-        if (state.setEnergy) state.setEnergy(item.energy)
-    }
-    console.log('[react] running', state.running.current)
-
-}
-
-
 export const timerHandler = (event, state) => {
     if (!event) return
     debug && console.log('[react] msg timer get.')
@@ -66,29 +65,6 @@ export const timerHandler = (event, state) => {
     debug && console.log('timer get ' + typeof item + ' ', item)
     if (item.type === 'timer') {
         state.setTimer(item)
-    }
-}
-
-export const timersHandler = (event, state) => {
-    if (!event) return
-    debug && console.log('[react] msg timers get.')
-    let item = parse(event)
-    debug && console.log('timers get ' + typeof item + ' ', item)
-    if (Array.isArray(item)) {
-        item.map(found => {
-            if (found.type === 'timer') {
-                timerParse(parse(found), state)
-            }
-        })
-    }
-    else if (typeof item === 'object') {
-        debug && console.log('timers get ' + typeof item + ' ', item)
-        let id; for (id in item) {
-            let found = parse(item[id])
-            if (found.type === 'timer') {
-                timerParse(parse(found), state)
-            }
-        }
     }
 }
 export const timerForEditHandler = (event, state) => {
@@ -106,10 +82,33 @@ export const timerForEditHandler = (event, state) => {
     }
 }
 
+export const timersHandler = (event, state) => {
+    if (!event) return
+    debug && console.log('[react] msg timers get.')
+    let item = parse(event)
+    console.log('timers get ' + typeof item + ' ', item)
+    if (Array.isArray(item)) {
+        item.map(found => {
+            if (found.type === 'timer') {
+                timerParse(parse(found), state)
+            }
+        })
+    }
+    else if (typeof item === 'object') {
+        debug && console.log('timers get ' + typeof item + ' ', item)
+        let id; for (id in item) {
+            let found = parse(item[id])
+            if (found.type === 'timer') {
+                timerParse(parse(found), state)
+            }
+        }
+    }
+}
+
 export const timersDeletedHandler = (event, state) => {
     if (!event) return
     let item = parse(event)
-    debug && console.log('get deleted timers ' + typeof item + ' ', item)
+    console.log('get deleted timers ' + typeof item + ' ', item)
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
@@ -128,6 +127,39 @@ export const timersDeletedHandler = (event, state) => {
     }
 }
 
+export const timerDatesHandler = (event, state) => {
+    if(!event) return
+    let item = parse(event)
+    console.log('get dates ' + typeof item, item)
+    if (typeof item === 'object') {
+        let found = Object.keys(item)
+        console.log('found dates: ', found)
+        state.setDays(found)
+    }
+}
+
+export const timersForDateHandler = (event, state) => {
+    if (!event) return
+    debug && console.log('[react] msg timers get.')
+    let item = parse(event)
+    console.log('timers get ' + typeof item, item)
+    if (Array.isArray(item)) {
+        item.map(found => {
+            if (found.type === 'timer') {
+                timerParse(parse(found), state)
+            }
+        })
+    }
+    else if (typeof item === 'object') {
+        debug && console.log('timers get ' + typeof item + ' ', item)
+        let id; for (id in item) {
+            let found = parse(item[id])
+            if (found.type === 'timer') {
+                timerParse(parse(found), state)
+            }
+        }
+    }
+}
 
 /////////////////// PROJECTS\\\\\\\\\\\\\\\\\\\\\\\
 export const projectParse = (found, state) => {

@@ -30,8 +30,8 @@ const endTimer = (timer) => {
   debug && console.log('Ending', timer)
   set(chain.timerHistory(timer.id), timer)
   put(chain.timer(timer.id), timerToString)
-  put(chain.projectTimer(timer.project, timer.id), timer)
-  put(chain.dateTimer(timer.started, timer.id), timer)
+  set(chain.projectTimer(timer.project, timer.id), timer)
+  set(chain.dateTimer(timer.started, timer.id), timer)
 }
 
 /**

@@ -105,9 +105,9 @@ export const getMonth = date => {
 }
 /**
  * return date as a simplifed date string `dd month yyy`
- * @param {*} date 
+ * @param {*} date optional, default: `today`
  */
-export const simpleDate = date => format(date, "MMM d yyyy")
+export const simpleDate = date => format(date ? date : new Date(), "MMM d yyyy")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
 export const fullDate = date => format(date, "EEE MMM d yyyy  hh:mm:ss aaa")
