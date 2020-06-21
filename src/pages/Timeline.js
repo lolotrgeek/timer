@@ -61,7 +61,7 @@ export default function Timeline() {
                 messenger.removeAllListeners(chained)
             })
         }
-    }, [online, days])
+    }, [days])
 
     useEffect(() => {
         console.log('Get timers...')

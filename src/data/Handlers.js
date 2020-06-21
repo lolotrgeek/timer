@@ -153,6 +153,7 @@ export const timersForDateHandler = (event, state) => {
     debug && console.log('[react] msg timers get.')
     let item = parse(event)
     debug && console.log('timers get ' + typeof item, item)
+    let looped = 0
     if (typeof item === 'object') {
         let section = { title: state.day, data: [] }
         let filtered = state.timers.filter(timer => timer.title === section.title ? true : false)
@@ -178,7 +179,9 @@ export const timersForDateHandler = (event, state) => {
                 }
 
             }
+            looped++
         }
+        console.log('Timers called loop: ' +looped)
         let alreadyInTimers = state.timers.some(timer => timer.title === section.title)
         if (!alreadyInTimers) {
             state.setTimers(timers => [...timers, section])
