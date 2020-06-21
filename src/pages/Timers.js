@@ -2,10 +2,10 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import { totalTime, simpleDate, sumProjectTimers } from '../constants/Functions'
+import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
+import { totalTime } from '../constants/Functions'
 import * as Data from '../data/Data'
-import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler, timersHandler } from '../data/Handlers'
+import { putHandler, runningHandler, timersHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { FlatList } from 'react-native-gesture-handler';
@@ -19,7 +19,6 @@ export default function Timers() {
 
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
-    const [days, setDays] = useState([])
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
@@ -43,7 +42,7 @@ export default function Timers() {
     useEffect(() => {
         messenger.addListener(chain.timers(), event => timersHandler(event, { timers, setTimers, running }))
         return () => {
-            messenger.removeAllListeners(chain.timerDates())
+            messenger.removeAllListeners(chain.timers())
         }
     }, [online])
 
