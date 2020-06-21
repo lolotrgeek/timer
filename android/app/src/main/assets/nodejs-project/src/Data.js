@@ -1,13 +1,11 @@
+/* eslint-disable no-unused-vars */
 // mini nodeified version of Data.js
-const isRunning = require('./Functions').isRunning
-const newEntryPerDay = require('./Functions').newEntryPerDay
-const dateSimple = require('./Functions').dateSimple
-const doneTimer = require('./Models').doneTimer
-const newTimer = require('./Models').newTimer
+const { multiDay, newEntryPerDay, isRunning } = require('./Functions')
+const { cloneTimer, newTimer, doneTimer } = require('./Models')
 const store = require('./Store')
 const chain = require('./Chains')
 
-const debug = false
+const debug = true
 
 const put = (key, value) => store.put({ key: key, value: JSON.stringify(value) })
 const set = (key, value) => store.set({ key: key, value: JSON.stringify(value) })
@@ -29,7 +27,7 @@ const createTimer = (projectId) => {
 const endTimer = (timer) => {
   debug && console.log('Ending', timer)
   set(chain.timerHistory(timer.id), timer)
-  put(chain.timer(timer.id), timerToString)
+  put(chain.timer(timer.id), timer)
   set(chain.projectTimer(timer.project, timer.id), timer)
   set(chain.dateTimer(timer.started, timer.id), timer)
 }
@@ -82,12 +80,11 @@ const getProject = (projectId, handler) => {
 const getTimers = (projectId) => {
   return new Promise((resolve, reject) => {
     try {
-      const chain = store.chainer(chain.timers(), store.app)
-      chain.once((data, key) => {
-        const foundData = trimSoul(data)
+      store.chainer(chain.timers(), store.app).once((data, key) => {
+        const foundData = store.trimSoul(data)
         debug && console.log('[GUN node] getTimers Data Found: ', foundData)
         let dataFiltered = []
-        for (id in foundData) {
+        let id ; for (id in foundData) {
           let item = store.parse(foundData[id])
           debug && console.log('getTimers item', item)
           if (item['project'] === projectId) {
@@ -113,12 +110,11 @@ const getTimers = (projectId) => {
 const getTimersFiltered = (projectId) => {
   return new Promise((resolve, reject) => {
     try {
-      const chain = store.chainer(chain.timers(), store.app)
-      chain.once((data, key) => {
-        const foundData = trimSoul(data)
+      store.chainer(chain.timers(), store.app).once((data, key) => {
+        const foundData = store.trimSoul(data)
         debug && console.log('[GUN node] getTimers Data Found: ', foundData)
         let dataFiltered = []
-        for (id in foundData) {
+        let id ; for (id in foundData) {
           let item = store.parse(foundData[id])
           debug && console.log('getTimers item', item)
           if (item['project'] === projectId) {

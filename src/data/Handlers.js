@@ -1,7 +1,7 @@
 // Handlers for event listeners - A Handler consumes an event and some state, applies conditions, then updates state 
 import { parse, totalTime } from '../constants/Functions'
 
-const debug = true
+const debug = false
 
 export const putHandler = (event, state) => {
     if (!event) return
@@ -24,7 +24,6 @@ export const runningHandler = (event, state) => {
 
 ///////////////////// TIMERS \\\\\\\\\\\\\\\\\\\\\\\
 export const timerParse = (found, state) => {
-    let called = 0
     // duplicate/edit parsing
     let alreadyInTimers = state.timers.some(timer => timer.id === found.id)
     if (!alreadyInTimers) {
@@ -33,8 +32,6 @@ export const timerParse = (found, state) => {
     }
     else if (alreadyInTimers && found.edited && found.edited.length > 0) {
         debug && console.log('Updating Listed Timer', found)
-        called+1
-        console.log('Timers called: ' + called)
         state.setTimers(timers => timers.map(timer => {
             if (timer.id === found.id) {
                 debug && console.log('Updating Timer', timer)
@@ -66,14 +63,12 @@ export const timersHandler = (event, state) => {
     if (!event) return
     debug && console.log('[react] msg timers get.')
     let item = parse(event)
-    console.log('timers get ' + typeof item + ' ', item)
-    let looped = 0
+    debug && console.log('timers get ' + typeof item + ' ', item)
     if (Array.isArray(item)) {
         item.map(found => {
             if (found.type === 'timer') {
                 timerParse(parse(found), state)
             }
-            looped++
         })
     }
     else if (!Array.isArray(item) && typeof item === 'object') {
@@ -83,9 +78,7 @@ export const timersHandler = (event, state) => {
             if (found.type === 'timer') {
                 timerParse(parse(found), state)
             }
-            looped++
         }
-        console.log('Timers called loop: ' +looped)
     }
 }
 
@@ -118,7 +111,7 @@ export const timerForEditHandler = (event, state) => {
 export const timersDeletedHandler = (event, state) => {
     if (!event) return
     let item = parse(event)
-    console.log('get deleted timers ' + typeof item + ' ', item)
+    debug && console.log('get deleted timers ' + typeof item + ' ', item)
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
@@ -153,7 +146,6 @@ export const timersForDateHandler = (event, state) => {
     debug && console.log('[react] msg timers get.')
     let item = parse(event)
     debug && console.log('timers get ' + typeof item, item)
-    let looped = 0
     if (typeof item === 'object') {
         let section = { title: state.day, data: [] }
         let filtered = state.timers.filter(timer => timer.title === section.title ? true : false)
@@ -179,9 +171,7 @@ export const timersForDateHandler = (event, state) => {
                 }
 
             }
-            looped++
         }
-        console.log('Timers called loop: ' +looped)
         let alreadyInTimers = state.timers.some(timer => timer.title === section.title)
         if (!alreadyInTimers) {
             state.setTimers(timers => [...timers, section])
@@ -224,7 +214,7 @@ export const projectHandler = (event, state) => {
         state.project.current = found
 
     }
-    console.log(typeof state.project.current, state.project.current)
+    debug && console.log(typeof state.project.current, state.project.current)
 
 }
 

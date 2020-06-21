@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 const config = {
   port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
   host: 'localhost'
@@ -50,10 +52,9 @@ const parse = (input) => {
  */
 const parser = input => {
   try {
-    input = JSON.parse(input)
+    return JSON.parse(input)
   } catch (error) {
     debug && console.log('[Parse node] not a JSON object')
-  } finally {
     return input
   }
 }
@@ -332,5 +333,6 @@ module.exports = {
   off: offAll,
   channel: eventEmitter,
   parse: parse,
+  trimSoul: trimSoul
 };
 

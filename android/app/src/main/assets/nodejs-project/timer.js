@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 const store = require('./src/Store')
 const createTimer = require('./src/Data').createTimer
@@ -8,7 +9,7 @@ const getRunning = require('./src/Data').getRunning
 const { differenceInSeconds, timerRanToday } = require('./src/Functions')
 const native = require('./native-bridge')
 
-const debug = false
+const debug = true
 
 let timer
 let runningTimer
@@ -49,10 +50,9 @@ const stopTimer = (running) => {
 // Helper Functions 
 const parser = input => {
     try {
-        input = JSON.parse(input)
+        return JSON.parse(input)
     } catch (error) {
         debug && console.log('[Parse node] not a JSON object')
-    } finally {
         return input
     }
 }
@@ -79,7 +79,7 @@ const findRunningProject = running => new Promise((resolve, reject) => {
     }
 })
 
-getCount = (data) => new Promise((resolve, reject) => {
+const getCount = (data) => new Promise((resolve, reject) => {
     if (!data) reject('no data')
     else if (runningTimer && runningTimer.project !== data.project) {
         debug && console.log(`getting count ${runningTimer.project} != ${data.project}`)
@@ -103,7 +103,7 @@ getCount = (data) => new Promise((resolve, reject) => {
     }
     else if (runningTimer && runningTimer.project === data.project) {
         debug && console.log(`same count ${runningTimer.project} = ${data.project}`)
-        count = count
+        // count = count
         resolve(count)
         debug && console.log(`count ${count}`)
     }

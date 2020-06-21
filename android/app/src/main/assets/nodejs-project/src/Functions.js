@@ -3,7 +3,7 @@ const moment = require('moment')
 const debug = false
 
 
-const formatDate = date => moment(dateTime).format("YYYY-MM-DD")
+const formatDate = date => moment(date).format("YYYY-MM-DD")
 
 /**
  * Create a date String of date
