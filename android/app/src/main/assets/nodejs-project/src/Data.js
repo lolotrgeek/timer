@@ -68,7 +68,28 @@ const finishTimer = (timer) => {
  * @param {string} projectId 
  * @param {function} handler 
  */
-const getProject = (projectId, handler) => {
+const getProject = (projectId) => {
+  return new Promise((resolve, reject) => {
+    if(!projectId) reject('no projectId passed')
+    try {
+      store.chainer(chain.project(projectId), store.app).once((data, key) => {
+        const foundData = store.trimSoul(data)
+        debug && console.log('[GUN node] getProject Data Found: ', foundData)
+        resolve(foundData)
+      })
+    } catch (error) {
+      console.log(error)
+      reject(error)
+    }
+  })
+}
+
+/**
+ * 
+ * @param {string} projectId 
+ * @param {function} handler 
+ */
+const getProjectCompat = (projectId, handler) => {
   get(chain.project(projectId))
   store.channel.addListener(chain.project(projectId), handler)
 }
@@ -84,7 +105,7 @@ const getTimers = (projectId) => {
         const foundData = store.trimSoul(data)
         debug && console.log('[GUN node] getTimers Data Found: ', foundData)
         let dataFiltered = []
-        let id ; for (id in foundData) {
+        let id; for (id in foundData) {
           let item = store.parse(foundData[id])
           debug && console.log('getTimers item', item)
           if (item['project'] === projectId) {
@@ -114,7 +135,7 @@ const getTimersFiltered = (projectId) => {
         const foundData = store.trimSoul(data)
         debug && console.log('[GUN node] getTimers Data Found: ', foundData)
         let dataFiltered = []
-        let id ; for (id in foundData) {
+        let id; for (id in foundData) {
           let item = store.parse(foundData[id])
           debug && console.log('getTimers item', item)
           if (item['project'] === projectId) {

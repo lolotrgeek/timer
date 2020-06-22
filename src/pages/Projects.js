@@ -68,7 +68,7 @@ export default function Projects() {
                 </View>
                 <View style={{ width: '50%' }}>
                     <Button title='start' onPress={() => {
-                        Data.finishTimer(running.current)
+                        if (running.current && running.current.status === 'running') Data.finishTimer(running.current) 
                         Data.createTimer(item.id)
                         setOnline(!online)
                     }} />

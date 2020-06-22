@@ -65,15 +65,17 @@ const inputParser = msg => {
 
 const findRunningProject = running => new Promise((resolve, reject) => {
     if (!running || running.status !== 'running') {
-        reject('no running timer')
+        debug && console.log('no running timer')
+        reject(running)
     } else {
-        getProject(running.project, event => {
+        getProject(running.project).then(event => {
             let item = JSON.parse(event)
             debug && console.log('[NODE_DEBUG_PUT] : Running Project ', item.id)
             if (item.type === 'project' && item.id === running.project) {
                 resolve(item)
             } else {
-                reject('no running project found')
+                debug && console.log('no running project found')
+                reject(event)
             }
         })
     }
