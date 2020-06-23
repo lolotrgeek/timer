@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import { totalTime, simpleDate, sumProjectTimers } from '../constants/Functions'
+import { totalTime, simpleDate, sumProjectTimers, nextDay } from '../constants/Functions'
 import * as Data from '../data/Data'
 import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
@@ -11,7 +11,7 @@ import * as chain from '../data/Chains'
 
 const debug = false
 const test = false
-
+const loadAll = false
 
 
 export default function Timeline() {
@@ -19,6 +19,7 @@ export default function Timeline() {
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
     const [days, setDays] = useState([])
+    const [day, setDay] = useState(0)
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
@@ -46,22 +47,39 @@ export default function Timeline() {
         }
     }, [online])
 
+    // useEffect(() => {
+    //     if (loadAll) {
+    //         days.forEach(day => {
+    //             let chained = `date/timers/${day}`
+    //             messenger.addListener(chained, event => {
+    //                 console.log('timer event: ', event)
+    //                 timersForDateHandler(event, { day, timers, setTimers, running })
+    //             })
+    //             Data.getTimersForDate(day)
+    //         })
+    //         return () => {
+    //             days.forEach(day => {
+    //                 let chained = `date/timers/${day}`
+    //                 messenger.removeAllListeners(chained)
+    //             })
+    //         }
+    //     }
+    // }, [days])
+
     useEffect(() => {
-        days.forEach(day => {
-            let chained = `date/timers/${day}`
-            messenger.addListener(chained, event => {
-                console.log('timer event: ', event)
-                timersForDateHandler(event, { day, timers, setTimers, running })
-            })
-            Data.getTimersForDate(day)
+        let chained = `date/timers/${days[day]}`
+        messenger.addListener(chained, event => {
+            console.log('timer event: ', event)
+            timersForDateHandler(event, { day, timers, setTimers, running })
         })
+        Data.getTimersForDate(day)
         return () => {
             days.forEach(day => {
                 let chained = `date/timers/${day}`
                 messenger.removeAllListeners(chained)
             })
         }
-    }, [days])
+    }, [])
 
     useEffect(() => {
         console.log('Get timers...')
@@ -71,6 +89,8 @@ export default function Timeline() {
     // useEffect(() => {
     //     console.log('timers: ', timers)
     // }, [timers])
+
+
 
     const renderTimer = ({ item }) => {
         return (
@@ -142,7 +162,12 @@ export default function Timeline() {
                     }}
                     style={{ height: 500 }}
                     renderItem={renderTimer}
-                    keyExtractor={(item, index) => item.project }
+                    onEndReached={() => {
+                        setDay(day => nextDay(day))
+                        Data.getTimersForDate(day)
+                    }}
+                    onEndReachedThreshold={1}
+                    keyExtractor={(item, index) => item.project}
                 />
             </View>
         </SafeAreaView>

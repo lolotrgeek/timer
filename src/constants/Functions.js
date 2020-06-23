@@ -1,4 +1,23 @@
-import { isValid, isSameDay, isDate, differenceInSeconds, startOfToday, compareAsc, isToday, isYesterday, addSeconds, endOfDay, addMinutes, parseISO, format, subHours, subMinutes, subSeconds, addHours } from 'date-fns'
+import {
+    isValid,
+    isSameDay,
+    isDate,
+    differenceInSeconds,
+    startOfToday,
+    compareAsc,
+    isToday,
+    isYesterday,
+    addSeconds,
+    endOfDay,
+    addMinutes,
+    parseISO,
+    format,
+    subHours,
+    subMinutes,
+    subSeconds,
+    addHours,
+    addDays
+} from 'date-fns'
 import moment from 'moment'
 
 const debug = false
@@ -45,12 +64,17 @@ export const datetimeCreator = () => {
 
 /**
  * Create a date String of date
- * `MM-DD-YYYY`
+ * 'YYYY-MM-DD'
  */
 export const dateSimple = date => {
     let parsedDate = date ? typeof date === 'string' ? new Date(date) : date : new Date()
     // const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
-    return moment(parsedDate).format('DD-MM-YYYY')
+    return moment(parsedDate).format('YYYY-MM-DD')
+}
+
+export const nextDay = date => {
+    if (typeof date === 'string') date = new Date(date)
+    return addDays(date, 1)
 }
 
 export const dateTestGen = () => {
@@ -76,7 +100,7 @@ export const startRandTestGen = () => {
 
 export const endRandTestGen = (start) => {
     let hours = start.getHours()
-    let range = 23 - hours 
+    let range = 23 - hours
     let end = addHours(start, Math.random() * range)
     return end
 }
