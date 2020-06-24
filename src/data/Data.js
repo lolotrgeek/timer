@@ -1,6 +1,6 @@
 import { cloneTimer, newProject, doneTimer, newTimer } from './Models'
 import { isRunning, multiDay, newEntryPerDay, dateSimple, dateTestGen, endRandTestGen, startRandTestGen } from '../constants/Functions'
-import * as store from './Store.native'
+import * as store from './Store'
 import * as chain from './Chains'
 
 const debug = true

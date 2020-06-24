@@ -43,7 +43,8 @@ const fs = require("fs");
 //   addWebpackModuleRule({test: /(@?react-(navigation|native)).*\.(ts|js)x?$/})
 // )
 
-
+// reduce web bundle size by filtering out any native modules
+// https://github.com/babel/babel/discussions/11694
 module.exports = function override(config, env) {
     config.module.rules.push({
         test: /(@?react-(navigation|native)).*\.(ts|js)x?$/,
