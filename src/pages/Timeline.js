@@ -180,7 +180,7 @@ export default function Timeline() {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
-                    sections={timers.length > 0 ? sumProjectTimers(timers) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
+                    sections={timers.length > 0 ? sumProjectTimers(timers).sort((a, b) => new Date(b.title) - new Date(a.title)) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
