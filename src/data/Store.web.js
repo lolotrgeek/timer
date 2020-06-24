@@ -10,7 +10,7 @@ const gun = new Gun({
     peers: peers,
 })
 const app = gun.get('app')
-const debug = false
+const debug = true
 
 
 export const testGun = () => {
@@ -97,14 +97,12 @@ const chainer = (input, chain) => {
 
 const getOne = (msg) => {
     const input = inputParser(msg)
-    debug && console.log('msg from android', input)
+    debug && console.log('msg from react', input)
     const chain = chainer(input, app)
     // debug && console.log('[React node] Chain :', chain)
     chain.once((data, key) => {
         const foundData = trimSoul(data)
         debug && console.log('[GUN node] getOne Data Found: ', foundData)
-        debug && console.log('msg found', foundData)
-
         messenger.emit(input, foundData)
     })
 }
@@ -164,19 +162,32 @@ const getAllFilter = (msg) => {
     })
 }
 
+const rungetAllOnce = (chain) => {
+    return new Promise((resolve, reject) => {
+        let result = {}
+        chain.once().map().once((data, key) => {
+            if (!data) {
+                debug && console.log('[GUN node] getAllOnce No Data Found',)
+            }
+            const foundData = trimSoul(data)
+            result[key] = foundData
+            // debug && console.log('[GUN node] getAllOnce Data Found: ', foundData)
+        })
+        resolve(result)
+    })
+}
+
 const getAllOnce = (msg) => {
     const input = inputParser(msg)
     const chain = chainer(input, app)
     // debug && console.log('[React node] Chain :', chain)
-    chain.once().map().once((data, key) => {
-        if (!data) {
-            debug && console.log('[GUN node] getAllOnce No Data Found',)
-        }
-        data = trimSoul(data)
-        debug && console.log('[GUN node] getAllOnce Data Found: ', data)
-        messenger.emit(input, data)
+
+    rungetAllOnce(chain).then(result => {
+        debug && console.log('[GUN node] getAllOnce Data Found: ', result)
+        messenger.emit(input, result)
+        chain.off()
     })
-    chain.off()
+
 }
 
 /**

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, NativeEventEmitter, NativeModules, FlatList } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList } from 'react-native';
 import * as Data from '../data/Data'
 import { putHandler, runningHandler, projectsHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
-const debug = false
+const debug = true
 const test = false
 
 export default function Projects() {
@@ -13,7 +13,6 @@ export default function Projects() {
     const [online, setOnline] = useState(false)
     const [projects, setProjects] = useState([])
     const [timers, setTimers] = useState([])
-    const [timerHistory, setTimerHistory] = useState([])
     const [count, setCount] = useState(0)
 
     const running = useRef({ id: 'none', name: 'none', project: 'none' })

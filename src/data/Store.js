@@ -1,7 +1,7 @@
-import * as store from './Store.back'
+import * as web from './Store.web'
 
-export const put = (key, value) => store.put({ key: key, value: value })
-export const set = (key, value) => store.set({ key: key, value: value })
-export const get = (key) => store.get(key)
-export const getAll = (key) => store.getAll(key)
-export const getAllOnce = (key) => store.getAllOnce(key)
+export const put = (key, value) => web.put({ key: key, value: value })
+export const set = (key, value) => web.set({ key: key, value: value })
+export const get = (key) => web.get(key)
+export const getAll = (key) => web.getAll(key)
+export const getAllOnce = (key) => web.getAllOnce(key)

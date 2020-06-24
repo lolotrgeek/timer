@@ -1,7 +1,7 @@
 // Handlers for event listeners - A Handler consumes an event and some state, applies conditions, then updates state 
 import { parse, totalTime } from '../constants/Functions'
 
-const debug = false
+const debug = true
 
 
 export const putHandler = (event, state) => {
@@ -41,7 +41,7 @@ export const timerParse = (found, state) => {
             return timer
         }))
     }
-    else if (alreadyInTimers && found.status === 'deleted' || found.status === 'moved') {
+    else if (alreadyInTimers && found.status === 'deleted' || 'moved') {
         debug && console.log('Updating Removed Timer', found)
         state.setTimers(timers => timers.filter(timer => timer.id === found.id))
     }
@@ -236,12 +236,13 @@ export const lastProjectHandler = (projects, state) => {
 export const projectsHandler = (event, state) => {
     if (!event) return
     let item = parse(event)
-    debug && console.log('projects get ' + typeof item + ' ', item)
+    debug && console.log('projects get ' + typeof event + ' ', event)
     if (typeof item === 'object') {
+        debug && console.log(`item ${typeof item}`, item)
         let id; for (id in item) {
             try {
                 let found = parse(item[id])
-                // console.log(`item ${typeof found}`, found)
+                debug && console.log(`item ${typeof found}`, found)
                 projectParse(found, state)
             } catch (error) {
                 console.log(error)

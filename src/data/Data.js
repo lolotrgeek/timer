@@ -168,7 +168,8 @@ export const finishTimer = (timer) => {
 }
 
 export const getProjects = () => {
-    store.get(chain.projects())
+    // store.get(chain.projects())
+    store.getAllOnce(chain.projects())
     // return store.off('projects')
 }
 
@@ -177,7 +178,7 @@ export const getProject = projectId => {
 }
 
 export const getTimers = () => {
-    store.get(chain.timers())
+    store.getAllOnce(chain.timers())
 }
 
 export const getTimerDates = () => {

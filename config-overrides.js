@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
 const path = require('path');
 const { override, addBabelPlugins, addBabelPresets, babelInclude, disableEsLint, addWebpackModuleRule, babelExclude } = require('customize-cra');
 const fs = require("fs");
