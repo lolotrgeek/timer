@@ -19,7 +19,7 @@ export default function Timeline() {
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
     const [days, setDays] = useState([])
-    const [day, setDay] = useState(0)
+    const [currentDay, setcurrentDay] = useState(0) // index of last retrieved day in `days`
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
@@ -47,44 +47,68 @@ export default function Timeline() {
         }
     }, [online])
 
-    // useEffect(() => {
-    //     if (loadAll) {
-    //         days.forEach(day => {
-    //             let chained = `date/timers/${day}`
-    //             messenger.addListener(chained, event => {
-    //                 console.log('timer event: ', event)
-    //                 timersForDateHandler(event, { day, timers, setTimers, running })
-    //             })
-    //             Data.getTimersForDate(day)
-    //         })
-    //         return () => {
-    //             days.forEach(day => {
-    //                 let chained = `date/timers/${day}`
-    //                 messenger.removeAllListeners(chained)
-    //             })
-    //         }
-    //     }
-    // }, [days])
+    useEffect(() => {
+        if (loadAll) {
+            days.forEach(day => {
+                let chained = `date/timers/${day}`
+                messenger.addListener(chained, event => {
+                    console.log('timer event: ', event)
+                    timersForDateHandler(event, { day, timers, setTimers, running })
+                })
+                Data.getTimersForDate(day)
+            })
+            return () => {
+                days.forEach(day => {
+                    let chained = `date/timers/${day}`
+                    messenger.removeAllListeners(chained)
+                })
+            }
+        }
+    }, [days])
 
     useEffect(() => {
-        let chained = `date/timers/${days[day]}`
+        console.log('days ', days)
+        let day = days[0]
+        if(!day) return
+        console.log('current day: ', currentDay, day)
+        let chained = `date/timers/${day}`
         messenger.addListener(chained, event => {
+            console.log('chained day: ', chained)
             console.log('timer event: ', event)
             timersForDateHandler(event, { day, timers, setTimers, running })
         })
         Data.getTimersForDate(day)
+
         return () => {
             days.forEach(day => {
                 let chained = `date/timers/${day}`
                 messenger.removeAllListeners(chained)
             })
         }
-    }, [])
+    }, [days])
 
     useEffect(() => {
         console.log('Get timers...')
         Data.getTimerDates()
     }, [online])
+
+    useEffect(() => {
+        if(currentDay <= days.length) {
+            let day = days[currentDay]
+            if(!day) return
+            console.log('current day: ', currentDay, day)
+            let chained = `date/timers/${day}`
+            messenger.addListener(chained, event => {
+                console.log('chained day: ', chained)
+                console.log('timer event: ', event)
+                timersForDateHandler(event, { day, timers, setTimers, running })
+            })
+            Data.getTimersForDate(day)
+        }
+        else { console.log('done.') }
+        return () => currentDay
+    }, [currentDay])
+
 
     // useEffect(() => {
     //     console.log('timers: ', timers)
@@ -163,11 +187,11 @@ export default function Timeline() {
                     style={{ height: 500 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
-                        setDay(day => nextDay(day))
-                        Data.getTimersForDate(day)
+                        setcurrentDay(currentDay + 1)
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.project}
+                    initialNumToRender={5}
                 />
             </View>
         </SafeAreaView>

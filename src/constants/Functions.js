@@ -74,7 +74,7 @@ export const dateSimple = date => {
 
 export const nextDay = date => {
     if (typeof date === 'string') date = new Date(date)
-    return addDays(date, 1)
+    return moment(addDays(date, 1)).format('YYYY-MM-DD')
 }
 
 export const dateTestGen = () => {

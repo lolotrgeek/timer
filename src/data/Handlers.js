@@ -148,8 +148,8 @@ export const timersForDateHandler = (event, state) => {
     debug && console.log('timers get ' + typeof item, item)
     if (typeof item === 'object') {
         let section = { title: state.day, data: [] }
-        let filtered = state.timers.filter(timer => timer.title === section.title ? true : false)
-        state.setTimers(filtered)
+        // let filtered = state.timers.filter(timer => timer.title === section.title ? true : false)
+        // state.setTimers(filtered)
         let id; for (id in item) {
             let found = parse(item[id])
             debug && console.log('timers get ' + typeof found + ' ', found)
