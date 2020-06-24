@@ -3,6 +3,7 @@ import { parse, totalTime } from '../constants/Functions'
 
 const debug = false
 
+
 export const putHandler = (event, state) => {
     if (!event) return
     debug && console.log('[react] successful put.')
@@ -12,7 +13,7 @@ export const putHandler = (event, state) => {
 
 export const runningHandler = (event, state) => {
     if (!event) return
-    let item = JSON.parse(event)
+    let item = parse(event)
     if (item && typeof item === 'object' && item.status === 'running') {
         state.running.current = item
         if (state.setMood) state.setMood(item.mood)
@@ -115,7 +116,7 @@ export const timersDeletedHandler = (event, state) => {
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
-                let found = JSON.parse(item[id])
+                let found = parse(item[id])
                 if (found.type === 'timer' && found.status === 'deleted') {
                     let alreadyInTimers = state.timers.some(timer => timer.id === found.id)
                     if (!alreadyInTimers) {
@@ -239,7 +240,7 @@ export const projectsHandler = (event, state) => {
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
-                let found = JSON.parse(item[id])
+                let found = parse(item[id])
                 // console.log(`item ${typeof found}`, found)
                 projectParse(found, state)
             } catch (error) {
@@ -257,7 +258,7 @@ export const projectsDeletedHandler = (event, state) => {
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
-                let found = JSON.parse(item[id])
+                let found = parse(item[id])
                 if (found.type === 'project' && found.status === 'deleted') {
                     let alreadyInProjects = state.projects.some(project => project.id === found.id)
                     if (!alreadyInProjects) {
@@ -287,7 +288,7 @@ export const timerHistoryHandler = (event, state) => {
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
-                let found = JSON.parse(item[id])
+                let found = parse(item[id])
                 if (found.type === 'timer') {
                     found.key = found.edited.length > 0 ? found.id + '_' + found.edited : found.id + '_' + found.status
                     let alreadyInProjects = state.timerHistory.some(timer => timer.key === found.key)
@@ -319,7 +320,7 @@ export const projectHistoryHandler = (event, state) => {
     if (typeof item === 'object') {
         let id; for (id in item) {
             try {
-                let found = JSON.parse(item[id])
+                let found = parse(item[id])
                 if (found.type === 'project') {
                     found.key = found.edited.length > 0 ? found.id + '_' + found.edited : found.id + '_' + found.status
                     let alreadyInProjects = state.edits.some(project => project.key === found.key)
