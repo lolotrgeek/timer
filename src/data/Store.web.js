@@ -12,11 +12,13 @@ const gun = new Gun({
 const app = gun.get('app')
 const debug = true
 
+debug && console.log('App prototype:' , Object.getPrototypeOf(app))
+
 
 export const testGun = () => {
     app.put('hello')
     app.get('world', (data, key) => {
-        console.log('gunTest ', data)
+        debug && console.log('gunTest ', data)
     })
 }
 
@@ -130,7 +132,7 @@ const getAll = (msg) => {
                 }
             }
         }
-        console.log('[GUN node] getAll Data Sending: ', dataFiltered)
+        debug && console.log('[GUN node] getAll Data Sending: ', dataFiltered)
         messenger.emit(input.key, dataFiltered)
     })
 }
@@ -208,6 +210,13 @@ const getOnce = (msg, cb) => {
     chain.off()
 }
 
+const runChain = (key, app) => {
+    return new Promise((resolve, reject) => {
+        const chain = chainer(key, app)
+        resolve(chain)
+    })
+}
+
 /**
  * Assign a value to keys, needs to parse msg first
  * @param {*} msg JSON or object
@@ -215,31 +224,29 @@ const getOnce = (msg, cb) => {
  * @param {*} msg.value any
  * @param {string} [channel] optional channel name, default name `done`
  */
-const putAll = (msg) => {
-    const input = inputParser(msg)
-    debug && console.log('[NODE_DEBUG_PUT] : ', input)
-    const chain = chainer(input.key, app)
-    // debug && console.log('[React node] Chain :', chain)
-    debug && console.log('[NODE_DEBUG_PUT] : ', typeof input)
-    chain.put(input.value, ack => {
-        const data = trimSoul(input.value)
-        debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-        messenger.emit('put', ack.err ? ack : data)
+const putAll = (key, value) => {
+    runChain(key, app).then(chain => {
+        debug && console.log('Chain prototype:' , Object.getPrototypeOf(chain))
+        // debug && console.log('[React node] Chain :', chain)
+        chain.put(value, ack => {
+            const data = trimSoul(value)
+            debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
+            messenger.emit('put', ack.err ? ack : data)
+        })
     })
+
 }
 
 /**
  * Assign a value to a set, needs to parse JSON msg first
  * @param {*} msg JSON `{key: 'key' || 'key1/key2/...', value: any}`
  */
-const setAll = (msg) => {
-    debug && console.log('[NODE_DEBUG_SET] : parsing - ', msg)
-    const input = inputParser(msg)
-    debug && console.log('[NODE_DEBUG_SET] : ', input)
-    const chain = chainer(input.key, app)
+const setAll = (key, value) => {
+    const chain = chainer(key, app)
+    debug && console.log('Chain prototype:' , Object.getPrototypeOf(chain))
     // debug && console.log('[React node] Chain :', chain)
-    chain.set(input.value, ack => {
-        const data = trimSoul(input.value)
+    chain.set(value, ack => {
+        const data = trimSoul(value)
         debug && console.log('[NODE_DEBUG_SET] ERR? ', ack.err)
         messenger.emit('set', ack.err ? ack : data)
     })
@@ -251,55 +258,59 @@ const offAll = msg => {
     chain.off()
 }
 
-messenger.on('get', msg => {
-    debug && console.log('[React node] incoming get: ' + typeof msg, msg)
-    try {
-        debug && console.log('[GUN node] Getting : ' + msg)
-        getOne(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Getting failed' + error)
-    }
-})
+// messenger.on('get', msg => {
+//     debug && console.log('[React node] incoming get: ' + typeof msg, msg)
+//     try {
+//         debug && console.log('[GUN node] Getting : ' + msg)
+//         getOne(msg)
+//     } catch (error) {
+//         debug && console.log('[GUN node] : Getting failed' + error)
+//     }
+// })
 
-messenger.on('getAll', msg => {
-    debug && console.log('[React node] incoming getAll: ' + typeof msg, msg)
-    try {
-        debug && console.log('[GUN node] Getting All: ' + msg)
-        getAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Getting All failed ' + error)
-    }
-})
+// messenger.on('getAll', msg => {
+//     debug && console.log('[React node] incoming getAll: ' + typeof msg, msg)
+//     try {
+//         debug && console.log('[GUN node] Getting All: ' + msg)
+//         getAll(msg)
+//     } catch (error) {
+//         debug && console.log('[GUN node] : Getting All failed ' + error)
+//     }
+// })
 
-messenger.on('put', msg => {
-    debug && console.log('[React node] incoming put: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] storing - ' + msg)
-        putAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Putting failed ' + error)
-    }
-})
+// messenger.on('put', msg => {
+//     debug && console.log('[React node] incoming put: ' + typeof msg, msg)
+//     try {
+//         debug && console.log('[React node] storing - ' , msg)
+//         let input = parse(msg)
+//         if(input && typeof input === 'object')
+//         putAll(input.key, input.value)
+//     } catch (error) {
+//         debug && console.log('[GUN node] : Putting failed ' + error)
+//     }
+// })
 
-messenger.on('set', msg => {
-    debug && console.log('[React node] incoming set: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] storing - ' + msg)
-        setAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Setting failed ' + error)
-    }
-})
+// messenger.on('set', msg => {
+//     debug && console.log('[React node] incoming set: ' + typeof msg, msg)
+//     try {
+//         debug && console.log('[React node] storing - ' , msg)
+//         let input = parse(msg)
+//         if(input && typeof input === 'object')
+//         setAll(input.key, input.value)
+//     } catch (error) {
+//         debug && console.log('[GUN node] : Setting failed ' + error)
+//     }
+// })
 
-messenger.on('off', msg => {
-    debug && console.log('[React node] incoming off: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] Off - ' + msg)
-        offAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Off failed ' + error)
-    }
-})
+// messenger.on('off', msg => {
+//     debug && console.log('[React node] incoming off: ' + typeof msg, msg)
+//     try {
+//         debug && console.log('[React node] Off - ' + msg)
+//         offAll(msg)
+//     } catch (error) {
+//         debug && console.log('[GUN node] : Off failed ' + error)
+//     }
+// })
 
 export {
     chainer,

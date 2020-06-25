@@ -9,7 +9,7 @@ export const createProject = (name, color) => {
     const project = newProject(name, color)
     if (!project) return false
     debug && console.log('[react Data] Creating Project', project)
-    store.set(chain.projectHistory(project.id), project)
+    // store.set(chain.projectHistory(project.id), project)
     store.put(chain.project(project.id), project)
 }
 
