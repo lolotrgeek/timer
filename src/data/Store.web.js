@@ -165,6 +165,7 @@ const getAllFilter = (msg) => {
 }
 
 const rungetAllOnce = (chain) => {
+    //TODO: might not need promise here...
     return new Promise((resolve, reject) => {
         let result = {}
         chain.map().on((data, key) => {

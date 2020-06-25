@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { BrowserRouter as Router, Link, Switch, Route, useParams, useHistory } from "react-router-dom"
 import * as routes from './routes'
+import './service/timer'
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'

@@ -205,6 +205,14 @@ export const formatTime = t => {
 }
 
 // TIMER FUNCTIONS - WIP
+
+/**
+ * 
+ * @param {*} timer 
+ * @return {boolean}
+ */
+export const timerRanToday = timer => isToday(timer.started)
+
 /**
  * 
  * @param {*} timer 
