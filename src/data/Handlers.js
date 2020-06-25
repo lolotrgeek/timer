@@ -57,7 +57,7 @@ export const timerParse = (found, state) => {
         debug && console.log(found)
         state.running.current = found
     }
-    
+
 }
 
 export const timersHandler = (event, state) => {
@@ -236,10 +236,12 @@ export const lastProjectHandler = (projects, state) => {
 export const projectsHandler = (event, state) => {
     if (!event) return
     let item = parse(event)
+    // let item = {test: {id: 'test', type: 'project'}}
     debug && console.log('projects get ' + typeof event + ' ', event)
     if (typeof item === 'object') {
         debug && console.log(`item ${typeof item}`, item)
         let id; for (id in item) {
+            debug && console.log(`item ${typeof id}`, id)
             try {
                 let found = parse(item[id])
                 debug && console.log(`item ${typeof found}`, found)
@@ -250,6 +252,7 @@ export const projectsHandler = (event, state) => {
 
         }
     }
+
 }
 
 export const projectsDeletedHandler = (event, state) => {

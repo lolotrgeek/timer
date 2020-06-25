@@ -165,14 +165,16 @@ const getAllFilter = (msg) => {
 const rungetAllOnce = (chain) => {
     return new Promise((resolve, reject) => {
         let result = {}
-        chain.once().map().once((data, key) => {
+        chain.map().on((data, key) => {
             if (!data) {
                 debug && console.log('[GUN node] getAllOnce No Data Found',)
             }
             const foundData = trimSoul(data)
+            // result["test"] = { id: 'test', type: 'project' }
             result[key] = foundData
-            // debug && console.log('[GUN node] getAllOnce Data Found: ', foundData)
+            // debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData , foundData)
         })
+        // result["test"] = { id: 'test', type: 'project' }
         resolve(result)
     })
 }
