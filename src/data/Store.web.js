@@ -102,7 +102,7 @@ const getOne = (msg) => {
     debug && console.log('msg from react', input)
     const chain = chainer(input, app)
     // debug && console.log('[React node] Chain :', chain)
-    chain.once((data, key) => {
+    chain.on((data, key) => {
         const foundData = trimSoul(data)
         debug && console.log('[GUN node] getOne Data Found: ', foundData)
         messenger.emit(input, foundData)
@@ -172,10 +172,10 @@ const rungetAllOnce = (chain) => {
             if (!data) {
                 debug && console.log('[GUN node] getAllOnce No Data Found',)
             }
-            const foundData = trimSoul(data)
+            let foundData = trimSoul(data)
             // result["test"] = { id: 'test', type: 'project' }
             result[key] = foundData
-            // debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData , foundData)
+            debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData , foundData)
         })
         // result["test"] = { id: 'test', type: 'project' }
         resolve(result)
@@ -195,21 +195,7 @@ const getAllOnce = (msg) => {
 
 }
 
-/**
- * Local node `get` function
- * @param {*} msg 
- * @param {*} cb 
- */
-const getOnce = (msg, cb) => {
-    const chain = chainer(msg, app)
-    // debug && console.log('[React node] Chain :', chain)
 
-    chain.on((data, key) => {
-        data = trimSoul(data)
-        debug && console.log('Got Once ', data)
-    })
-    chain.off()
-}
 
 const runChain = (key, app) => {
     return new Promise((resolve, reject) => {
@@ -317,7 +303,6 @@ export {
     chainer,
     app,
     getOne as get,
-    getOnce,
     getAll,
     getAllOnce,
     putAll as put,

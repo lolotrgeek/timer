@@ -1,14 +1,15 @@
 /* eslint-disable no-unused-vars */
 
 import * as store from './store'
-import { createTimer, finishTimer, getProject, getTimers, getRunning } from './data'
+import { getTimers, getProject } from './data'
+import { createTimer, finishTimer  } from '../data/Data'
 import { timerRanToday, totalTime, parse } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 const debug = true
 
 let timer
-let runningTimer
-let runningProject
+let runningTimer = { id: 'none'}
+let runningProject = { id: 'none'}
 let count = 0
 // Core Functions
 
@@ -105,7 +106,7 @@ function updateRunning(runningTimer, runningProject) {
 // Remote Commands Handler, listens to finishTimer or createTimer
 store.chainer('running', store.app).on((data, key) => {
     data = parse(data)
-    if (data.type === 'timer') {
+    if (data && data.type === 'timer') {
         if (data.status === 'running') {
             getCount(data).then(count => {
                 runningTimer = data
