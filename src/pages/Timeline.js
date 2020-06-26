@@ -14,8 +14,8 @@ const test = false
 const loadAll = false
 
 
-export default function Timeline() {
-
+export default function Timeline({ useHistory }) {
+    let history = useHistory();
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
     const [days, setDays] = useState([])
@@ -69,7 +69,7 @@ export default function Timeline() {
     useEffect(() => {
         console.log('days ', days)
         let day = days[0]
-        if(!day) return
+        if (!day) return
         console.log('current day: ', currentDay, day)
         let chained = `date/timers/${day}`
         messenger.addListener(chained, event => {
@@ -93,9 +93,9 @@ export default function Timeline() {
     }, [online])
 
     useEffect(() => {
-        if(currentDay <= days.length) {
+        if (currentDay <= days.length) {
             let day = days[currentDay]
-            if(!day) return
+            if (!day) return
             console.log('current day: ', currentDay, day)
             let chained = `date/timers/${day}`
             messenger.addListener(chained, event => {

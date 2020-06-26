@@ -182,15 +182,15 @@ export const getTimers = () => {
 }
 
 export const getTimerDates = () => {
-    store.get(chain.timerDates())
+    store.getAllOnce(chain.timerDates())
 }
 
 export const getTimersForDate = (date) => {
-    store.get(`date/timers/${date}`)
+    store.getAllOnce(`date/timers/${date}`)
 }
 
 export const getProjectTimers = projectId => {
-    store.get(chain.projectTimers(projectId))
+    store.getAllOnce(chain.projectTimers(projectId))
     // store.getAll('timers', { key: 'project', value: projectId })
 }
 

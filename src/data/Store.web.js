@@ -12,7 +12,7 @@ const gun = new Gun({
 const app = gun.get('app')
 const debug = true
 
-debug && console.log('App prototype:' , Object.getPrototypeOf(app))
+debug && console.log('App prototype:', Object.getPrototypeOf(app))
 
 
 export const testGun = () => {
@@ -164,34 +164,22 @@ const getAllFilter = (msg) => {
     })
 }
 
-const rungetAllOnce = (chain) => {
-    //TODO: might not need promise here...
-    return new Promise((resolve, reject) => {
-        let result = {}
-        chain.map().on((data, key) => {
-            if (!data) {
-                debug && console.log('[GUN node] getAllOnce No Data Found',)
-            }
-            let foundData = trimSoul(data)
-            // result["test"] = { id: 'test', type: 'project' }
-            result[key] = foundData
-            debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData , foundData)
-        })
-        // result["test"] = { id: 'test', type: 'project' }
-        resolve(result)
-    })
-}
-
 const getAllOnce = (msg) => {
     const input = inputParser(msg)
     const chain = chainer(input, app)
-    // debug && console.log('[React node] Chain :', chain)
 
-    rungetAllOnce(chain).then(result => {
-        debug && console.log('[GUN node] getAllOnce Data Found: ', result)
-        messenger.emit(input, result)
-        chain.off()
+    let result = {}
+    chain.map().on((data, key) => {
+        if (!data) {
+            debug && console.log('[GUN node] getAllOnce No Data Found',)
+        }
+        let foundData = trimSoul(data)
+        // result["test"] = { id: 'test', type: 'project' }
+        result[key] = foundData
+        debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData, foundData)
     })
+    // result["test"] = { id: 'test', type: 'project' }
+    messenger.emit(input, result)
 
 }
 
@@ -213,7 +201,7 @@ const runChain = (key, app) => {
  */
 const putAll = (key, value) => {
     runChain(key, app).then(chain => {
-        debug && console.log('Chain prototype:' , Object.getPrototypeOf(chain))
+        debug && console.log('Chain prototype:', Object.getPrototypeOf(chain))
         // debug && console.log('[React node] Chain :', chain)
         chain.put(value, ack => {
             const data = trimSoul(value)
@@ -230,7 +218,7 @@ const putAll = (key, value) => {
  */
 const setAll = (key, value) => {
     const chain = chainer(key, app)
-    debug && console.log('Chain prototype:' , Object.getPrototypeOf(chain))
+    debug && console.log('Chain prototype:', Object.getPrototypeOf(chain))
     // debug && console.log('[React node] Chain :', chain)
     chain.set(value, ack => {
         const data = trimSoul(value)
