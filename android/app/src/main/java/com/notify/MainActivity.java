@@ -23,7 +23,10 @@ public class MainActivity extends ReactActivity {
   public void onStart() {
       super.onStart();
       Context context = getApplicationContext();
-      context.startService(new Intent(context, HeartbeatService.class).putExtra("TITLE", "Node React Test"));
+      if(!HeartbeatService.ISRUNNING) {
+          context.startService(new Intent(context, HeartbeatService.class));
+      }
+
   }
 
   // SERVICE DEFINITIONS HERE

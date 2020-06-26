@@ -109,13 +109,6 @@ export default function Timeline({ useHistory }) {
         return () => currentDay
     }, [currentDay])
 
-
-    // useEffect(() => {
-    //     console.log('timers: ', timers)
-    // }, [timers])
-
-
-
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10 }}>

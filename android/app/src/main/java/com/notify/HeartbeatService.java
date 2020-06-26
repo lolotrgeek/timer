@@ -37,6 +37,7 @@ public class HeartbeatService extends NodeJS {
     private static boolean DEBUG = false;
     private static boolean DEBUG_PUT = false;
     private static boolean DEBUG_COUNT = false;
+    public static boolean ISRUNNING;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -267,6 +268,7 @@ public class HeartbeatService extends NodeJS {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        ISRUNNING = false;
         this.countHandler.removeCallbacks(this.runnableCode);
     }
 
@@ -342,10 +344,11 @@ public class HeartbeatService extends NodeJS {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Title")
-                .setContentText("Ready...").setSmallIcon(R.mipmap.ic_launcher).setContentIntent(contentIntent)
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Timer")
+                .setContentText("Listening...").setSmallIcon(R.mipmap.ic_launcher).setContentIntent(contentIntent)
                 .setOnlyAlertOnce(true).setPriority(NotificationCompat.PRIORITY_HIGH).setOngoing(true).build();
         startForeground(SERVICE_NOTIFICATION_ID, notification);
+        ISRUNNING = true;
         return START_STICKY;
     }
 }

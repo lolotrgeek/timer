@@ -202,16 +202,17 @@ const getAllOnce = (msg) => {
   const input = inputParser(msg)
   const chain = chainer(input, app)
   // debug && console.log('[React node] Chain :', chain)
-  chain.once().map().once((data, key) => {
-    if (!data) {
-      debug && console.log('[GUN node] getAllOnce No Data Found',)
-    }
-    data = trimSoul(data)
-    debug && console.log('[GUN node] getAllOnce Data Found: ', data)
+    let result = {}
+    chain.map().on((data, key) => {
+      if (!data) {
+        debug && console.log('[GUN node] getAllOnce No Data Found',)
+      }
+      let foundData = trimSoul(data)
+      result[key] = foundData
+      debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData, foundData)
+    })
     native.channel.post(input, data)
     eventEmitter.emit(msg, data)
-  })
-  chain.off()
 }
 
 /**

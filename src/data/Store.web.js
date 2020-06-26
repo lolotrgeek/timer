@@ -174,15 +174,12 @@ const getAllOnce = (msg) => {
             debug && console.log('[GUN node] getAllOnce No Data Found',)
         }
         let foundData = trimSoul(data)
-        // result["test"] = { id: 'test', type: 'project' }
         result[key] = foundData
         debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData, foundData)
     })
-    // result["test"] = { id: 'test', type: 'project' }
     messenger.emit(input, result)
 
 }
-
 
 
 const runChain = (key, app) => {
