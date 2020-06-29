@@ -4,12 +4,13 @@ import * as Data from '../data/Data'
 import { putHandler, runningHandler, projectsHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
+import { projectlink } from '../routes'
 
 const debug = true
 const test = false
 
-export default function Projects() {
-
+export default function Projects({ useHistory, useParams }) {
+    let history = useHistory()
     const [online, setOnline] = useState(false)
     const [projects, setProjects] = useState([])
     const [timers, setTimers] = useState([])
@@ -59,15 +60,16 @@ export default function Projects() {
         Data.getProjects()
     }, [online])
 
+
     const renderRow = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10 }}>
                 <View style={{ width: '50%' }}>
-                    <Text style={{ color: 'red' }}>{item.id}</Text>
+                    <Text onPress={() => history.push(projectlink(item.id))} style={{ color: 'red' }}>{item.id}</Text>
                 </View>
                 <View style={{ width: '50%' }}>
                     <Button title='start' onPress={() => {
-                        if (running.current && running.current.status === 'running') Data.finishTimer(running.current) 
+                        if (running.current && running.current.status === 'running') Data.finishTimer(running.current)
                         Data.createTimer(item.id)
                         setOnline(!online)
                     }} />

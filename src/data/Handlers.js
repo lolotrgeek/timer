@@ -203,8 +203,8 @@ export const projectParse = (found, state) => {
  * 
  * @param {*} event 
  * @param {*} state 
- * @param {*} state.projects
- * @param {*} state.setProjects 
+ * @param {*} state.project
+ * @param {*} state.setProject
  */
 export const projectHandler = (event, state) => {
     if (!event) return
@@ -212,7 +212,8 @@ export const projectHandler = (event, state) => {
     debug && console.log('project get ' + typeof item + ' ', item)
     if (typeof item === 'object') {
         let found = parse(item)
-        state.project.current = found
+        state.setProject(found)
+        // state.project.current = found
 
     }
     debug && console.log(typeof state.project.current, state.project.current)

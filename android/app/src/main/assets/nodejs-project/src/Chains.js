@@ -9,7 +9,8 @@ exports.timers = () => "timers"
 exports.timer = timerId => `timers/${timerId}`
 exports.timerHistory = timerId => `history/timers/${timerId}`
 exports.projectTimer = (projectId, timerId) => `project/${projectId}/timers/${timerId}`
-exports.dateTimer = (date, timerId) => `date/timers/${dateSimple(date)}`
+exports.dateTimer = date => `date/timers/${dateSimple(date)}`
 exports.projectTimers = projectId => `project/${projectId}/timers`
 exports.dateTimers = () => `date/timers`
+exports.dayTimer = day => `date/timers/${day}`
 

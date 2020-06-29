@@ -1,28 +1,26 @@
-// display a list of timers: timeline (date/timers), project records (project/timers)
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
 import { totalTime, simpleDate, sumProjectTimers, nextDay } from '../constants/Functions'
-import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
+import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler, projectHandler } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import '../state/timelineState'
 
-const debug = false
+const debug = true
 const test = false
 const loadAll = false
 
-
-export default function Timeline({ useHistory }) {
-    let history = useHistory();
+export default function Project({ useHistory, useParams }) {
+    let { projectId } = useParams()
+    let history = useHistory()
     const [online, setOnline] = useState(false)
+    const [project, setProject] = useState({})
     const [timers, setTimers] = useState([])
     const [days, setDays] = useState([])
     const [currentDay, setcurrentDay] = useState(0) // index of last retrieved day in `days`
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
+
 
     useEffect(() => Data.getRunning(), [online])
 
@@ -42,14 +40,79 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener("daytimers", event => setTimers(event))
-        return () => messenger.removeAllListeners("daytimers")
-    }, [])
-
+        messenger.addListener(chain.project(projectId), event => projectHandler(event, { project, setProject, running }))
+        return () => {
+            messenger.removeAllListeners(chain.project(projectId))
+        }
+    }, [online])
     useEffect(() => {
-        messenger.emit("timeline", true)
+        messenger.addListener(chain.timerDates(), event => timerDatesHandler(event, { days, setDays }))
+        return () => {
+            messenger.removeAllListeners(chain.timerDates())
+        }
     }, [online])
 
+    useEffect(() => {
+        if (loadAll) {
+            days.forEach(day => {
+                let chained = `date/timers/${day}`
+                messenger.addListener(chained, event => {
+                    console.log('timer event: ', event)
+                    timersForDateHandler(event, { day, timers, setTimers, running })
+                })
+                Data.getTimersForDate(day)
+            })
+            return () => {
+                days.forEach(day => {
+                    let chained = `date/timers/${day}`
+                    messenger.removeAllListeners(chained)
+                })
+            }
+        }
+    }, [days])
+
+    useEffect(() => {
+        console.log('days ', days)
+        let day = days[0]
+        if (!day) return
+        console.log('current day: ', currentDay, day)
+        let chained = `date/timers/${day}`
+        messenger.addListener(chained, event => {
+            console.log('chained day: ', chained)
+            console.log('timer event: ', event)
+            timersForDateHandler(event, { day, timers, setTimers, running })
+        })
+        Data.getTimersForDate(day)
+
+        return () => {
+            days.forEach(day => {
+                let chained = `date/timers/${day}`
+                messenger.removeAllListeners(chained)
+            })
+        }
+    }, [days])
+
+    useEffect(() => {
+        console.log('Get timers...')
+        Data.getTimerDates()
+    }, [online])
+
+    useEffect(() => {
+        if (currentDay <= days.length) {
+            let day = days[currentDay]
+            if (!day) return
+            console.log('current day: ', currentDay, day)
+            let chained = `date/timers/${day}`
+            messenger.addListener(chained, event => {
+                console.log('chained day: ', chained)
+                console.log('timer event: ', event)
+                timersForDateHandler(event, { day, timers, setTimers, running })
+            })
+            Data.getTimersForDate(day)
+        }
+        else { console.log('done.') }
+        return () => currentDay
+    }, [currentDay])
 
     const renderTimer = ({ item }) => {
         return (
