@@ -390,7 +390,7 @@ export const sumProjectTimers = dayheaders => {
                 // debug && console.log('first timer: ', )
                 // // debug && console.log('ticked : ',  timer.total, 'calculated : ', totalTime(timer.started, timer.ended))
                 let total = totalTime(timer.started, timer.ended)
-                projects.push({ project: timer.project, totals: [total], total: total, status: timer.status, timers: [timer.id] })
+                projects.push({ project: timer.project, name: timer.name, color: timer.color ,totals: [total], total: total, status: timer.status, timers: [timer.id] })
             }
             // for each project get all timer entries and sum the totals
             const match = projects.find(inProjects => inProjects.project === timer.project)

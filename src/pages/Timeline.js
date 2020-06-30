@@ -46,17 +46,12 @@ export default function Timeline({ useHistory }) {
         return () => messenger.removeAllListeners("daytimers")
     }, [])
 
-    useEffect(() => {
-        // messenger.emit("timeline", {currentday: currentDay, pagesize: 2})
-    }, [online])
-
-
     const renderTimer = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
+            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.project}</Text>
+                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>

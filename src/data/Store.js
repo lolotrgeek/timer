@@ -1,4 +1,5 @@
 import * as web from './Store.web'
+export const chainer = web.chainer
 export const app = web.app
 export const put = (key, value) => web.put(key, value)
 export const set = (key, value) => web.set(key, value)

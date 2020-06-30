@@ -50,7 +50,6 @@ const done = () => {
     days.forEach(day => messenger.removeAllListeners(chain.timerDays(day)))
 }
 
-
 const timersForDateHandler = (event, state) => {
     if (!event) return
     debug && console.log('[react] msg timers get.')
@@ -64,22 +63,28 @@ const timersForDateHandler = (event, state) => {
             let found = parse(item[id])
             debug && console.log('timers get ' + typeof found + ' ', found)
             if (found.type === 'timer') {
-                // duplicate/edit check
-                let alreadyInSection = section.data.some(timer => timer.id === found.id)
-                if (!alreadyInSection && found.status === 'done') {
-                    console.log('Listing Timer', found)
-                    retrievedtimers = retrievedtimers + 1
-                    section.data.push(found)
-                }
-                // running check
-                else if (found.status === 'running') {
-                    running = found
-                }
-                else if (found.status === 'done' && found.id === running.id) {
-                    debug && console.log('[react] Setting last run Timer.')
-                    debug && console.log(found)
-                    running = found
-                }
+                // update name/color
+                findProject(found.project).then(project => {
+                    found.color = project.color
+                    found.name = project.name
+                    // duplicate/edit check
+                    let alreadyInSection = section.data.some(timer => timer.id === found.id)
+                    if (!alreadyInSection && found.status === 'done') {
+                        console.log('Listing Timer', found)
+                        retrievedtimers = retrievedtimers + 1
+                        section.data.push(found)
+                    }
+                    // running check
+                    else if (found.status === 'running') {
+                        running = found
+                    }
+                    else if (found.status === 'done' && found.id === running.id) {
+                        debug && console.log('[react] Setting last run Timer.')
+                        debug && console.log(found)
+                        running = found
+                    }
+                })
+
 
             }
         }
@@ -90,6 +95,21 @@ const timersForDateHandler = (event, state) => {
     }
 }
 
+
+const findProject = projectId => new Promise((resolve, reject) => {
+    if (!projectId) {
+        debug && console.log('no id')
+        reject(projectId)
+    } else {
+        Data.getProject(projectId)
+        messenger.on(chain.project(projectId), msg => {
+            let found = parse(msg)
+            if (found && found.type === 'project') {
+                resolve(found)
+            }
+        })
+    }
+})
 
 const daylistHandler = (event) => {
     if (!event) return
