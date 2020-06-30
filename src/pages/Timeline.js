@@ -47,7 +47,7 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        messenger.emit("timeline", true)
+        // messenger.emit("timeline", {currentday: currentDay, pagesize: 2})
     }, [online])
 
 
@@ -115,18 +115,19 @@ export default function Timeline({ useHistory }) {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
-                    sections={timers.length > 0 ? sumProjectTimers(timers).sort((a, b) => new Date(b.title) - new Date(a.title)) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
+                    sections={timers.length > 0 ? sumProjectTimers(timers) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
-                    style={{ height: 500 }}
+                    style={{ height: 200 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
+                        messenger.emit('timeline', {currentday: currentDay, pagesize: 2})
                         setcurrentDay(currentDay + 1)
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.project}
-                    initialNumToRender={5}
+                    initialNumToRender={2}
                 />
             </View>
         </SafeAreaView>

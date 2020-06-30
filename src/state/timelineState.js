@@ -5,27 +5,42 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
 let debug = true
-let pagesize = 50 // number of timers to get
-let days = []
-let currentday = 0
-let timers = []
-let timercount = 0
+let pagesize = 5 // number of timers per `page`
+let days = [] // set of days containing timers
+let currentday = 0 // last day where timers were retrieved
+let timers = [] // set of timers sectioned by day
+let retrievedtimers = 0 // total number of timers retrieved
 let running = { id: 'none', name: 'none', project: 'none' }
+
+// input pagesize && current day 
+// get days until page is filled
+
+// listen for a list of days
+messenger.on(chain.timerDates(), event => daylistHandler(event))
+// listen for state change requests
+messenger.on("timeline", msg => {
+    if (msg) {
+        pagesize = msg.pagesize
+        currentday = msg.currentday
+        store.getAllOnce(chain.timerDates())
+        timelineState()
+    }
+})
 
 const timelineState = () => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`
 
     // get timers for day
     console.log('days ', days)
-
-    // keep getting days with timers until timercount is greater than or equal to pagesize or there are no more timers to get
-    while (timercount < pagesize) {
+    retrievedtimers = 0
+    // keep getting days with timers until retrievedtimers is greater than or equal to pagesize or there are no more timers to get
+    while (retrievedtimers < pagesize) {
         console.log('days ', days)
-        if (timercount >= pagesize) break;
-        else if (currentday === days.length) break;
+        if (retrievedtimers >= pagesize) break;
+        else if (currentday >= days.length) break;
         let day = days[currentday]
         console.log('current day: ', currentday, day)
-        Data.getTimersForDate(day)
+        store.getAllOnce(chain.timerDays(day))
         currentday = currentday + 1
     }
     messenger.emit('daytimers', timers)
@@ -34,14 +49,7 @@ const timelineState = () => {
 const done = () => {
     days.forEach(day => messenger.removeAllListeners(chain.timerDays(day)))
 }
-// listen for a list of days
-messenger.on(chain.timerDates(), event => daylistHandler(event))
-messenger.on("timeline", msg => {
-    if (msg) {
-        store.getAllOnce(chain.timerDates())
-        timelineState()
-    }
-})
+
 
 const timersForDateHandler = (event, state) => {
     if (!event) return
@@ -60,7 +68,7 @@ const timersForDateHandler = (event, state) => {
                 let alreadyInSection = section.data.some(timer => timer.id === found.id)
                 if (!alreadyInSection && found.status === 'done') {
                     console.log('Listing Timer', found)
-                    timercount = timercount + 1
+                    retrievedtimers = retrievedtimers + 1
                     section.data.push(found)
                 }
                 // running check
@@ -90,7 +98,7 @@ const daylistHandler = (event) => {
     if (item && typeof item === 'object') {
         let found = Object.keys(item)
         debug && console.log('found dates: ', found)
-        days = found
+        days = found.sort((a, b) => new Date(b) - new Date(a))
         days.forEach(day => messenger.addListener(chain.timerDays(day), event => timersForDateHandler(event, { day })))
     }
 }
