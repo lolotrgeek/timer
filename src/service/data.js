@@ -4,7 +4,7 @@ import { trimSoul } from '../constants/Functions'
 import * as store from '../data/Store.web'
 import * as chain from '../data/Chains'
 
-const debug = true
+const debug = false
 
 export const put = (key, value) => store.put(key, value)
 export const set = (key, value) => store.set(key, value)

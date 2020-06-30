@@ -5,7 +5,7 @@ import { getTimers, getProject } from './data'
 import { createTimer, finishTimer  } from '../data/Data'
 import { timerRanToday, totalTime, parse } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-const debug = true
+const debug = false
 
 let timer
 let runningTimer = { id: 'none'}

@@ -6,7 +6,7 @@ import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
-const debug = true
+const debug = false
 const test = false
 const loadAll = false
 

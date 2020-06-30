@@ -12,4 +12,4 @@ export const projectTimer = (projectId, timerId) => `project/${projectId}/timers
 export const projectTimers = projectId => `project/${projectId}/timers`
 export const timerDates = () => `date/timers`
 export const dateTimer = (date) => `date/timers/${dateSimple(date)}`
-export const timerDays = day => `date/timers/${day}`
+export const timersInDay = day => `date/timers/${day}`

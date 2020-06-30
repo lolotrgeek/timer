@@ -3,7 +3,7 @@ import { isRunning, multiDay, newEntryPerDay, dateSimple, dateTestGen, endRandTe
 import * as store from './Store'
 import * as chain from './Chains'
 
-const debug = true
+const debug = false
 
 export const createProject = (name, color) => {
     const project = newProject(name, color)

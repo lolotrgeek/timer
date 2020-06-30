@@ -6,8 +6,8 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink } from '../routes'
 
-const debug = true
-const test = false
+const debug = false
+const test = true
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()

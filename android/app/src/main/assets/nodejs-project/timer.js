@@ -9,7 +9,7 @@ const getRunning = require('./src/Data').getRunning
 const { differenceInSeconds, timerRanToday } = require('./src/Functions')
 const native = require('./native-bridge')
 
-const debug = true
+const debug = false
 
 let timer
 let runningTimer

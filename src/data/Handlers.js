@@ -1,7 +1,7 @@
 // Handlers for event listeners - A Handler consumes an event and some state, applies conditions, then updates state 
 import { parse, totalTime } from '../constants/Functions'
 
-const debug = true
+const debug = false
 
 
 export const putHandler = (event, state) => {

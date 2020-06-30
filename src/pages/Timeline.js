@@ -19,7 +19,6 @@ export default function Timeline({ useHistory }) {
     let history = useHistory();
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
-    const [days, setDays] = useState([])
     const [currentDay, setcurrentDay] = useState(0) // index of last retrieved day in `days`
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
@@ -110,14 +109,14 @@ export default function Timeline({ useHistory }) {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
-                    sections={timers.length > 0 ? sumProjectTimers(timers) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
+                    sections={timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
                     style={{ height: 200 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
-                        messenger.emit('timeline', {currentday: currentDay, pagesize: 2})
+                        messenger.emit('getPage', {currentday: currentDay, pagesize: 2})
                         setcurrentDay(currentDay + 1)
                     }}
                     onEndReachedThreshold={1}
@@ -138,6 +137,7 @@ const styles = StyleSheet.create({
     },
     list: {
         flexDirection: 'row',
+        width: '100%',
         backgroundColor: '#ccc'
     },
     button: {

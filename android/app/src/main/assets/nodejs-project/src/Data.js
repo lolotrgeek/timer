@@ -5,7 +5,7 @@ const { cloneTimer, newTimer, doneTimer } = require('./Models')
 const store = require('./Store')
 const chain = require('./Chains')
 
-const debug = true
+const debug = false
 
 const put = (key, value) => store.put({ key: key, value: JSON.stringify(value) })
 const set = (key, value) => store.set({ key: key, value: JSON.stringify(value) })
