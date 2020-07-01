@@ -41,10 +41,10 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener("daytimers", event => setTimers(event))
+        messenger.addListener("daytimers", event => setTimers(timers => timers.concat(event)))
         return () => messenger.removeAllListeners("daytimers")
     }, [])
-
+    
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
@@ -116,12 +116,11 @@ export default function Timeline({ useHistory }) {
                     style={{ height: 200 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
-                        messenger.emit('getPage', {currentday: currentDay, pagesize: 2})
-                        setcurrentDay(currentDay + 1)
+                        console.log('End Reached')
+                        messenger.emit('getPage', {pagesize: 4})
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.project}
-                    initialNumToRender={2}
                 />
             </View>
         </SafeAreaView>
