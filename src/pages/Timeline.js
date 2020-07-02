@@ -50,7 +50,7 @@ export default function Timeline({ useHistory }) {
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
+                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>
