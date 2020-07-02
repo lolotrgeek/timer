@@ -87,8 +87,8 @@ const parseDayTimers = (found, section) => {
         let data = [...section.data]
         let alreadyInSection = data.some(timer => timer.id === found.id)
         if (!alreadyInSection && found.status === 'done') {
-            section.data = sortDayTimers(found, data)
-            updatePage(section)
+            data = sortDayTimers(found, data)
+            updatePage({title: section.title, data: data})
         }
         // running check
         else if (found.status === 'running') {
