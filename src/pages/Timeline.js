@@ -19,11 +19,13 @@ export default function Timeline({ useHistory }) {
     let history = useHistory();
     const [online, setOnline] = useState(false)
     const [timers, setTimers] = useState([])
-    const [currentDay, setcurrentDay] = useState(0) // index of last retrieved day in `days`
+    const [pages, setPages] = useState([])
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
-    useEffect(() => Data.getRunning(), [online])
+    useEffect(() => Data.getRunning(), [online, count])
+
+
 
     useEffect(() => {
         messenger.addListener("put", event => putHandler(event, { running, setTimers }))
@@ -41,10 +43,31 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener("daytimers", event => setTimers(timers => timers.concat(event)))
-        return () => messenger.removeAllListeners("daytimers")
+        messenger.addListener("page", event => {
+            // setTimers(timers.concat(event))
+            setPages(pages => [...pages, event])
+        })
+        return () => messenger.removeAllListeners("page")
     }, [])
-    
+
+    useEffect(() => {
+        messenger.addListener("pages", event => {
+            if (event && Array.isArray(event)) {
+                console.log('Pages', event)
+                setPages(event)
+            }
+        })
+        return () => messenger.removeAllListeners("pages")
+    }, [])
+
+    useEffect(() => {
+        if(pages && Array.isArray(pages) ) {
+            let flattened = pages.flat(1)
+            setTimers(flattened)
+        }
+    }, [pages])
+
+
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
@@ -90,12 +113,9 @@ export default function Timeline({ useHistory }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Begin' onPress={() => {
-                    Data.createProject('react project', '#ccc')
-                    Data.createProject('test project', '#ccc')
+                <Button title='Refresh' onPress={() => {
                     setOnline(!online)
                 }} />
-                <Button title='Refresh' onPress={() => setOnline(!online)} />
                 <Button title='Clear' onPress={() => {
                     running.current = { id: 'none', name: 'none', project: 'none' }
                     setTimers([])
@@ -109,15 +129,23 @@ export default function Timeline({ useHistory }) {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
-                    sections={timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+                    sections={timers && timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
-                    style={{ height: 200 }}
+                    style={{ height: 500 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
                         console.log('End Reached')
-                        messenger.emit('getPage', {pagesize: 4})
+                        if (timers) {
+                            console.log(timers, typeof timers, Array.isArray(timers))
+                            let msg = { current: timers, pagesize: 4 }
+                            messenger.emit('getPages', msg)
+
+                        } else {
+                            setOnline(!online)
+                        }
+
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.project}

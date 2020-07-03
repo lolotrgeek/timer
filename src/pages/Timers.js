@@ -52,9 +52,7 @@ export default function Timers() {
         Data.getTimers()
     }, [online])
 
-    // useEffect(() => {
-    //     console.log('timers: ', timers)
-    // }, [timers])
+
 
     const renderTimer = ({ item }) => {
         return (
@@ -100,11 +98,6 @@ export default function Timers() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Begin' onPress={() => {
-                    Data.createProject('react project', '#ccc')
-                    Data.createProject('test project', '#ccc')
-                    setOnline(!online)
-                }} />
                 <Button title='Refresh' onPress={() => setOnline(!online)} />
                 <Button title='Clear' onPress={() => {
                     running.current = { id: 'none', name: 'none', project: 'none' }

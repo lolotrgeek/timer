@@ -7,7 +7,7 @@ import * as chain from '../data/Chains'
 import { projectlink } from '../routes'
 
 const debug = false
-const test = true
+const test = false
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()
@@ -44,22 +44,28 @@ export default function Projects({ useHistory, useParams }) {
     }, [online])
 
     useEffect(() => {
-        // TEST GENERATOR
+        console.log('Get projects...')
+        Data.getProjects()
+    }, [online])
+
+    const generateTimers = () => {
         let amount = 100
-        if (test && projects.length > 0 && timers.length < amount) {
+        if (projects.length > 0 && timers.length < amount) {
             let i = 0
             while (i < amount) {
                 Data.generateTimer(projects)
                 i++
             }
         }
-    }, [online])
+    }
 
-    useEffect(() => {
-        console.log('Get projects...')
-        Data.getProjects()
-    }, [online])
+    const Begin = () => {
+        Data.createProject('react project', '#ccc')
+        Data.createProject('test project', '#ccc')
+        // generate timer entries
 
+        setOnline(!online)
+    }
 
     const renderRow = ({ item }) => {
         return (
@@ -107,11 +113,11 @@ export default function Projects({ useHistory, useParams }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flexDirection: 'row', margin: 10 }}>
-                {projects.length === 0 ? <Button title='Begin' onPress={() => {
-                    Data.createProject('react project', '#ccc')
-                    Data.createProject('test project', '#ccc')
-                    setOnline(!online)
-                }} /> : <Button title='Refresh' onPress={() => setOnline(!online)} />}
+                {projects.length === 0 ?
+                    <Button title='Begin' onPress={() => Begin()} /> :
+                    <Button title="Test" onPress={() => generateTimers()} />
+                }
+                <Button title='Refresh' onPress={() => setOnline(!online)} />
                 <Button title='Clear' onPress={() => {
                     running.current = { id: 'none', name: 'none', project: 'none' }
                     setProjects([])
