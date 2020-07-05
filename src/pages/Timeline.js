@@ -10,6 +10,7 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import '../state/timelineState'
 
+
 const debug = false
 const test = false
 const loadAll = false
@@ -21,16 +22,12 @@ export default function Timeline({ useHistory }) {
     const [timers, setTimers] = useState([])
     const [pages, setPages] = useState([])
     const [count, setCount] = useState(0)
+    const [location, setLocation] = useState({ x: 0, y: 0 })
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
+    const timelineList = useRef()
+
     useEffect(() => Data.getRunning(), [online, count])
-
-
-
-    useEffect(() => {
-        messenger.addListener("put", event => putHandler(event, { running, setTimers }))
-        return () => messenger.removeAllListeners("put")
-    }, [])
 
     useEffect(() => {
         messenger.addListener("count", event => setCount(event))
@@ -61,11 +58,23 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        if(pages && Array.isArray(pages) ) {
+        messenger.addListener("location", event => {
+            setLocation({ x: event.x, y: event.y, animated: false })
+            console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
+            // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
+            timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+        })
+        return () => messenger.removeAllListeners("location")
+    }, [])
+
+    useEffect(() => {
+        if (pages && Array.isArray(pages)) {
             let flattened = pages.flat(1)
             setTimers(flattened)
         }
     }, [pages])
+
+
 
 
     const renderTimer = ({ item }) => {
@@ -129,6 +138,10 @@ export default function Timeline({ useHistory }) {
             <Text>Timeline: </Text>
             <View style={styles.list}>
                 <SectionList
+                    ref={timelineList}
+                    onLayout={layout => {
+                        console.log(timelineList.current)
+                    }}
                     sections={timers && timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
@@ -138,17 +151,20 @@ export default function Timeline({ useHistory }) {
                     onEndReached={() => {
                         console.log('End Reached')
                         if (timers) {
-                            console.log(timers, typeof timers, Array.isArray(timers))
+                            debug && console.log(timers, typeof timers, Array.isArray(timers))
                             let msg = { current: timers, pagesize: 4 }
                             messenger.emit('getPages', msg)
 
                         } else {
                             setOnline(!online)
                         }
-
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.project}
+                    onScroll={scroll => {
+                        // console.log(scroll.nativeEvent.contentOffset.y)
+                        messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)
+                    }}
                 />
             </View>
         </SafeAreaView>

@@ -22,11 +22,6 @@ export default function Projects({ useHistory, useParams }) {
     useEffect(() => Data.getRunning(), [online])
 
     useEffect(() => {
-        messenger.addListener("put", event => putHandler(event, { running, setTimers }))
-        return () => messenger.removeAllListeners("put")
-    }, [])
-
-    useEffect(() => {
         messenger.addListener("count", event => setCount(event))
         return () => messenger.removeAllListeners("count")
     }, [])

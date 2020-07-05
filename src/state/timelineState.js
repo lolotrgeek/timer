@@ -16,6 +16,7 @@ let currentday = 0 // last day where timers were retrieved
 let page = [] // set of timers sectioned by day
 let running = { id: 'none', name: 'none', project: 'none' }
 let currentPage = 1
+let pagelocation = {x: 0, y: 0}
 
 const daylistHandler = (event) => {
     if (!event) return
@@ -25,7 +26,7 @@ const daylistHandler = (event) => {
         let found = Object.keys(item)
         debug && console.log('found dates: ', found)
         days = found.sort((a, b) => new Date(b) - new Date(a))
-        console.log(days)
+        debug && console.log(days)
         // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
     }
 }
@@ -34,12 +35,19 @@ const daylistHandler = (event) => {
 messenger.on(chain.timerDates(), event => daylistHandler(event))
 store.getAllOnce(chain.timerDates())
 
+messenger.on("pagelocation", msg => {
+    if(msg) {
+        pagelocation.x = msg.x
+        pagelocation.y = msg.y
+        console.log(pagelocation.y)
+    }
+})
 
 // listen for state change requests
 messenger.on("getPage", msg => {
     if (msg) {
         pagesize = msg.pagesize
-        console.log('getpage received')
+        debug && console.log('getpage received')
         getPage()
     }
 })
@@ -54,16 +62,18 @@ messenger.on("getPages", msg => {
             if (msg.current.length === 0) {
                 if (pages && pages.length === 0) {
                     currentday = 0
-                    console.log('getting pages.')
+                    debug && console.log('getting pages.')
                     getPage()
                 } else {
-                    console.log('updating pages.')
+                    debug && console.log('updating pages.')
                     messenger.emit("pages", pages)
+                    console.log('locating...', pagelocation.y)
+                    messenger.emit('location', pagelocation)
                 }
             }
             else {
                 currentday = msg.current.length
-                console.log('getting pages.')
+                debug && console.log('getting pages.')
                 getPage()
             }
         }
@@ -81,7 +91,7 @@ const getPage = () => {
         return
     }
     else if (page.length >= pagesize) {
-        console.log('Page ' + currentPage + ' Complete.')
+        debug && console.log('Page ' + currentPage + ' Complete.')
         messenger.emit('page', page)
         pages.push(page)
         page = []
@@ -169,8 +179,8 @@ const addSection = (section) => {
     let alreadyInTimers = page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
     if (!alreadyInTimers && section.data.length > 0 && days[currentday] === section.title) {
-        console.log(currentday, days[currentday], section.title)
-        console.log(section)
+        debug && console.log(currentday, days[currentday], section.title)
+        debug && console.log(section)
         page.push(section)
         currentday++
         getPage()
