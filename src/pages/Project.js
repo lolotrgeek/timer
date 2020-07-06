@@ -41,31 +41,34 @@ export default function Project({ useHistory, useParams }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener("projectpage", event => {
+        messenger.addListener(`${projectId}/page`, event => {
             // setTimers(timers.concat(event))
             setPages(pages => [...pages, event])
         })
-        return () => messenger.removeAllListeners("projectpage")
+        return () => messenger.removeAllListeners(`${projectId}/page`)
     }, [])
 
     useEffect(() => {
-        messenger.addListener("projectpages", event => {
+        messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
                 console.log('Pages', event)
                 setPages(event)
             }
         })
-        return () => messenger.removeAllListeners("projectpages")
+        return () => messenger.removeAllListeners(`${projectId}/pages`)
     }, [])
 
     useEffect(() => {
-        messenger.addListener("projectlocation", event => {
+        messenger.addListener(`${projectId}/lastpagelocation`, event => {
             setLocation({ x: event.x, y: event.y, animated: false })
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
-            timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+            // DANGER: raw _functions, but it works
+            if (timerList.current._wrapperListRef) {
+                timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+            }
         })
-        return () => messenger.removeAllListeners("location")
+        return () => messenger.removeAllListeners(`${projectId}/lastpagelocation`)
     }, [])
 
     useEffect(() => {
@@ -74,8 +77,6 @@ export default function Project({ useHistory, useParams }) {
             setTimers(flattened)
         }
     }, [pages])
-
-
 
 
     const renderTimer = ({ item }) => {
@@ -154,7 +155,8 @@ export default function Project({ useHistory, useParams }) {
                         if (timers) {
                             debug && console.log(timers, typeof timers, Array.isArray(timers))
                             let msg = { projectId: projectId, current: timers, pagesize: 4 }
-                            messenger.emit('getProjectPages', msg)
+                            console.log('Page requesting state: ', msg)
+                            messenger.emit(`getPages`, msg)
                         } else {
                             setOnline(!online)
                         }
@@ -163,7 +165,7 @@ export default function Project({ useHistory, useParams }) {
                     keyExtractor={(item, index) => item.id}
                     onScroll={scroll => {
                         // console.log(scroll.nativeEvent.contentOffset.y)
-                        messenger.emit('projectpagelocation', scroll.nativeEvent.contentOffset)
+                        messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)
                     }}
                 />
             </View>
