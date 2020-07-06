@@ -1,33 +1,34 @@
+// display a list of timers: timeline (date/timers), project records (project/timers)
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import { totalTime, simpleDate, sumProjectTimers, nextDay } from '../constants/Functions'
-import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler, projectHandler } from '../data/Handlers'
+import { } from '../constants/Functions'
+import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
+import '../state/projectState'
+
 
 const debug = false
 const test = false
 const loadAll = false
 
+
 export default function Project({ useHistory, useParams }) {
-    let { projectId } = useParams()
-    let history = useHistory()
+    let history = useHistory();
+    let { projectId } = useParams();
     const [online, setOnline] = useState(false)
-    const [project, setProject] = useState({})
     const [timers, setTimers] = useState([])
-    const [days, setDays] = useState([])
-    const [currentDay, setcurrentDay] = useState(0) // index of last retrieved day in `days`
+    const [pages, setPages] = useState([])
     const [count, setCount] = useState(0)
+    const [location, setLocation] = useState({ x: 0, y: 0 })
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
+    const timerList = useRef()
 
-    useEffect(() => Data.getRunning(), [online])
-
-    useEffect(() => {
-        messenger.addListener("put", event => putHandler(event, { running, setTimers }))
-        return () => messenger.removeAllListeners("put")
-    }, [])
+    useEffect(() => Data.getRunning(), [online, count])
 
     useEffect(() => {
         messenger.addListener("count", event => setCount(event))
@@ -40,86 +41,49 @@ export default function Project({ useHistory, useParams }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener(chain.project(projectId), event => projectHandler(event, { project, setProject, running }))
-        return () => {
-            messenger.removeAllListeners(chain.project(projectId))
-        }
-    }, [online])
-    useEffect(() => {
-        messenger.addListener(chain.timerDates(), event => timerDatesHandler(event, { days, setDays }))
-        return () => {
-            messenger.removeAllListeners(chain.timerDates())
-        }
-    }, [online])
-
-    useEffect(() => {
-        if (loadAll) {
-            days.forEach(day => {
-                let chained = `date/timers/${day}`
-                messenger.addListener(chained, event => {
-                    console.log('timer event: ', event)
-                    timersForDateHandler(event, { day, timers, setTimers, running })
-                })
-                Data.getTimersForDate(day)
-            })
-            return () => {
-                days.forEach(day => {
-                    let chained = `date/timers/${day}`
-                    messenger.removeAllListeners(chained)
-                })
-            }
-        }
-    }, [days])
-
-    useEffect(() => {
-        console.log('days ', days)
-        let day = days[0]
-        if (!day) return
-        console.log('current day: ', currentDay, day)
-        let chained = `date/timers/${day}`
-        messenger.addListener(chained, event => {
-            console.log('chained day: ', chained)
-            console.log('timer event: ', event)
-            timersForDateHandler(event, { day, timers, setTimers, running })
+        messenger.addListener("projectpage", event => {
+            // setTimers(timers.concat(event))
+            setPages(pages => [...pages, event])
         })
-        Data.getTimersForDate(day)
-
-        return () => {
-            days.forEach(day => {
-                let chained = `date/timers/${day}`
-                messenger.removeAllListeners(chained)
-            })
-        }
-    }, [days])
+        return () => messenger.removeAllListeners("projectpage")
+    }, [])
 
     useEffect(() => {
-        console.log('Get timers...')
-        Data.getTimerDates()
-    }, [online])
+        messenger.addListener("projectpages", event => {
+            if (event && Array.isArray(event)) {
+                console.log('Pages', event)
+                setPages(event)
+            }
+        })
+        return () => messenger.removeAllListeners("projectpages")
+    }, [])
 
     useEffect(() => {
-        if (currentDay <= days.length) {
-            let day = days[currentDay]
-            if (!day) return
-            console.log('current day: ', currentDay, day)
-            let chained = `date/timers/${day}`
-            messenger.addListener(chained, event => {
-                console.log('chained day: ', chained)
-                console.log('timer event: ', event)
-                timersForDateHandler(event, { day, timers, setTimers, running })
-            })
-            Data.getTimersForDate(day)
+        messenger.addListener("projectlocation", event => {
+            setLocation({ x: event.x, y: event.y, animated: false })
+            console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
+            // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
+            timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+        })
+        return () => messenger.removeAllListeners("location")
+    }, [])
+
+    useEffect(() => {
+        if (pages && Array.isArray(pages)) {
+            let flattened = pages.flat(1)
+            setTimers(flattened)
         }
-        else { console.log('done.') }
-        return () => currentDay
-    }, [currentDay])
+    }, [pages])
+
+
+
 
     const renderTimer = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
+            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.project}</Text>
+                    <Text style={{ color: 'black' }}>{item.started + ' - ' + item.ended}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>
@@ -159,12 +123,9 @@ export default function Project({ useHistory, useParams }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Begin' onPress={() => {
-                    Data.createProject('react project', '#ccc')
-                    Data.createProject('test project', '#ccc')
+                <Button title='Refresh' onPress={() => {
                     setOnline(!online)
                 }} />
-                <Button title='Refresh' onPress={() => setOnline(!online)} />
                 <Button title='Clear' onPress={() => {
                     running.current = { id: 'none', name: 'none', project: 'none' }
                     setTimers([])
@@ -175,21 +136,35 @@ export default function Project({ useHistory, useParams }) {
 
             <RunningTimer />
 
-            <Text>Timeline: </Text>
+            <Text>Project: </Text>
             <View style={styles.list}>
                 <SectionList
-                    sections={timers.length > 0 ? sumProjectTimers(timers).sort((a, b) => new Date(b.title) - new Date(a.title)) : [{ title: 'Day', data: [{ id: 'nothing here' }] }]}
+                    ref={timerList}
+                    onLayout={layout => {
+                        console.log(timerList.current)
+                    }}
+                    sections={timers && timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
                     style={{ height: 500 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
-                        setcurrentDay(currentDay + 1)
+                        console.log('End Reached')
+                        if (timers) {
+                            debug && console.log(timers, typeof timers, Array.isArray(timers))
+                            let msg = { projectId: projectId, current: timers, pagesize: 4 }
+                            messenger.emit('getProjectPages', msg)
+                        } else {
+                            setOnline(!online)
+                        }
                     }}
                     onEndReachedThreshold={1}
-                    keyExtractor={(item, index) => item.project}
-                    initialNumToRender={5}
+                    keyExtractor={(item, index) => item.id}
+                    onScroll={scroll => {
+                        // console.log(scroll.nativeEvent.contentOffset.y)
+                        messenger.emit('projectpagelocation', scroll.nativeEvent.contentOffset)
+                    }}
                 />
             </View>
         </SafeAreaView>
@@ -205,6 +180,7 @@ const styles = StyleSheet.create({
     },
     list: {
         flexDirection: 'row',
+        width: '100%',
         backgroundColor: '#ccc'
     },
     button: {
