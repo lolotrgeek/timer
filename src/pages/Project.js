@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import { } from '../constants/Functions'
+import {timeSpan } from '../constants/Functions'
 import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
@@ -84,7 +84,7 @@ export default function Project({ useHistory, useParams }) {
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'black' }}>{item.started + ' - ' + item.ended}</Text>
+                    <Text style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>

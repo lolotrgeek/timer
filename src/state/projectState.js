@@ -1,4 +1,4 @@
-import { totalTime, simpleDate, sumProjectTimers, nextDay, parse, trimSoul } from '../constants/Functions'
+import { totalTime, timeString, parse, trimSoul, timeSpan } from '../constants/Functions'
 import * as Data from '../data/Data'
 import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
@@ -8,7 +8,7 @@ import * as chain from '../data/Chains'
 // TODO: test remote updating
 // TODO: fix replicated sections at beginning of new page
 
-let debug = false
+let debug = true
 
 let projectState = {}
 let projectId // current project state generator is operating on
@@ -96,12 +96,11 @@ const getPage = (currentday) => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`
     // TODO: needs a last page function to handle when last page might not be full
     let day = days[projectState[projectId].currentday]
-    debug && console.log(`day: ${currentday}/${projectState[projectId].days.length} [${day}], 
+    debug && console.log(`day: ${currentday}/${days.length} [${day}], 
     timer: ${projectState[projectId].page.length}/${projectState[projectId].pagesize} `)
 
     if (currentday >= days.length) {
         debug && console.log('No more days with full pages.')
-        // put any remaining timers into the last page
         if (projectState[projectId].page.length > 0) {
             console.log('Last Page ' + projectState[projectId].currentPage + ' Complete.')
             messenger.emit(`${projectState[projectId].project.id}/page`, projectState[projectId].page)
@@ -134,6 +133,12 @@ const timersInDayHandler = (day) => {
                 if (found.type === 'timer' && found.project === projectState[projectId].project.id) {
                     parseDayTimers(found, section, projectState[projectId].project)
                 }
+                else {
+                    console.log('no timers in day, try next...')
+                    projectState[projectId].currentday++
+                    getPage(projectState[projectId].currentday)
+                    console.log(projectState)
+                }
             }
         }
     })
@@ -155,12 +160,6 @@ const parseDayTimers = (found, section, project) => {
         debug && console.log('[react] Setting last run Timer.')
         debug && console.log(found)
         running = found
-    }
-    else {
-        console.log('no timers in day, try next...')
-        projectState[projectId].currentday++
-        getPage(projectState[projectId].currentday)
-        console.log(projectState)
     }
 
 }
