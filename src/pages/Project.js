@@ -156,7 +156,7 @@ export default function Project({ useHistory, useParams }) {
                             debug && console.log(timers, typeof timers, Array.isArray(timers))
                             let msg = { projectId: projectId, current: timers, pagesize: 4 }
                             console.log('Page requesting state: ', msg)
-                            messenger.emit(`getPages`, msg)
+                            messenger.emit("getProjectPages", msg)
                         } else {
                             setOnline(!online)
                         }
