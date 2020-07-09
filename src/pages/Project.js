@@ -2,7 +2,7 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
 import { timeSpan } from '../constants/Functions'
 import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
@@ -25,8 +25,8 @@ export default function Project({ useHistory, useParams }) {
     const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
     const [count, setCount] = useState(0)
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
-
     const timerList = useRef()
+
 
     useEffect(() => Data.getRunning(), [online, count])
 
@@ -120,34 +120,45 @@ export default function Project({ useHistory, useParams }) {
         )
     }
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Refresh' onPress={() => {
-                    setOnline(!online)
-                }} />
-                <Button title='Clear' onPress={() => {
-                    running.current = { id: 'none', name: 'none', project: 'none' }
-                    setDaytimers([])
-                    setOnline(!online)
-                }} />
-            </View>
+    const HeaderButtons = () => (
+        <View style={{ flexDirection: 'row', margin: 10 }}>
+            <Button title='Refresh' onPress={() => {
+                setOnline(!online)
+            }} />
+            <Button title='Clear' onPress={() => {
+                running.current = { id: 'none', name: 'none', project: 'none' }
+                setDaytimers([])
+                setOnline(!online)
+            }} />
+        </View>
+    )
 
-
+    const Header = () => (
+        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+            <HeaderButtons />
             <RunningTimer />
+        </View>
+    )
 
-            <Text>Project: </Text>
+    return (
+        <SafeAreaView style={styles.container} onLayout={(layout => { console.log(layout) })}>
+            <Header />
             <View style={styles.list}>
                 <SectionList
+                    // TODO: simplify creating sticky header/footer with list
+                    //app routes: 20 padding + 50 height
+                    // header: 20 padding + 100 height
+                    // 20 + 20 + 50 + 100 = 190
+                    style={{ marginTop: 190, height: Dimensions.get('window').height - 190 }}
                     ref={timerList}
                     onLayout={layout => {
-                        console.log(timerList.current)
+                        // console.log(timerList.current)
+                        // console.log(layout)
                     }}
                     sections={daytimers && daytimers.length > 0 ? daytimers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
-                    style={{ height: 500 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
                         console.log('End Reached')
@@ -163,6 +174,7 @@ export default function Project({ useHistory, useParams }) {
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.id}
                     onScroll={scroll => messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)}
+
                 />
             </View>
         </SafeAreaView>
@@ -171,7 +183,6 @@ export default function Project({ useHistory, useParams }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',

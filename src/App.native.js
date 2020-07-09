@@ -12,7 +12,7 @@ export default function App() {
     return (
         <NativeRouter>
             <BackButton >
-                <View style={{ flexDirection: 'row', margin: 10 }}>
+                <View style={{ position: 'absolute', flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000 }}>
                     <View style={{ width: '30%' }}>
                         <Link to={'/'}><Text>Timeline</Text></Link>
                     </View>
