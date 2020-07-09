@@ -1,9 +1,9 @@
-// display a list of timers: timeline (date/timers), project records (project/timers)
+// display a list of daytimers: timeline (date/daytimers), project records (project/daytimers)
 
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
-import {timeSpan } from '../constants/Functions'
+import { timeSpan } from '../constants/Functions'
 import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
@@ -20,10 +20,10 @@ export default function Project({ useHistory, useParams }) {
     let history = useHistory();
     let { projectId } = useParams();
     const [online, setOnline] = useState(false)
-    const [timers, setTimers] = useState([])
+    const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
+    const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
     const [count, setCount] = useState(0)
-    const [location, setLocation] = useState({ x: 0, y: 0 })
     const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
     const timerList = useRef()
@@ -42,7 +42,6 @@ export default function Project({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`${projectId}/page`, event => {
-            // setTimers(timers.concat(event))
             setPages(pages => [...pages, event])
         })
         return () => messenger.removeAllListeners(`${projectId}/page`)
@@ -60,8 +59,8 @@ export default function Project({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`${projectId}/lastpagelocation`, event => {
-            setLocation({ x: event.x, y: event.y, animated: false })
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
+            setLocation({ x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
             // DANGER: raw _functions, but it works
             if (timerList.current._wrapperListRef) {
@@ -69,12 +68,12 @@ export default function Project({ useHistory, useParams }) {
             }
         })
         return () => messenger.removeAllListeners(`${projectId}/lastpagelocation`)
-    }, [])
+    }, [daytimers])
 
     useEffect(() => {
         if (pages && Array.isArray(pages)) {
             let flattened = pages.flat(1)
-            setTimers(flattened)
+            setDaytimers(flattened)
         }
     }, [pages])
 
@@ -129,7 +128,7 @@ export default function Project({ useHistory, useParams }) {
                 }} />
                 <Button title='Clear' onPress={() => {
                     running.current = { id: 'none', name: 'none', project: 'none' }
-                    setTimers([])
+                    setDaytimers([])
                     setOnline(!online)
                 }} />
             </View>
@@ -144,7 +143,7 @@ export default function Project({ useHistory, useParams }) {
                     onLayout={layout => {
                         console.log(timerList.current)
                     }}
-                    sections={timers && timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+                    sections={daytimers && daytimers.length > 0 ? daytimers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
@@ -152,9 +151,9 @@ export default function Project({ useHistory, useParams }) {
                     renderItem={renderTimer}
                     onEndReached={() => {
                         console.log('End Reached')
-                        if (timers) {
-                            debug && console.log(timers, typeof timers, Array.isArray(timers))
-                            let msg = { projectId: projectId, current: timers, pagesize: 4 }
+                        if (daytimers) {
+                            debug && console.log(daytimers, typeof daytimers, Array.isArray(daytimers))
+                            let msg = { projectId: projectId, currentday: daytimers.length, pagesize: 4 }
                             console.log('Page requesting state: ', msg)
                             messenger.emit("getProjectPages", msg)
                         } else {
@@ -163,10 +162,7 @@ export default function Project({ useHistory, useParams }) {
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.id}
-                    onScroll={scroll => {
-                        // console.log(scroll.nativeEvent.contentOffset.y)
-                        messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)
-                    }}
+                    onScroll={scroll => messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)}
                 />
             </View>
         </SafeAreaView>

@@ -7,8 +7,8 @@ import * as chain from '../data/Chains'
 // TODO: test remote updating
 // TODO: fix replicated sections at beginning of new page
 
-let debug = true
-// const log = text => debug && console.log(text)
+let debug = false
+// const log = text => debug && debug && console.log(text)
 let projectState = {}
 let current
 // let projectId // current project state generator is operating on
@@ -30,17 +30,17 @@ const newProjectState = (projectId) => {
 const daylistHandler = (event) => {
     if (!event) return
     let item = parse(event)
-    console.log('get dates ' + typeof item, item)
+    debug && console.log('get dates ' + typeof item, item)
     if (item && typeof item === 'object') {
         let found = Object.keys(item)
-        console.log('found dates: ', found)
+        debug && console.log('found dates: ', found)
         days = found.sort((a, b) => new Date(b) - new Date(a))
         // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
     }
 }
 
 
-// register messengers
+// register listeners
 messenger.on('getProjectPages', msg => getProjectPage(msg))
 messenger.on(chain.timerDates(), event => daylistHandler(event))
 
@@ -49,7 +49,7 @@ store.getAllOnce(chain.timerDates())
 
 const getProjectPage = msg => {
     if (msg && msg.projectId) {
-        console.log('getProjectPages received')
+        debug && console.log('getProjectPages received')
         setCurrentProject(msg)
         listenForPageLocation(projectState[msg.projectId])
     }
@@ -68,7 +68,7 @@ const listenForPageLocation = current => {
 const setCurrent = (projectId) => {
     if (!projectState[projectId]) {
         projectState[projectId] = newProjectState(projectId)
-    } 
+    }
     current = projectState[projectId]
 
 }
@@ -87,55 +87,61 @@ const setCurrentProject = (msg) => {
             handleProjectPages(msg)
         })
     } else {
-        console.log('Project: ', current.project)
-        console.log('projectState: ', projectState)
+        debug && console.log('Project: ', current.project)
+        debug && console.log('projectState: ', projectState)
         handleProjectPages(msg)
     }
 }
 
 const handleProjectPages = msg => {
-    if (msg.current) {
-        if (msg.current.length === 0) {
-            if (current.pages && current.pages.length === 0) {
-                setState('currentday', 0)
-                console.log('getting pages.')
-                getPage(0)
-            } else {
-                console.log('updating pages.')
-                messenger.emit(`${current.project.id}/pages`, current.pages)
-                console.log('locating...', current.pagelocation.y)
-                messenger.emit(`${current.project.id}/lastpagelocation`, current.pagelocation)
-            }
-        }
-        else {
-            console.log('getting pages.')
-            getPage(msg.current.length)
+    if (msg.currentday === 0) {
+        if (current.pages && current.pages.length === 0) {
+            setState('currentday', 0)
+            debug && console.log('getting pages.')
+            getPage(0)
+        } else {
+            debug && console.log('updating pages.')
+            messenger.emit(`${current.project.id}/pages`, current.pages)
+            debug && console.log('locating...', current.pagelocation.y)
+            messenger.emit(`${current.project.id}/lastpagelocation`, current.pagelocation)
         }
     }
+    else if(msg.currentday > 0) {
+        
+        debug && console.log('getting pages.')
+        // update state if page has last retrieved day, otherwise use current state
+        if(msg.currentday > current.currentday) {
+            setState('currentday', msg.currentday)
+        } else {
+            setState('currentday' , current.currentday+1)
+        }
+        getPage(current.currentday) 
+    }
+
 }
 
 const getPage = (currentday) => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`
     // TODO: needs a last page function to handle when last page might not be full
-    let day = days[current.currentday]
-    console.log(`day: ${currentday}/${days.length} [${day}], 
+    let day = days[currentday]
+    debug && console.log(`day: ${currentday}/${days.length} [${day}], 
     timer: ${current.page.length}/${current.pagesize} `)
 
     if (currentday >= days.length) {
-        console.log('No more days with full pages.')
+        debug && console.log('No more days with full pages.')
         if (current.page.length > 0) {
             completePage()
-            console.log('Last Page ' + current.currentPage + ' Complete.')
+            debug && console.log('Last Page ' + current.currentPage + ' Complete.')
         }
         return
     }
     else if (current.page.length >= current.pagesize) {
         completePage()
-        console.log('Page ' + current.currentPage + ' Complete.')
+        debug && console.log('Page ' + current.currentPage + ' Complete.')
         current.currentPage++
     }
     else {
-        console.log('Getting Timers for Page.', current.page)
+        debug && console.log('Getting Timers for Page.', current.page)
         timersInDayHandler(day)
     }
 }
@@ -148,7 +154,7 @@ const completePage = () => {
 
 const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
-        console.log('[react] msg timers get: ', event)
+        debug && console.log('[react] msg timers get: ', event)
         let item = parse(event)
         if (typeof item === 'object') parseDayTimers(item, day)
     })
@@ -160,7 +166,7 @@ const parseDayTimers = (daytimers, day) => {
     let section = { title: day, data: [] }
     let id; for (id in daytimers) {
         let daytimer = parse(daytimers[id])
-        console.log('DayTimer: ', daytimer)
+        debug && console.log('DayTimer: ', daytimer)
         if (validDayTimer(daytimer)) {
             dayTimer(daytimer, section, current.project)
         }
@@ -168,10 +174,10 @@ const parseDayTimers = (daytimers, day) => {
     }
 }
 const dayTimer = (daytimer, section) => {
-    console.log('timers get ' + typeof daytimer + ' ', daytimer)
+    debug && console.log('timers get ' + typeof daytimer + ' ', daytimer)
     let data = section.data
     if (notInSection(data, daytimer)) {
-        console.log('New DayTimer...')
+        debug && console.log('New DayTimer...')
         addSection({ title: section.title, data: sortDayTimers(daytimer, data) })
     }
     else isRunning(daytimer)
@@ -179,10 +185,10 @@ const dayTimer = (daytimer, section) => {
 }
 
 const noTimersinDay = () => {
-    console.log('no timers in day, try next...')
+    debug && console.log('no timers in day, try next...')
     current.currentday++
     getPage(current.currentday)
-    console.log(projectState)
+    debug && console.log(projectState)
 }
 
 const isRunning = timer => {
@@ -206,8 +212,8 @@ const addSection = (section) => {
     let alreadyInTimers = current.page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
     if (!alreadyInTimers && section.data.length > 0 && days[current.currentday] === section.title) {
-        // console.console.log(currentday, days[currentday], section.title)
-        console.log(section)
+        // debug && console.debug && console.log(currentday, days[currentday], section.title)
+        debug && console.log(section)
         current.page.push(section)
         current.currentday++
         getPage(current.currentday)
@@ -220,14 +226,14 @@ const getProject = (projectId) => {
         try {
             store.chainer(chain.project(projectId), store.app).once((data, key) => {
                 const foundData = trimSoul(data)
-                // console.log('[GUN node] getProject Data Found: ', foundData)
+                // debug && console.log('[GUN node] getProject Data Found: ', foundData)
                 if (foundData && foundData.type === 'project') {
                     resolve(foundData)
                 }
 
             })
         } catch (error) {
-            console.console.log(error)
+            debug && console.debug && console.log(error)
             reject(error)
         }
     })
@@ -243,11 +249,11 @@ const getDayTimers = (day) => {
             let result = {}
             store.chainer(chain.timersInDay(day), store.app).map().on((data, key) => {
                 if (!data) {
-                    console.log('[GUN node] getAllOnce No Data Found',)
+                    debug && console.log('[GUN node] getAllOnce No Data Found',)
                 }
                 let foundData = trimSoul(data)
                 result[key] = foundData
-                console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
+                debug && console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
             })
             resolve(result)
         } catch (err) {
