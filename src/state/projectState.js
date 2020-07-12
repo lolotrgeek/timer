@@ -1,33 +1,38 @@
 import { totalTime, parse, trimSoul } from '../constants/Functions'
-import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
+import * as store from '../data/Store'
 
-// TODO: page position retained after navigation
+
 // TODO: test remote updating
-// TODO: fix replicated sections at beginning of new page
+// TODO: needs refactoring
 
-let debug = false
-// const log = text => debug && debug && console.log(text)
+let debug = true
 let projectState = {}
-let current
-// let projectId // current project state generator is operating on
+let current // current project in view state
 let running = { id: 'none', name: 'none', project: 'none' }
 let days = [] // set of days containing timers
 
-const newProjectState = (projectId) => {
-    return {
-        pages: [],
-        pagesize: 5, // number of timers per `page`
-        currentday: 0, // last day where timers were retrieved
-        page: [], // set of timers sectioned by day
-        currentPage: 1,
-        pagelocation: { x: 0, y: 0 },
-        project: { id: projectId ? projectId : 'none' }
+//////////////STATE
+const newProjectState = (projectId) => ({
+    pages: [],
+    pagesize: 5, // number of timers per `page`
+    currentday: 0, // last day where timers were retrieved
+    page: [], // set of timers sectioned by day
+    currentPage: 1,
+    pagelocation: { x: 0, y: 0 },
+    project: { id: projectId ? projectId : 'none' }
+})
+const setCurrent = (projectId) => {
+    if (!projectState[projectId]) {
+        projectState[projectId] = newProjectState(projectId)
     }
-}
+    current = projectState[projectId]
 
-const daylistHandler = (event) => {
+}
+const setState = (key, value) => current[key] = value
+
+const sortDaylist = (event) => {
     if (!event) return
     let item = parse(event)
     debug && console.log('get dates ' + typeof item, item)
@@ -39,13 +44,14 @@ const daylistHandler = (event) => {
     }
 }
 
-
-// register listeners
+////////////// LISTENING
 messenger.on('getProjectPages', msg => getProjectPage(msg))
-messenger.on(chain.timerDates(), event => daylistHandler(event))
+messenger.on(chain.timerDates(), event => sortDaylist(event))
 
-// make requests
+////////////// REQUESTING
 store.getAllOnce(chain.timerDates())
+
+//////////////SORTING
 
 const getProjectPage = msg => {
     if (msg && msg.projectId) {
@@ -54,7 +60,6 @@ const getProjectPage = msg => {
         listenForPageLocation(projectState[msg.projectId])
     }
 }
-
 const listenForPageLocation = current => {
     messenger.on(`${current.project.id}/pagelocation`, msg => {
         if (msg) {
@@ -64,20 +69,6 @@ const listenForPageLocation = current => {
         }
     })
 }
-
-const setCurrent = (projectId) => {
-    if (!projectState[projectId]) {
-        projectState[projectId] = newProjectState(projectId)
-    }
-    current = projectState[projectId]
-
-}
-const setState = (key, value) => current[key] = value
-
-/**
- * Map msg to current state
- * @param {*} msg 
- */
 const setCurrentProject = (msg) => {
     setCurrent(msg.projectId)
     setState('pagesize', msg.pagesize)
@@ -106,16 +97,15 @@ const handleProjectPages = msg => {
             messenger.emit(`${current.project.id}/lastpagelocation`, current.pagelocation)
         }
     }
-    else if(msg.currentday > 0) {
-        
+    else if (msg.currentday > 0) {
         debug && console.log('getting pages.')
         // update state if page has last retrieved day, otherwise use current state
-        if(msg.currentday > current.currentday) {
+        if (msg.currentday > current.currentday) {
             setState('currentday', msg.currentday)
         } else {
-            setState('currentday' , current.currentday+1)
+            setState('currentday', current.currentday + 1)
         }
-        getPage(current.currentday) 
+        getPage(current.currentday)
     }
 
 }
@@ -150,7 +140,6 @@ const completePage = () => {
     current.pages.push(current.page)
     current.page = []
 }
-
 
 const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
@@ -220,6 +209,8 @@ const addSection = (section) => {
     }
 }
 
+
+// // Eventually put these in a stateData decoupling with messengers \\\
 const getProject = (projectId) => {
     return new Promise((resolve, reject) => {
         if (!projectId) reject('no projectId passed')

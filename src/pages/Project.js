@@ -121,7 +121,7 @@ export default function Project({ useHistory, useParams }) {
     }
 
     const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row', margin: 10 }}>
+        <View style={{ flexDirection: 'row' }}>
             <Button title='Refresh' onPress={() => {
                 setOnline(!online)
             }} />
@@ -145,11 +145,12 @@ export default function Project({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <SectionList
+                    ListHeaderComponent={<Text style={{textAlign:'center', fontSize:25}}>{projectId}</Text>}
                     // TODO: simplify creating sticky header/footer with list
                     //app routes: 20 padding + 50 height
                     // header: 20 padding + 100 height
                     // 20 + 20 + 50 + 100 = 190
-                    style={{ marginTop: 190, height: Dimensions.get('window').height - 190 }}
+                    style={{ marginTop: 170, height: Dimensions.get('window').height - 170 }}
                     ref={timerList}
                     onLayout={layout => {
                         // console.log(timerList.current)

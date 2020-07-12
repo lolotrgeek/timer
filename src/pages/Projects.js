@@ -5,6 +5,7 @@ import { putHandler, runningHandler, projectsHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink } from '../routes'
+import '../state/countState'
 
 const debug = false
 const test = false

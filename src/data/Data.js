@@ -183,6 +183,7 @@ export const getTimers = () => {
 
 export const getTimerDates = () => {
     store.getAllOnce(chain.timerDates())
+    
 }
 
 export const getTimersForDate = (date) => {

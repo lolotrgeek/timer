@@ -203,7 +203,7 @@ const putAll = (key, value) => {
         chain.put(value, ack => {
             const data = trimSoul(value)
             debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-            messenger.emit('put', ack.err ? ack : data)
+            messenger.emit(`${key}_put`, ack.err ? ack : data)
         })
     })
 
@@ -220,7 +220,7 @@ const setAll = (key, value) => {
     chain.set(value, ack => {
         const data = trimSoul(value)
         debug && console.log('[NODE_DEBUG_SET] ERR? ', ack.err)
-        messenger.emit('set', ack.err ? ack : data)
+        messenger.emit(`${key}_set`, ack.err ? ack : data)
     })
 }
 

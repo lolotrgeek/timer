@@ -58,25 +58,29 @@ messenger.on("getPages", msg => {
 
         console.log('getPages received')
         console.log(msg.current)
-        if (msg.current) {
-            if (msg.current.length === 0) {
-                if (pages && pages.length === 0) {
-                    currentday = 0
-                    debug && console.log('getting pages.')
-                    getPage()
-                } else {
-                    debug && console.log('updating pages.')
-                    messenger.emit("pages", pages)
-                    console.log('locating...', pagelocation.y)
-                    messenger.emit('location', pagelocation)
-                }
-            }
-            else {
-                currentday = msg.current.length
+
+        if (msg.currentday === 0) {
+            if (pages && pages.length === 0) {
+                currentday = 0
                 debug && console.log('getting pages.')
                 getPage()
+            } else {
+                debug && console.log('updating pages.')
+                messenger.emit("pages", pages)
+                console.log('locating...', pagelocation.y)
+                messenger.emit('location', pagelocation)
             }
         }
+        else if (msg.currentday > 0) {
+            if(msg.currentday > currentday){
+                currentday = msg.currentday
+            } else {
+                currentday = currentday + 1
+            } 
+            debug && console.log('getting pages.')
+            getPage()
+        }
+
     }
 })
 
@@ -88,7 +92,7 @@ const getPage = () => {
     if (currentday >= days.length) {
         debug && console.log('No more days with full pages.')
         // put any remaining timers into the last page
-        if(page.length > 0) {
+        if (page.length > 0) {
             console.log('Last Page ' + currentPage + ' Complete.')
             messenger.emit('projectpage', page)
             pages.push(page)

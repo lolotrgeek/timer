@@ -2,14 +2,13 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions} from 'react-native';
 import { totalTime, simpleDate, sumProjectTimers, nextDay } from '../constants/Functions'
 import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import '../state/timelineState'
-
 
 const debug = false
 const test = false
@@ -19,7 +18,7 @@ const loadAll = false
 export default function Timeline({ useHistory }) {
     let history = useHistory();
     const [online, setOnline] = useState(false)
-    const [timers, setTimers] = useState([])
+    const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
     const [count, setCount] = useState(0)
     const [location, setLocation] = useState({ x: 0, y: 0 })
@@ -41,7 +40,6 @@ export default function Timeline({ useHistory }) {
 
     useEffect(() => {
         messenger.addListener("page", event => {
-            // setTimers(timers.concat(event))
             setPages(pages => [...pages, event])
         })
         return () => messenger.removeAllListeners("page")
@@ -58,19 +56,21 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener("location", event => {
+        messenger.addListener("pagelocation", event => {
             setLocation({ x: event.x, y: event.y, animated: false })
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
-            timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+            if (timelineList.current._wrapperListRef) {
+                timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
+            }
         })
-        return () => messenger.removeAllListeners("location")
+        return () => messenger.removeAllListeners("pagelocation")
     }, [])
 
     useEffect(() => {
         if (pages && Array.isArray(pages)) {
             let flattened = pages.flat(1)
-            setTimers(flattened)
+            setDaytimers(flattened)
         }
     }, [pages])
 
@@ -118,41 +118,50 @@ export default function Timeline({ useHistory }) {
             </View>
         )
     }
+    const HeaderButtons = () => (
+        <View style={{ flexDirection: 'row'}}>
+            <Button title='Refresh' onPress={() => {
+                setOnline(!online)
+            }} />
+            <Button title='Clear' onPress={() => {
+                running.current = { id: 'none', name: 'none', project: 'none' }
+                setDaytimers([])
+                setOnline(!online)
+            }} />
+        </View>
+    )
+    const Header = () => (
+        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+            <HeaderButtons />
+            <RunningTimer />
+        </View>
+    )
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Refresh' onPress={() => {
-                    setOnline(!online)
-                }} />
-                <Button title='Clear' onPress={() => {
-                    running.current = { id: 'none', name: 'none', project: 'none' }
-                    setTimers([])
-                    setOnline(!online)
-                }} />
-            </View>
-
-
-            <RunningTimer />
-
-            <Text>Timeline: </Text>
+            <Header />
             <View style={styles.list}>
                 <SectionList
+                    ListHeaderComponent={<Text style={{textAlign:'center', fontSize:25}}>Timeline</Text>}
+                    // TODO: simplify creating sticky header/footer with list
+                    //app routes: 20 padding + 50 height
+                    // header: 20 padding + 100 height
+                    // 20 + 20 + 50 + 100 = 190
+                    style={{ marginTop: 170, height: Dimensions.get('window').height - 170 }}
                     ref={timelineList}
                     onLayout={layout => {
                         console.log(timelineList.current)
                     }}
-                    sections={timers && timers.length > 0 ? timers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+                    sections={daytimers && daytimers.length > 0 ? daytimers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
-                    style={{ height: 500 }}
                     renderItem={renderTimer}
                     onEndReached={() => {
                         console.log('End Reached')
-                        if (timers) {
-                            debug && console.log(timers, typeof timers, Array.isArray(timers))
-                            let msg = { current: timers, pagesize: 4 }
+                        if (daytimers) {
+                            debug && console.log(daytimers, typeof daytimers, Array.isArray(daytimers))
+                            let msg = { currentday: daytimers.length, pagesize: 4 }
                             messenger.emit('getPages', msg)
 
                         } else {
