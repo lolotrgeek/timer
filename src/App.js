@@ -10,6 +10,8 @@ import Timeline from './pages/Timeline'
 import Timers from './pages/Timers'
 import Projects from './pages/Projects'
 import Project from './pages/Project'
+import ProjectCreate from './pages/ProjectCreate'
+import ProjectHistory from './pages/ProjectHistory'
 
 export default function App() {
     return (
@@ -25,13 +27,14 @@ export default function App() {
                     <Link to={'/timers'}><Text>Timers</Text></Link>
                 </View>
             </View>
-
-
             <Switch >
                 <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.timerListlink()} children={<Timers useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} />} />
             </Switch>
         </Router >
     );

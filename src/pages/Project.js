@@ -8,6 +8,7 @@ import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
+import { projectHistorylink, projectEditlink } from '../routes'
 import '../state/projectState'
 
 
@@ -130,6 +131,12 @@ export default function Project({ useHistory, useParams }) {
                 setDaytimers([])
                 setOnline(!online)
             }} />
+            <Button title='Edit' onPress={() => {
+                history.push(projectEditlink(projectId))
+            }} />
+            <Button title='History' onPress={() => {
+                history.push(projectHistorylink(projectId))
+            }} />
         </View>
     )
 
@@ -145,7 +152,7 @@ export default function Project({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <SectionList
-                    ListHeaderComponent={<Text style={{textAlign:'center', fontSize:25}}>{projectId}</Text>}
+                    ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>{projectId}</Text>}
                     // TODO: simplify creating sticky header/footer with list
                     //app routes: 20 padding + 50 height
                     // header: 20 padding + 100 height

@@ -1,48 +1,34 @@
 import messenger from '../constants/Messenger'
-import { colorValid } from '../constants/Validators'
+import { colorValid, nameValid } from '../constants/Validators'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 import { newProject } from '../data/Models'
 
+let debug = true
 let state = {}
 const setState = (key, value) => state[key] = value
 
-messenger.on('name', event => {
-    if (!nameValid(event)) {
-        messenger.emit('error', `${event} is not valid name`)
-        return false
-    } else {
-        state.name = event
+messenger.on('ProjectCreate', event => {
+    if (typeof event === 'object' && event.name && event.color) {
+        state = event
+        if (!nameValid(state.name)) {
+            messenger.emit('ProjectCreateError', `${state.name} is not valid name`)
+            return false
+        }
+        if (!colorValid(state.color)) {
+            // alert('Need valid color');
+            messenger.emit('ProjectCreateError', `${state.color} is not valid color`)
+            return false
+        }
+        else {
+            createProject(state.name, state.color).then(project => {
+                console.log(`success! ${project.id}`)
+                messenger.emit('ProjectCreateSuccess', project)
+            })
+
+        }
     }
 })
-
-messenger.on('color', event => {
-    if (!colorValid(event)) {
-        messenger.emit('error', `${event} is not valid name`)
-        return false
-    } else {
-        state.color = event   
-    }
-})
-
-messenger.on('newProjectSubmit', event => handleNewProjectSubmit(event))
-const handleNewProjectSubmit = event => {
-    if (!nameValid(state.name)) {
-        messenger.emit('error', `${state.name} is not valid name`)
-        return false
-    }
-    if (!colorValid(state.color)) {
-        // alert('Need valid color');
-        messenger.emit('error', `${state.color} is not valid color`)
-        return false
-    }
-    else {
-        createProject(state.name, state.color).then(project => {
-            messenger.emit('success', `Project ${project.name} updated!`)
-        })
-        
-    }
-}
 
 const createProject = (name, color) => {
     return new Promise((resolve, reject) => {
@@ -51,8 +37,10 @@ const createProject = (name, color) => {
         debug && console.log('[react Data] Creating Project', project)
         // store.set(chain.projectHistory(project.id), project)
         store.put(chain.project(project.id), project)
-        messenger.on(`${project.id}_put`, event => {
-            if(event === project) resolve(project)
+        // TODO: make this part of chaining?
+        messenger.on(`projects/${project.id}`, event => {
+            debug && console.log(event)
+            if (event === project) resolve(project)
             else reject(event)
         })
     })

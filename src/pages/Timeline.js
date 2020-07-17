@@ -2,10 +2,10 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions} from 'react-native';
-import { totalTime, simpleDate, sumProjectTimers, nextDay } from '../constants/Functions'
-import { putHandler, runningHandler, timerDatesHandler, timersForDateHandler } from '../data/Handlers'
+import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
+import { runningHandler } from '../data/Handlers'
 import * as Data from '../data/Data'
+import { projectCreatelink } from '../routes'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import '../state/timelineState'
@@ -16,7 +16,7 @@ const loadAll = false
 
 
 export default function Timeline({ useHistory }) {
-    let history = useHistory();
+    let history = useHistory()
     const [online, setOnline] = useState(false)
     const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
@@ -74,27 +74,7 @@ export default function Timeline({ useHistory }) {
         }
     }, [pages])
 
-
-
-
-    const renderTimer = ({ item }) => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
-
-                <View style={{ width: '30%' }}>
-                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
-                </View>
-                <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.total}</Text>
-                </View>
-                <View style={{ width: '30%' }}>
-
-                </View>
-            </View>
-        );
-    };
-
-    const RunningTimer = () => {
+    const RunningTimer = props => {
         return (
             <View style={{ flexDirection: 'row', margin: 10 }}>
                 <View style={{ width: '25%' }}>
@@ -118,8 +98,26 @@ export default function Timeline({ useHistory }) {
             </View>
         )
     }
+    const renderTimer = ({ item }) => {
+        return (
+            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
+
+                <View style={{ width: '30%' }}>
+                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
+                </View>
+                <View style={{ width: '30%' }}>
+                    <Text style={{ color: 'red' }}>{item.total}</Text>
+                </View>
+                <View style={{ width: '30%' }}>
+
+                </View>
+            </View>
+        );
+    };
+
+
     const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
             <Button title='Refresh' onPress={() => {
                 setOnline(!online)
             }} />
@@ -137,12 +135,21 @@ export default function Timeline({ useHistory }) {
         </View>
     )
 
+    const Footer = () => (
+        <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+            <Button
+                onPress={() => history.push(projectCreatelink())}
+                title='Create Project'
+            />
+        </View>
+    )
+
     return (
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={styles.list}>
                 <SectionList
-                    ListHeaderComponent={<Text style={{textAlign:'center', fontSize:25}}>Timeline</Text>}
+                    ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
                     // TODO: simplify creating sticky header/footer with list
                     //app routes: 20 padding + 50 height
                     // header: 20 padding + 100 height
@@ -176,6 +183,7 @@ export default function Timeline({ useHistory }) {
                     }}
                 />
             </View>
+            <Footer />
         </SafeAreaView>
     );
 }

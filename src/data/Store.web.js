@@ -197,14 +197,13 @@ const runChain = (key, app) => {
  * @param {string} [channel] optional channel name, default name `done`
  */
 const putAll = (key, value) => {
-    runChain(key, app).then(chain => {
-        debug && console.log('Chain prototype:', Object.getPrototypeOf(chain))
-        // debug && console.log('[React node] Chain :', chain)
-        chain.put(value, ack => {
-            const data = trimSoul(value)
-            debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-            messenger.emit(`${key}_put`, ack.err ? ack : data)
-        })
+    const chain = chainer(key, app)
+    // debug && console.log('Chain prototype:', Object.getPrototypeOf(chain))
+    // debug && console.log('[React node] Chain :', chain)
+    chain.put(value, ack => {
+        debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
+        console.log(key, value)
+        messenger.emit(key, ack.err ? ack : value)
     })
 
 }
