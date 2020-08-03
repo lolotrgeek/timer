@@ -1,5 +1,5 @@
 import { cloneTimer, newProject, doneTimer, newTimer } from './Models'
-import { isRunning, multiDay, newEntryPerDay, dateSimple, dateTestGen, endRandTestGen, startRandTestGen } from '../constants/Functions'
+import { isRunning, multiDay, newEntryPerDay, endRandTestGen, startRandTestGen, nameGen } from '../constants/Functions'
 import * as store from './Store'
 import * as chain from './Chains'
 
@@ -79,6 +79,16 @@ export const generateTimer = (projects) => {
     store.set(chain.projectTimer(projectId, timer.id), timer)
     store.set(chain.dateTimer(timer.started, timer.id), timer)
     return true
+}
+
+export const generateProject = () => {
+    const project = newProject(nameGen(), '#ccc')
+    if (!project) return false
+    console.log('Generating Project', project)
+    // store.set(chain.projectHistory(project.id), project)
+    // store.put(chain.project(project.id), project)
+    let chained = chain.project(project.id)
+    store.chainer(chained, store.app).put(project, ack => {console.log('ack', ack)})
 }
 
 export const runTimer = (timer) => {

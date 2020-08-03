@@ -6,6 +6,7 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink } from '../routes'
 import '../state/countState'
+import '../state/projectsState'
 
 const debug = false
 const test = false
@@ -17,32 +18,46 @@ export default function Projects({ useHistory, useParams }) {
     const [timers, setTimers] = useState([])
     const [count, setCount] = useState(0)
 
-    const running = useRef({ id: 'none', name: 'none', project: 'none' })
-    // const projects = useRef(projects[0])
+    // const running = useRef({ id: 'none', name: 'none', project: 'none' })
+    // // const projects = useRef(projects[0])
 
-    useEffect(() => Data.getRunning(), [online])
+    // useEffect(() => Data.getRunning(), [online])
+
+    // useEffect(() => {
+    //     messenger.addListener("count", event => setCount(event))
+    //     return () => messenger.removeAllListeners("count")
+    // }, [])
+
+    // useEffect(() => {
+    //     messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
+    //     return () => messenger.removeAllListeners(chain.running())
+    // }, [])
 
     useEffect(() => {
-        messenger.addListener("count", event => setCount(event))
-        return () => messenger.removeAllListeners("count")
-    }, [])
+        messenger.addListener('projects', event => {
+            console.log(event)
+            if(!event || event.length === 0) {
+                generateProjects()
+            }
+            setProjects(event)
+        })
+        messenger.emit('getProjects', {all: true})
 
-    useEffect(() => {
-        messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
-        return () => messenger.removeAllListeners(chain.running())
-    }, [])
-
-    useEffect(() => {
-        messenger.addListener(chain.projects(), event => projectsHandler(event, { projects, setProjects, running }))
         return () => {
-            messenger.removeAllListeners(chain.projects())
+            messenger.removeAllListeners('projects')
         }
     }, [online])
 
-    useEffect(() => {
-        console.log('Get projects...')
-        Data.getProjects()
-    }, [online])
+    const generateProjects = () => {
+        let amount = 5
+        let i = 0
+        while (i < amount) {
+            Data.generateProject()
+            console.log(i)
+            i++
+            
+        }
+    }
 
     const generateTimers = () => {
         let amount = 100
@@ -55,13 +70,6 @@ export default function Projects({ useHistory, useParams }) {
         }
     }
 
-    const Begin = () => {
-        Data.createProject('react project', '#ccc')
-        Data.createProject('test project', '#ccc')
-        // generate timer entries
-
-        setOnline(!online)
-    }
 
     const renderRow = ({ item }) => {
         return (
@@ -71,7 +79,7 @@ export default function Projects({ useHistory, useParams }) {
                 </View>
                 <View style={{ width: '50%' }}>
                     <Button title='start' onPress={() => {
-                        if (running.current && running.current.status === 'running') Data.finishTimer(running.current)
+                        // if (running.current && running.current.status === 'running') Data.finishTimer(running.current)
                         Data.createTimer(item.id)
                         setOnline(!online)
                     }} />
@@ -81,47 +89,46 @@ export default function Projects({ useHistory, useParams }) {
     };
 
 
-    const RunningTimer = () => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
-                    <Text>{running.current.project ? running.current.project : ''}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{count}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    {!running.current || running.current.id === 'none' ?
-                        <Text>No Running Timer</Text> : running.current.status === 'done' ?
-                            //TODO: assuming that project exists on start... needs validation
-                            <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
-                            <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
-                    }
-                </View>
-            </View>
-        )
-    }
+    // const RunningTimer = () => {
+    //     return (
+    //         <View style={{ flexDirection: 'row', margin: 10 }}>
+    //             <View style={{ width: '25%' }}>
+    //                 <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
+    //                 <Text>{running.current.project ? running.current.project : ''}</Text>
+    //             </View>
+    //             <View style={{ width: '25%' }}>
+    //                 <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
+    //             </View>
+    //             <View style={{ width: '25%' }}>
+    //                 <Text>{count}</Text>
+    //             </View>
+    //             <View style={{ width: '25%' }}>
+    //                 {!running.current || running.current.id === 'none' ?
+    //                     <Text>No Running Timer</Text> : running.current.status === 'done' ?
+    //                         //TODO: assuming that project exists on start... needs validation
+    //                         <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
+    //                         <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
+    //                 }
+    //             </View>
+    //         </View>
+    //     )
+    // }
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flexDirection: 'row', margin: 10 }}>
-                {projects.length === 0 ?
-                    <Button title='Begin' onPress={() => Begin()} /> :
-                    <Button title="Test" onPress={() => generateTimers()} />
-                }
+
+                <Button title="Test" onPress={() => projects.length > 0 ? generateTimers(): console.log('testing')} />
+
                 <Button title='Refresh' onPress={() => setOnline(!online)} />
                 <Button title='Clear' onPress={() => {
-                    running.current = { id: 'none', name: 'none', project: 'none' }
+                    // running.current = { id: 'none', name: 'none', project: 'none' }
                     setProjects([])
                     setOnline(!online)
                 }} />
             </View>
 
-            <RunningTimer />
+            {/* <RunningTimer /> */}
 
             <View style={styles.list}>
                 <FlatList

@@ -1,4 +1,4 @@
-import Gun from 'gun/gun'
+import Gun from 'gun'
 import messenger from '../constants/Messenger'
 
 //TODO process to find signal server
@@ -10,7 +10,7 @@ const gun = new Gun({
     peers: peers,
 })
 const app = gun.get('app')
-const debug = false
+const debug = true
 
 debug && console.log('App prototype:', Object.getPrototypeOf(app))
 
