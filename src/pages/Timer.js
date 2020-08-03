@@ -2,8 +2,8 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
-import { timeSpan } from '../constants/Functions'
+import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions } from 'react-native';
+import { timeSpan, totalTime } from '../constants/Functions'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
@@ -21,8 +21,6 @@ export default function Timer({ useHistory, useParams }) {
     let { projectId, timerId } = useParams();
     const [online, setOnline] = useState(false)
     const [timer, setTimer] = useState();
-
-
 
     useEffect(() => {
         messenger.addListener(`${timerId}`, event => {
@@ -62,7 +60,15 @@ export default function Timer({ useHistory, useParams }) {
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={styles.list}>
-                <Text>{JSON.stringify(timer)}</Text>
+                {timer ? <View>
+                    <Text>{timer.project}</Text>
+                    <Text>{timer.started}</Text>
+                    <Text>{timer.ended}</Text>
+                    <Text>{totalTime(timer.started, timer.ended)}</Text>
+                    <Text>{timer.mood}</Text>
+                    <Text>{timer.energy}</Text>
+                </View>
+                    : <Text>No Timer</Text>}
             </View>
         </SafeAreaView>
     );
@@ -86,6 +92,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
+        marginTop: 170,
+        height: Dimensions.get('window').height - 170,
         flexDirection: 'row',
         width: '100%',
         backgroundColor: '#ccc'
@@ -97,3 +105,4 @@ const styles = StyleSheet.create({
         fontSize: 30,
     }
 });
+
