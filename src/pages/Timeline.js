@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
 import { runningHandler } from '../data/Handlers'
 import * as Data from '../data/Data'
-import { projectCreatelink } from '../routes'
+import { projectCreatelink, projectlink, timerlink } from '../routes'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import '../state/timelineState'
@@ -101,9 +101,8 @@ export default function Timeline({ useHistory }) {
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
-
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
+                    <Text onPress={() => history.push(projectlink(item.project))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>

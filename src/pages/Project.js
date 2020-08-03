@@ -8,7 +8,7 @@ import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import { projectHistorylink, projectEditlink } from '../routes'
+import { projectHistorylink, projectEditlink, timerlink } from '../routes'
 import '../state/projectState'
 
 
@@ -84,7 +84,7 @@ export default function Project({ useHistory, useParams }) {
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
+                    <Text onPress={() => { history.push(timerlink(projectId, item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>

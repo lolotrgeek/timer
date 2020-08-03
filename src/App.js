@@ -12,6 +12,7 @@ import Projects from './pages/Projects'
 import Project from './pages/Project'
 import ProjectCreate from './pages/ProjectCreate'
 import ProjectHistory from './pages/ProjectHistory'
+import Timer from './pages/Timer'
 
 export default function App() {
     return (
@@ -35,6 +36,7 @@ export default function App() {
                 <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.timerlink(':projectId', ':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
             </Switch>
         </Router >
     );

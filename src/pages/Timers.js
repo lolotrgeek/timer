@@ -2,13 +2,12 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList } from 'react-native';
 import { totalTime } from '../constants/Functions'
 import * as Data from '../data/Data'
 import { putHandler, runningHandler, timersHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import { FlatList } from 'react-native-gesture-handler';
 
 const debug = false
 const test = false
@@ -40,18 +39,15 @@ export default function Timers() {
     }, [])
 
     useEffect(() => {
-        messenger.addListener(chain.timers(), event => timersHandler(event, { timers, setTimers, running }))
+        messenger.addListener('timers', event => {
+            console.log(event)
+            setTimers(event)
+        })
+        messenger.emit('getTimers', {all: true})
         return () => {
             messenger.removeAllListeners(chain.timers())
         }
     }, [online])
-
-
-    useEffect(() => {
-        console.log('Get timers...')
-        Data.getTimers()
-    }, [online])
-
 
 
     const renderTimer = ({ item }) => {
@@ -94,20 +90,28 @@ export default function Timers() {
             </View>
         )
     }
+    const HeaderButtons = () => (
+        <View style={{ flexDirection: 'row' }}>
+            <Button title='Refresh' onPress={() => {
+                setOnline(!online)
+            }} />
+            <Button title='Clear' onPress={() => {
+                running.current = { id: 'none', name: 'none', project: 'none' }
+                setTimers([])
+                setOnline(!online)
+            }} />
+        </View>
+    )
+    const Header = () => (
+        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+            <HeaderButtons />
+            <RunningTimer />
+        </View>
+    )
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <Button title='Refresh' onPress={() => setOnline(!online)} />
-                <Button title='Clear' onPress={() => {
-                    running.current = { id: 'none', name: 'none', project: 'none' }
-                    setTimers([])
-                    setOnline(!online)
-                }} />
-            </View>
-
-
-            <RunningTimer />
+            <Header />
 
             <Text>Timers: </Text>
             <View style={styles.list}>
