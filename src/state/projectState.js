@@ -7,9 +7,9 @@ import * as store from '../data/Store'
 // TODO: test remote updating
 // TODO: needs refactoring
 
-let debug = true
+let debug = false
 let projectState = {}
-let current // current project in view state
+let current = {} // current project in view state
 let running = { id: 'none', name: 'none', project: 'none' }
 let days = [] // set of days containing timers
 
@@ -74,7 +74,9 @@ const setCurrentProject = (msg) => {
     setState('pagesize', msg.pagesize)
     if (current.project.id === 'none') {
         getProject(current.projectId).then(foundproject => {
-            setState('project', foundproject)
+            current.project = foundproject
+            console.log(current)
+            messenger.emit(`${current.project.id}/project`, current.project)
             handleProjectPages(msg)
         })
     } else {
@@ -82,6 +84,7 @@ const setCurrentProject = (msg) => {
         debug && console.log('projectState: ', projectState)
         handleProjectPages(msg)
     }
+
 }
 
 const handleProjectPages = msg => {

@@ -8,7 +8,7 @@ import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import { projectHistorylink, projectEditlink, timerlink } from '../routes'
+import { projectHistorylink, projectEditlink, timerlink, projectsListLink } from '../routes'
 import '../state/projectState'
 
 
@@ -21,6 +21,7 @@ export default function Project({ useHistory, useParams }) {
     let history = useHistory();
     let { projectId } = useParams();
     const [online, setOnline] = useState(false)
+    const [project, setProject] = useState({})
     const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
     const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
@@ -40,6 +41,13 @@ export default function Project({ useHistory, useParams }) {
         messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
         return () => messenger.removeAllListeners(chain.running())
     }, [])
+    useEffect(() => {
+        messenger.addListener(`${projectId}/project`, event => {
+            console.log(event)
+            if (event) setProject(event.project)
+        })
+        return () => messenger.removeAllListeners(`${projectId}/project`)
+    }, [online])
 
     useEffect(() => {
         messenger.addListener(`${projectId}/page`, event => {
@@ -70,6 +78,8 @@ export default function Project({ useHistory, useParams }) {
         })
         return () => messenger.removeAllListeners(`${projectId}/lastpagelocation`)
     }, [daytimers])
+
+
 
     useEffect(() => {
         if (pages && Array.isArray(pages)) {
@@ -137,6 +147,10 @@ export default function Project({ useHistory, useParams }) {
             <Button title='History' onPress={() => {
                 history.push(projectHistorylink(projectId))
             }} />
+            <Button title='Delete' onPress={() => {
+                Data.deleteProject(project)
+                history.push(projectsListLink())
+            }} />
         </View>
     )
 
@@ -152,7 +166,7 @@ export default function Project({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <SectionList
-                    ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>{projectId}</Text>}
+                    ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>{project && project.name ? project.name : projectId}</Text>}
                     // TODO: simplify creating sticky header/footer with list
                     //app routes: 20 padding + 50 height
                     // header: 20 padding + 100 height

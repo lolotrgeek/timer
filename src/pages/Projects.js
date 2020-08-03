@@ -4,7 +4,7 @@ import * as Data from '../data/Data'
 import { putHandler, runningHandler, projectsHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import { projectlink } from '../routes'
+import { projectlink, projectTrashlink } from '../routes'
 import '../state/countState'
 import '../state/projectsState'
 
@@ -122,6 +122,7 @@ export default function Projects({ useHistory, useParams }) {
                 setProjects([])
                 setOnline(!online)
             }} />
+            <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
     )
     const Header = () => (

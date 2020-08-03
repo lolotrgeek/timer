@@ -22,7 +22,7 @@ const getProjects = () => {
             store.chainer(chain.projects(), store.app).map().on((data, key) => {
                 let foundData = trimSoul(data)
                 debug && console.log('[GUN node] getProject Data Found: ', foundData)
-                if (foundData && foundData.type === 'project') {
+                if (foundData && foundData.type === 'project' && foundData.status === 'active') {
                     result.push(foundData)
                 }
             })
