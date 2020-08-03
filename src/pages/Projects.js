@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions} from 'react-native';
 import * as Data from '../data/Data'
 import { putHandler, runningHandler, projectsHandler } from '../data/Handlers'
 import messenger from '../constants/Messenger'
@@ -18,30 +18,30 @@ export default function Projects({ useHistory, useParams }) {
     const [timers, setTimers] = useState([])
     const [count, setCount] = useState(0)
 
-    // const running = useRef({ id: 'none', name: 'none', project: 'none' })
-    // // const projects = useRef(projects[0])
+    const running = useRef({ id: 'none', name: 'none', project: 'none' })
+    // const projects = useRef(projects[0])
 
-    // useEffect(() => Data.getRunning(), [online])
+    useEffect(() => Data.getRunning(), [online])
 
-    // useEffect(() => {
-    //     messenger.addListener("count", event => setCount(event))
-    //     return () => messenger.removeAllListeners("count")
-    // }, [])
+    useEffect(() => {
+        messenger.addListener("count", event => setCount(event))
+        return () => messenger.removeAllListeners("count")
+    }, [])
 
-    // useEffect(() => {
-    //     messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
-    //     return () => messenger.removeAllListeners(chain.running())
-    // }, [])
+    useEffect(() => {
+        messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
+        return () => messenger.removeAllListeners(chain.running())
+    }, [])
 
     useEffect(() => {
         messenger.addListener('projects', event => {
             console.log(event)
-            if(!event || event.length === 0) {
+            if (!event || event.length === 0) {
                 generateProjects()
             }
             setProjects(event)
         })
-        messenger.emit('getProjects', {all: true})
+        messenger.emit('getProjects', { all: true })
 
         return () => {
             messenger.removeAllListeners('projects')
@@ -55,7 +55,7 @@ export default function Projects({ useHistory, useParams }) {
             Data.generateProject()
             console.log(i)
             i++
-            
+
         }
     }
 
@@ -70,14 +70,38 @@ export default function Projects({ useHistory, useParams }) {
         }
     }
 
+    const RunningTimer = () => {
+        return (
+            <View style={{ flexDirection: 'row', margin: 10 }}>
+                <View style={{ width: '25%' }}>
+                    <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
+                    <Text>{running.current.project ? running.current.project : ''}</Text>
+                </View>
+                <View style={{ width: '25%' }}>
+                    <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
+                </View>
+                <View style={{ width: '25%' }}>
+                    <Text>{count}</Text>
+                </View>
+                <View style={{ width: '25%' }}>
+                    {!running.current || running.current.id === 'none' ?
+                        <Text>No Running Timer</Text> : running.current.status === 'done' ?
+                            //TODO: assuming that project exists on start... needs validation
+                            <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
+                            <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
+                    }
+                </View>
+            </View>
+        )
+    }
 
     const renderRow = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
+            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '50%' }}>
                     <Text onPress={() => history.push(projectlink(item.id))} style={{ color: 'red' }}>{item.id}</Text>
                 </View>
-                <View style={{ width: '50%' }}>
+                <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {
                         // if (running.current && running.current.status === 'running') Data.finishTimer(running.current)
                         Data.createTimer(item.id)
@@ -88,50 +112,31 @@ export default function Projects({ useHistory, useParams }) {
         );
     };
 
+    const HeaderButtons = () => (
+        <View style={{ flexDirection: 'row', margin: 10 }}>
+            <Button title="Test" onPress={() => projects.length > 0 ? generateTimers() : console.log('testing')} />
 
-    // const RunningTimer = () => {
-    //     return (
-    //         <View style={{ flexDirection: 'row', margin: 10 }}>
-    //             <View style={{ width: '25%' }}>
-    //                 <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
-    //                 <Text>{running.current.project ? running.current.project : ''}</Text>
-    //             </View>
-    //             <View style={{ width: '25%' }}>
-    //                 <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
-    //             </View>
-    //             <View style={{ width: '25%' }}>
-    //                 <Text>{count}</Text>
-    //             </View>
-    //             <View style={{ width: '25%' }}>
-    //                 {!running.current || running.current.id === 'none' ?
-    //                     <Text>No Running Timer</Text> : running.current.status === 'done' ?
-    //                         //TODO: assuming that project exists on start... needs validation
-    //                         <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
-    //                         <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
-    //                 }
-    //             </View>
-    //         </View>
-    //     )
-    // }
+            <Button title='Refresh' onPress={() => setOnline(!online)} />
+            <Button title='Clear' onPress={() => {
+                // running.current = { id: 'none', name: 'none', project: 'none' }
+                setProjects([])
+                setOnline(!online)
+            }} />
+        </View>
+    )
+    const Header = () => (
+        <View style={styles.header}>
+            <HeaderButtons />
+            <RunningTimer />
+        </View>
+    )
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-
-                <Button title="Test" onPress={() => projects.length > 0 ? generateTimers(): console.log('testing')} />
-
-                <Button title='Refresh' onPress={() => setOnline(!online)} />
-                <Button title='Clear' onPress={() => {
-                    // running.current = { id: 'none', name: 'none', project: 'none' }
-                    setProjects([])
-                    setOnline(!online)
-                }} />
-            </View>
-
-            {/* <RunningTimer /> */}
-
+            <Header />
             <View style={styles.list}>
                 <FlatList
+                    style={{ width: '100%', marginTop: 170, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
                     keyExtractor={project => project.id}
@@ -143,6 +148,17 @@ export default function Projects({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
+    header: {
+        position: 'absolute',
+        marginTop: 50,
+        top: 0,
+        flexDirection: 'row',
+        padding: 10,
+        width: '100%',
+        background: 'white',
+        zIndex: 10000,
+        flexDirection: 'column'
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
@@ -150,6 +166,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
+        width: '100%',
         flexDirection: 'row',
         backgroundColor: '#ccc'
     },
