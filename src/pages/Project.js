@@ -44,7 +44,7 @@ export default function Project({ useHistory, useParams }) {
     useEffect(() => {
         messenger.addListener(`${projectId}/project`, event => {
             console.log(event)
-            if (event) setProject(event.project)
+            if (event) setProject(event)
         })
         return () => messenger.removeAllListeners(`${projectId}/project`)
     }, [online])
@@ -148,6 +148,11 @@ export default function Project({ useHistory, useParams }) {
                 history.push(projectHistorylink(projectId))
             }} />
             <Button title='Delete' onPress={() => {
+                daytimers.forEach(daytimer => {
+                    daytimer.data.forEach(timer => {
+                        Data.deleteTimer(timer)
+                    })
+                })
                 Data.deleteProject(project)
                 history.push(projectsListLink())
             }} />
@@ -155,7 +160,7 @@ export default function Project({ useHistory, useParams }) {
     )
 
     const Header = () => (
-        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+        <View style={styles.header}>
             <HeaderButtons />
             <RunningTimer />
         </View>
@@ -183,6 +188,7 @@ export default function Project({ useHistory, useParams }) {
                     }}
                     renderItem={renderTimer}
                     onEndReached={() => {
+                        // TODO: decouple, put in separate function
                         console.log('End Reached')
                         if (daytimers) {
                             debug && console.log(daytimers, typeof daytimers, Array.isArray(daytimers))
@@ -204,6 +210,7 @@ export default function Project({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
+    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
     container: {
         backgroundColor: '#fff',
         alignItems: 'center',

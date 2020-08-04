@@ -223,6 +223,20 @@ const setAll = (key, value) => {
     })
 }
 
+/**
+ * Remove a value from a set, needs to parse JSON msg first
+ * @param {*} msg JSON `{key: 'key' || 'key1/key2/...', value: any}`
+ */
+const unsetAll = (key) => {
+    const chain = chainer(key, app)
+    debug && console.log('Chain prototype:', Object.getPrototypeOf(chain))
+    // debug && console.log('[React node] Chain :', chain)
+    chain.set(null, ack => {
+        debug && console.log('[NODE_DEBUG_SET] ERR? ', ack.err)
+        messenger.emit(`${key}_unset`, ack.err ? ack : key)
+    })
+}
+
 const offAll = msg => {
     const input = inputParser(msg)
     const chain = chainer(input.key)
@@ -291,6 +305,7 @@ export {
     getAllOnce,
     putAll as put,
     setAll as set,
+    unsetAll as unset,
     offAll as off,
     messenger as channel,
 };

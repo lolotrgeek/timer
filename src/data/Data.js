@@ -138,10 +138,11 @@ export const deleteTimer = (timer) => {
     let timerDelete = timer
     timerDelete.deleted = new Date().toString()
     timerDelete.status = 'deleted'
-    store.set(chain.timerHistory(timer.id), timerDelete)
+    store.set(chain.timerHistory(timer.id, timerDelete))
     store.put(chain.timer(timer.id), timerDelete)
-    store.set(chain.projectTimer(timer.project, timer.id), timerDelete)
-    store.set(chain.dateTimer(timer.started, timer.id), timerDelete)
+    store.set(chain.projectTimer(timer.project, timer.id), null)
+    store.set(chain.dateTimer(timer.started, timer.id), null)
+    console.log(timerDelete)
 }
 
 /**

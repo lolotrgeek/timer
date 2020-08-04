@@ -102,7 +102,7 @@ export default function Timeline({ useHistory }) {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '30%' }}>
-                    <Text onPress={() => history.push(projectlink(item.project))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.project ? item.project : ''}</Text>
+                    <Text onPress={() => history.push(projectlink(item.project))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.total}</Text>
@@ -128,14 +128,14 @@ export default function Timeline({ useHistory }) {
         </View>
     )
     const Header = () => (
-        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' }}>
             <HeaderButtons />
             <RunningTimer />
         </View>
     )
 
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', padding: 10, width: '100%', background: 'white', zIndex: 10000, flexDirection: 'column' }}>
+        <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' }}>
             <Button
                 onPress={() => history.push(projectCreatelink())}
                 title='Create Project'

@@ -72,16 +72,14 @@ const listenForPageLocation = current => {
 const setCurrentProject = (msg) => {
     setCurrent(msg.projectId)
     setState('pagesize', msg.pagesize)
-    if (current.project.id === 'none') {
-        getProject(current.projectId).then(foundproject => {
+    if (!current.project.name || current.project.id === 'none') {
+        getProject(current.project.id).then(foundproject => {
             current.project = foundproject
-            console.log(current)
+            console.log('Project: ', current.project)
             messenger.emit(`${current.project.id}/project`, current.project)
             handleProjectPages(msg)
         })
     } else {
-        debug && console.log('Project: ', current.project)
-        debug && console.log('projectState: ', projectState)
         handleProjectPages(msg)
     }
 
@@ -152,7 +150,7 @@ const timersInDayHandler = (day) => {
     })
 }
 
-const validDayTimer = daytimer => daytimer.type === 'timer' && daytimer.project === current.project.id
+const validDayTimer = daytimer => daytimer && daytimer.type === 'timer' && daytimer.project === current.project.id
 
 const parseDayTimers = (daytimers, day) => {
     let section = { title: day, data: [] }

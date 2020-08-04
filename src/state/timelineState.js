@@ -72,11 +72,11 @@ messenger.on("getPages", msg => {
             }
         }
         else if (msg.currentday > 0) {
-            if(msg.currentday > currentday){
+            if (msg.currentday > currentday) {
                 currentday = msg.currentday
             } else {
                 currentday = currentday + 1
-            } 
+            }
             debug && console.log('getting pages.')
             getPage()
         }
@@ -115,19 +115,16 @@ const getPage = () => {
     }
 }
 
-
-
 const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
         debug && console.log('[react] msg timers get.')
         let item = parse(event)
-        if (typeof item === 'object') {
+        if (item && typeof item === 'object') {
             let section = { title: day, data: [] }
             let id; for (id in item) {
                 let found = parse(item[id])
-                if (found.type === 'timer') {
-                    parseDayTimers(found, section)
-                }
+                console.log(found)
+                parseDayTimers(found, section)
             }
         }
     })
@@ -135,28 +132,37 @@ const timersInDayHandler = (day) => {
 
 const parseDayTimers = (found, section) => {
     debug && console.log('timers get ' + typeof found + ' ', found)
-    getProject(found.project).then(project => {
-        if(project.status === 'active') {
-            debug && console.log('Found project', project)
-            found.color = project.color
-            found.name = project.name
-            // duplicate/edit check
-            let data = section.data
-            let alreadyInSection = data.some(timer => timer.id === found.id)
-            if (!alreadyInSection && found.status === 'done') {
-                addSection({ title: section.title, data: sortDayTimers(found, data) })
+    if (!found) {
+        console.log('not found')
+        addSection(section)
+    } else if (found && found.type === 'timer' && found.status === 'done') {
+        getProject(found.project).then(project => {
+            if (project.status === 'active') {
+                debug && console.log('Found project', project)
+                found.color = project.color
+                found.name = project.name
+                // duplicate/edit check
+                let data = section.data
+                let alreadyInSection = data.some(timer => timer.id === found.id)
+                if (!alreadyInSection && found.status === 'done') {
+                    addSection({ title: section.title, data: sortDayTimers(found, data) })
+                }
+                // running check
+                else if (found.status === 'running') {
+                    running = found
+                }
+                else if (found.status === 'done' && found.id === running.id) {
+                    debug && console.log('[react] Setting last run Timer.')
+                    debug && console.log(found)
+                    running = found
+                }
+            } else {
+                let data = section.data
+                let filterNonActive = data.filter(timer => timer.id === found.id)
+                addSection({ title: section.title, data: filterNonActive })
             }
-            // running check
-            else if (found.status === 'running') {
-                running = found
-            }
-            else if (found.status === 'done' && found.id === running.id) {
-                debug && console.log('[react] Setting last run Timer.')
-                debug && console.log(found)
-                running = found
-            }
-        }
-    })
+        })
+    }
 }
 const sortDayTimers = (found, data) => {
     debug && console.log('Found Timer', found)
