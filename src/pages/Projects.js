@@ -99,7 +99,7 @@ export default function Projects({ useHistory, useParams }) {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '50%' }}>
-                    <Text onPress={() => history.push(projectlink(item.id))} style={{ color: 'red' }}>{item.id}</Text>
+                    <Text onPress={() => history.push(projectlink(item.id))} style={{ color: 'red' }}>{item.name}</Text>
                 </View>
                 <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {

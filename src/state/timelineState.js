@@ -39,7 +39,7 @@ messenger.on("pagelocation", msg => {
     if (msg) {
         pagelocation.x = msg.x
         pagelocation.y = msg.y
-        console.log(pagelocation.y)
+        debug && console.log(pagelocation.y)
     }
 })
 
@@ -56,8 +56,8 @@ messenger.on("getPages", msg => {
     if (msg) {
         pagesize = msg.pagesize
 
-        console.log('getPages received')
-        console.log(msg.current)
+        debug && console.log('getPages received')
+        debug && console.log(msg)
 
         if (msg.currentday === 0) {
             if (pages && pages.length === 0) {
@@ -67,7 +67,7 @@ messenger.on("getPages", msg => {
             } else {
                 debug && console.log('updating pages.')
                 messenger.emit("pages", pages)
-                console.log('locating...', pagelocation.y)
+                debug && console.log('locating...', pagelocation.y)
                 messenger.emit('location', pagelocation)
             }
         }
@@ -93,7 +93,7 @@ const getPage = () => {
         debug && console.log('No more days with full pages.')
         // put any remaining timers into the last page
         if (page.length > 0) {
-            console.log('Last Page ' + currentPage + ' Complete.')
+            debug && console.log('Last Page ' + currentPage + ' Complete.')
             messenger.emit('projectpage', page)
             pages.push(page)
             page = []
@@ -119,51 +119,59 @@ const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
         debug && console.log('[react] msg timers get.')
         let item = parse(event)
-        if (item && typeof item === 'object') {
-            let section = { title: day, data: [] }
-            let id; for (id in item) {
-                let found = parse(item[id])
-                console.log(found)
-                parseDayTimers(found, section)
-            }
-        }
+        if (item && typeof item === 'object') parseDayTimers(item, day)
+
     })
 }
 
-const parseDayTimers = (found, section) => {
-    debug && console.log('timers get ' + typeof found + ' ', found)
-    if (!found) {
-        console.log('not found')
-        addSection(section)
-    } else if (found && found.type === 'timer' && found.status === 'done') {
-        getProject(found.project).then(project => {
-            if (project.status === 'active') {
-                debug && console.log('Found project', project)
-                found.color = project.color
-                found.name = project.name
-                // duplicate/edit check
-                let data = section.data
-                let alreadyInSection = data.some(timer => timer.id === found.id)
-                if (!alreadyInSection && found.status === 'done') {
-                    addSection({ title: section.title, data: sortDayTimers(found, data) })
-                }
-                // running check
-                else if (found.status === 'running') {
-                    running = found
-                }
-                else if (found.status === 'done' && found.id === running.id) {
-                    debug && console.log('[react] Setting last run Timer.')
-                    debug && console.log(found)
-                    running = found
-                }
-            } else {
-                let data = section.data
-                let filterNonActive = data.filter(timer => timer.id === found.id)
-                addSection({ title: section.title, data: filterNonActive })
+const parseDayTimers = (daytimers, day) => {
+    let section = { title: day, data: [] }
+    let id; for (id in daytimers) {
+        let found = parse(daytimers[id])
+        debug && console.log(found)
+        debug && console.log('timers get ' + typeof found + ' ', found)
+        if (found && found.type === 'timer') {
+            if (found.status === 'deleted') {
+                debug && console.log('deleted')
+                addSection(section)
             }
-        })
+            else if (found.status === 'done') {
+                getProject(found.project).then(project => parseProject(project, found, section))
+            }
+        }
     }
 }
+
+const parseProject = (project, found, section) => {
+    if (project.status === 'active') {
+        debug && console.log('Found project', project)
+        found.color = project.color
+        found.name = project.name
+        // duplicate/edit check
+        let data = section.data
+        let alreadyInSection = data.some(timer => timer.id === found.id)
+        if (!alreadyInSection && found.status === 'done') {
+            addSection({ title: section.title, data: sortDayTimers(found, data) })
+        }
+        // running check
+        else if (found.status === 'running') {
+            running = found
+        }
+        else if (found.status === 'done' && found.id === running.id) {
+            debug && console.log('[react] Setting last run Timer.')
+            debug && console.log(found)
+            running = found
+        }
+    }
+    else {
+        debug && console.log('project inactive')
+        let data = section.data
+        found.status = 'deleted'
+        addSection({ title: section.title, data: sortDayTimers(found, data) })
+    }
+
+}
+
 const sortDayTimers = (found, data) => {
     debug && console.log('Found Timer', found)
     let total = totalTime(found.started, found.ended)
@@ -177,8 +185,8 @@ const sortDayTimers = (found, data) => {
         match.totals.push(total)
         filteredData.push(match)
         return filteredData
-    } else {
-        let reducedTimer = {
+    } else if (found.status === 'done') {
+        let reducedDayTimer = {
             project: found.project,
             name: found.name,
             color: found.color,
@@ -187,8 +195,21 @@ const sortDayTimers = (found, data) => {
             totals: [total],
             status: found.status
         }
-        debug && console.log('Listing ', reducedTimer)
-        data.push(reducedTimer)
+        debug && console.log('Listing ', reducedDayTimer)
+        data.push(reducedDayTimer)
+        return data
+    } else {
+        let inactiveDayTimer = {
+            project: found.project,
+            name: found.name,
+            color: found.color,
+            total: 0,
+            timers: [],
+            totals: [],
+            status: found.status
+        }
+        debug && console.log('Inactive ', inactiveDayTimer)
+        // data.push(inactiveDayTimer)
         return data
     }
 }
@@ -196,10 +217,13 @@ const sortDayTimers = (found, data) => {
 const addSection = (section) => {
     let alreadyInTimers = page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
-    if (!alreadyInTimers && section.data.length > 0 && days[currentday] === section.title) {
+
+    if (!alreadyInTimers && days[currentday] === section.title) {
         debug && console.log(currentday, days[currentday], section.title)
-        debug && console.log(section)
-        page.push(section)
+        console.log(section)
+        if (section.data.length > 0) {
+            page.push(section)
+        } 
         currentday++
         getPage()
     }
@@ -218,7 +242,7 @@ const getProject = (projectId) => {
 
             })
         } catch (error) {
-            console.log(error)
+            debug && console.log(error)
             reject(error)
         }
     })

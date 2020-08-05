@@ -47,7 +47,9 @@ const sortDaylist = (event) => {
 ////////////// LISTENING
 messenger.on('getProjectPages', msg => getProjectPage(msg))
 messenger.on(chain.timerDates(), event => sortDaylist(event))
-
+messenger.on('getDayTimers', event => getDayTimers().then(daytimers => {
+    messenger.emit('dayTimers', daytimers)
+}))
 ////////////// REQUESTING
 store.getAllOnce(chain.timerDates())
 
@@ -146,6 +148,7 @@ const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
         debug && console.log('[react] msg timers get: ', event)
         let item = parse(event)
+        // console.log(day, item)
         if (typeof item === 'object') parseDayTimers(item, day)
     })
 }
@@ -156,6 +159,7 @@ const parseDayTimers = (daytimers, day) => {
     let section = { title: day, data: [] }
     let id; for (id in daytimers) {
         let daytimer = parse(daytimers[id])
+        daytimer.key = id
         debug && console.log('DayTimer: ', daytimer)
         if (validDayTimer(daytimer)) {
             dayTimer(daytimer, section, current.project)

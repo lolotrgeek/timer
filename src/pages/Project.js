@@ -148,11 +148,19 @@ export default function Project({ useHistory, useParams }) {
                 history.push(projectHistorylink(projectId))
             }} />
             <Button title='Delete' onPress={() => {
-                daytimers.forEach(daytimer => {
-                    daytimer.data.forEach(timer => {
-                        Data.deleteTimer(timer)
-                    })
-                })
+                // daytimers.forEach(daytimer => {
+                //     // console.log(daytimer)
+                //     daytimer.data.forEach(timer => {
+                //         console.log(daytimer.title, timer.key)
+                //         let daychain = chain.dateTimer(timer.started, timer.id)+'/'+timer.key
+                //         console.log(daychain)
+                //         Data.deleteTimer(timer)
+                //         // messenger.addListener(daychain, msg => {
+                //         //     console.log(msg)
+                //         // })
+                //         // Data.getDayTimer(timer)
+                //     })
+                // })
                 Data.deleteProject(project)
                 history.push(projectsListLink())
             }} />

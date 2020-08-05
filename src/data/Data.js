@@ -138,10 +138,11 @@ export const deleteTimer = (timer) => {
     let timerDelete = timer
     timerDelete.deleted = new Date().toString()
     timerDelete.status = 'deleted'
+
     store.set(chain.timerHistory(timer.id, timerDelete))
     store.put(chain.timer(timer.id), timerDelete)
-    store.set(chain.projectTimer(timer.project, timer.id), null)
-    store.set(chain.dateTimer(timer.started, timer.id), null)
+    // store.set(chain.projectTimer(timer.project, timer.id), timerDelete) 
+    store.put(chain.dateTimer(timer.started, timer.id)+'/'+timer.key, timerDelete)
     console.log(timerDelete)
 }
 
@@ -194,7 +195,6 @@ export const getTimers = () => {
 
 export const getTimerDates = () => {
     store.getAllOnce(chain.timerDates())
-    
 }
 
 export const getTimersForDate = (date) => {
@@ -220,4 +220,8 @@ export const getProjectHistory = projectId => {
 
 export const getRunning = () => {
     store.get(chain.running())
+}
+
+export const getDayTimer = (timer) => {
+    store.get(chain.dateTimer(timer.started, timer.id)+'/'+timer.key)
 }
