@@ -217,7 +217,6 @@ const sortDayTimers = (found, data) => {
 const addSection = (section) => {
     let alreadyInTimers = page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
-
     if (!alreadyInTimers && days[currentday] === section.title) {
         debug && console.log(currentday, days[currentday], section.title)
         console.log(section)

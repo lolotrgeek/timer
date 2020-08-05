@@ -117,7 +117,7 @@ const getPage = (currentday) => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`
     // TODO: needs a last page function to handle when last page might not be full
     let day = days[currentday]
-    debug && console.log(`day: ${currentday}/${days.length} [${day}], 
+    console.log(`day: ${currentday}/${days.length} [${day}], 
     timer: ${current.page.length}/${current.pagesize} `)
 
     if (currentday >= days.length) {
@@ -162,6 +162,7 @@ const parseDayTimers = (daytimers, day) => {
         daytimer.key = id
         debug && console.log('DayTimer: ', daytimer)
         if (validDayTimer(daytimer)) {
+            // console.log(daytimer)
             dayTimer(daytimer, section, current.project)
         }
         else noTimersinDay()
@@ -171,6 +172,7 @@ const dayTimer = (daytimer, section) => {
     debug && console.log('timers get ' + typeof daytimer + ' ', daytimer)
     let data = section.data
     if (notInSection(data, daytimer)) {
+        console.log(daytimer)
         debug && console.log('New DayTimer...')
         addSection({ title: section.title, data: sortDayTimers(daytimer, data) })
     }
@@ -205,9 +207,9 @@ const sortDayTimers = (found, data) => {
 const addSection = (section) => {
     let alreadyInTimers = current.page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
-    if (!alreadyInTimers && section.data.length > 0 && days[current.currentday] === section.title) {
+    console.log(section)
+    if (!alreadyInTimers && section.data.length > 0) {
         // debug && console.debug && console.log(currentday, days[currentday], section.title)
-        debug && console.log(section)
         current.page.push(section)
         current.currentday++
         getPage(current.currentday)
@@ -245,11 +247,11 @@ const getDayTimers = (day) => {
             let result = {}
             store.chainer(chain.timersInDay(day), store.app).map().on((data, key) => {
                 if (!data) {
-                    debug && console.log('[GUN node] getAllOnce No Data Found',)
+                    // debug && console.log('[GUN node] getAllOnce No Data Found',)
                 }
                 let foundData = trimSoul(data)
                 result[key] = foundData
-                debug && console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
+                // debug && console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
             })
             resolve(result)
         } catch (err) {
