@@ -9,7 +9,7 @@ let state = {
 }
 
 messenger.on(`getProjectTrash`, msg => {
-    getProjectTrash(msg.projectId).then(trash => {
+    getProjectTrash().then(trash => {
         state.trash = trash
         messenger.emit(`projectTrash`, trash)
     })
@@ -20,7 +20,7 @@ const getProjectTrash = () => {
     return new Promise((resolve, reject) => {
         try {
             let result = []
-            store.chainer(chain.projects(projectId), store.app).map().on((data, key) => {
+            store.chainer(chain.projects(), store.app).map().on((data, key) => {
                 let foundData = trimSoul(data)
                 // debug && console.log('[GUN node] getProject Data Found: ', foundData)
                 if (foundData && foundData.type === 'project' && foundData.status === 'deleted') {

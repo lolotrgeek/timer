@@ -4,39 +4,41 @@ import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import * as routes from '../routes'
-import '../state/projectTrashState'
+import '../state/timerTrashState'
 
-export default function ProjectTrash({ useHistory, useParams }) {
+export default function TimerTrash({ useHistory, useParams }) {
     let history = useHistory()
+    let { projectId } = useParams();
     const [online, setOnline] = useState(false)
     const [trash, setTrash] = useState([{ id: 'none' }])
 
     useEffect(() => {
-        messenger.on(`projectTrash`, event => {
+        messenger.on(`timerTrash`, event => {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)
             }
         })
 
-        messenger.emit('getProjectTrash', { })
+        messenger.emit('getTimerTrash', {projectId: projectId })
     }, [])
 
 
-    const renderProject = ({ item }) => {
+    const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
-                <View style={{ width: '30%' }}>
-                    <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
+                <View style={{ width: '20%' }}>
+                    {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
+                    <Text>{item.id}</Text>
                 </View>
-                <View style={{ width: '30%' }}>
+                <View style={{ width: '40%' }}>
                     <Text>{item.deleted}</Text>
                 </View>
-                <View style={{ width: '30%' }}>
+                <View style={{ width: '20%' }}>
                     <Button title='Restore' onPress={() => {
-                        Data.restoreProject(item)
-                        history.push(routes.projectlink(item.id))
+                        Data.restoreTimer(item)
+                        history.push(routes.timerlink(item.id))
                     }} />
                 </View>
             </View>
@@ -55,7 +57,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
     )
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{ textAlign: 'center', fontSize: 25 }}>Deleted Projects</Text>
+            <Text style={{ textAlign: 'center', fontSize: 25 }}>Deleted Timers</Text>
             <HeaderButtons />
         </View>
     )
@@ -65,7 +67,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
             <FlatList
                 style={styles.list}
                 data={trash}
-                renderItem={renderProject}
+                renderItem={renderTimer}
                 keyExtractor={(item, index) => item.id + index}
             />
         </SafeAreaView>

@@ -18,7 +18,7 @@ const loadAll = false
 
 export default function Timer({ useHistory, useParams }) {
     let history = useHistory();
-    let { projectId, timerId } = useParams();
+    let { timerId } = useParams();
     const [online, setOnline] = useState(false)
     const [timer, setTimer] = useState();
 
@@ -26,7 +26,7 @@ export default function Timer({ useHistory, useParams }) {
         messenger.addListener(`${timerId}`, event => {
             setTimer(event)
         })
-        messenger.emit('getTimer', { projectId, timerId })
+        messenger.emit('getTimer', { timerId })
         return () => messenger.removeAllListeners(`${timerId}`)
     }, [online])
 
@@ -41,11 +41,11 @@ export default function Timer({ useHistory, useParams }) {
                 setOnline(!online)
             }} />
             <Button title='Delete' onPress={() => {
-                // TODO: need delete function here
-                history.push(projectlink(projectId))
+                Data.deleteTimer(timer)
+                history.push(projectlink(timer.project))
             }} />
             <Button title='History' onPress={() => {
-                history.push(timerHistorylink(projectId, timerId))
+                history.push(timerHistorylink(timerId))
             }} />
         </View>
     )

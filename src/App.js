@@ -11,7 +11,10 @@ import Projects from './pages/Projects'
 import Project from './pages/Project'
 import ProjectCreate from './pages/ProjectCreate'
 import ProjectHistory from './pages/ProjectHistory'
+import ProjectTrash from './pages/ProjectTrash'
 import Timer from './pages/Timer'
+import TimerHistory from './pages/TimerHistory'
+import TimerTrash from './pages/TimerTrash'
 
 export default function App() {
     return (
@@ -31,7 +34,10 @@ export default function App() {
                 <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
                 <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} />} />
-                <Route path={routes.timerlink(':projectId', ':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} />} />
+                <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} />} />
             </Switch>
         </Router >
     );

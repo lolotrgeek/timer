@@ -128,7 +128,7 @@ export default function Timeline({ useHistory }) {
         </View>
     )
     const Header = () => (
-        <View style={{ position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' }}>
+        <View style={styles.header}>
             <HeaderButtons />
             <RunningTimer />
         </View>
@@ -188,6 +188,7 @@ export default function Timeline({ useHistory }) {
 }
 
 const styles = StyleSheet.create({
+    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
     container: {
         flex: 1,
         backgroundColor: '#fff',
