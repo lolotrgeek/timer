@@ -4,7 +4,7 @@ import { trimSoul } from '../constants/Functions'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 
-let debug = true
+let debug = false
 let state = {
     projects: []
 }

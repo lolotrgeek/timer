@@ -223,7 +223,7 @@ export const formatTime = t => {
  * @param {*} timer 
  * @return {boolean}
  */
-export const timerRanToday = timer => isToday(timer.started)
+export const timerRanToday = timer => isToday(new Date(timer.started))
 
 /**
  * 
@@ -235,6 +235,12 @@ export const sayRunning = timer => timer.ended === timer.started ? 'running' : t
  * @param {*} timer 
  */
 export const isRunning = timer => timer && typeof timer === 'object' && timer.status === 'running' ? true : false
+
+/**
+ * 
+ * @param {*} date 
+ */
+export {isToday}
 /**
  * Get amount of time since entry was started
  * @param {string} started datestring when entry was started

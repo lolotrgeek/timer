@@ -67,7 +67,7 @@ const listenForPageLocation = current => {
         if (msg) {
             current.pagelocation.x = msg.x
             current.pagelocation.y = msg.y
-            console.log(current.pagelocation.y)
+            debug && console.log(current.pagelocation.y)
         }
     })
 }
@@ -77,7 +77,7 @@ const setCurrentProject = (msg) => {
     if (!current.project.name || current.project.id === 'none') {
         getProject(current.project.id).then(foundproject => {
             current.project = foundproject
-            console.log('Project: ', current.project)
+            debug && console.log('Project: ', current.project)
             messenger.emit(`${current.project.id}/project`, current.project)
             handleProjectPages(msg)
         })
@@ -117,7 +117,7 @@ const getPage = (currentday) => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`
     // TODO: needs a last page function to handle when last page might not be full
     let day = days[currentday]
-    console.log(`day: ${currentday}/${days.length} [${day}], 
+    debug && console.log(`day: ${currentday}/${days.length} [${day}], 
     timer: ${current.page.length}/${current.pagesize} `)
 
     if (currentday >= days.length) {
@@ -148,7 +148,7 @@ const timersInDayHandler = (day) => {
     getDayTimers(day).then(event => {
         debug && console.log('[react] msg timers get: ', event)
         let item = parse(event)
-        // console.log(day, item)
+        //  debug && console.log(day, item)
         if (typeof item === 'object') parseDayTimers(item, day)
     })
 }
@@ -162,7 +162,7 @@ const parseDayTimers = (daytimers, day) => {
         daytimer.key = id
         debug && console.log('DayTimer: ', daytimer)
         if (validDayTimer(daytimer)) {
-            // console.log(daytimer)
+            //  debug && console.log(daytimer)
             dayTimer(daytimer, section, current.project)
         }
         else noTimersinDay()
@@ -172,7 +172,7 @@ const dayTimer = (daytimer, section) => {
     debug && console.log('timers get ' + typeof daytimer + ' ', daytimer)
     let data = section.data
     if (notInSection(data, daytimer)) {
-        console.log(daytimer)
+        debug && console.log(daytimer)
         debug && console.log('New DayTimer...')
         addSection({ title: section.title, data: sortDayTimers(daytimer, data) })
     }
@@ -207,9 +207,9 @@ const sortDayTimers = (found, data) => {
 const addSection = (section) => {
     let alreadyInTimers = current.page.some(entry => entry.title === section.title)
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
-    console.log(section)
+    debug && console.log(section)
     if (!alreadyInTimers && section.data.length > 0) {
-        // debug && console.debug && console.log(currentday, days[currentday], section.title)
+        //   debug && console.  debug && console.log(currentday, days[currentday], section.title)
         current.page.push(section)
         current.currentday++
         getPage(current.currentday)
@@ -224,7 +224,7 @@ const getProject = (projectId) => {
         try {
             store.chainer(chain.project(projectId), store.app).once((data, key) => {
                 const foundData = trimSoul(data)
-                // debug && console.log('[GUN node] getProject Data Found: ', foundData)
+                //   debug && console.log('[GUN node] getProject Data Found: ', foundData)
                 if (foundData && foundData.type === 'project') {
                     resolve(foundData)
                 }
@@ -247,11 +247,11 @@ const getDayTimers = (day) => {
             let result = {}
             store.chainer(chain.timersInDay(day), store.app).map().on((data, key) => {
                 if (!data) {
-                    // debug && console.log('[GUN node] getAllOnce No Data Found',)
+                    //   debug && console.log('[GUN node] getAllOnce No Data Found',)
                 }
                 let foundData = trimSoul(data)
                 result[key] = foundData
-                // debug && console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
+                //   debug && console.log('[GUN] getAllOnce Data Found: ', typeof foundData, foundData)
             })
             resolve(result)
         } catch (err) {

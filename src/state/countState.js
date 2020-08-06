@@ -5,7 +5,7 @@ import { getTimers, getProject } from '../service/data'
 import { createTimer, finishTimer  } from '../data/Data'
 import { timerRanToday, totalTime, parse } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-const debug = false
+const debug = true
 
 let timer
 let runningTimer = { id: 'none'}
@@ -70,7 +70,7 @@ const getCount = (data) => new Promise((resolve, reject) => {
             timers.map(foundTimer => {
                 // debug && console.log(`Got count timer ${typeof foundTimer}`, foundTimer)
                 if (timerRanToday(foundTimer)) {
-                    let TIMERTOTAL = totalTime(foundTimer.ended, foundTimer.started)
+                    let TIMERTOTAL = totalTime(foundTimer.started, foundTimer.ended)
                     debug && console.log(`Got count ${foundTimer.project}/${foundTimer.id} , ${TIMERTOTAL}`)
                     count = count + TIMERTOTAL
                     debug && console.log('Updating count ', count)

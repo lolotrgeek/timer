@@ -13,7 +13,7 @@ import '../state/timelineState'
 const debug = false
 const test = false
 const loadAll = false
-
+const pagesize = 4
 
 export default function Timeline({ useHistory }) {
     let history = useHistory()
@@ -92,7 +92,12 @@ export default function Timeline({ useHistory }) {
                         <Text>No Running Timer</Text> : running.current.status === 'done' ?
                             //TODO: assuming that project exists on start... needs validation
                             <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
-                            <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
+                            <Button title='stop' onPress={() => {
+                                Data.finishTimer(running.current)
+                                setDaytimers([])
+                                messenger.emit('getPages', { currentday: 0, refresh: true, pagesize: pagesize })
+                                // setOnline(!online)
+                            }} />
                     }
                 </View>
             </View>
@@ -118,6 +123,8 @@ export default function Timeline({ useHistory }) {
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
             <Button title='Refresh' onPress={() => {
+                setDaytimers([])
+                messenger.emit('getPages', { currentday: 0, refresh: true, pagesize: pagesize })
                 setOnline(!online)
             }} />
             <Button title='Clear' onPress={() => {
@@ -166,9 +173,9 @@ export default function Timeline({ useHistory }) {
                     onEndReached={() => {
                         console.log('End Reached')
                         if (daytimers) {
+                            console.log(daytimers)
                             debug && console.log(daytimers, typeof daytimers, Array.isArray(daytimers))
-                            let msg = { currentday: daytimers.length, pagesize: 4 }
-                            messenger.emit('getPages', msg)
+                            messenger.emit('getPages', { currentday: daytimers.length, pagesize: pagesize })
 
                         } else {
                             setOnline(!online)

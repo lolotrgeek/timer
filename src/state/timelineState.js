@@ -1,4 +1,4 @@
-import { totalTime, simpleDate, sumProjectTimers, nextDay, parse, trimSoul } from '../constants/Functions'
+import { totalTime, simpleDate, sumProjectTimers, nextDay, parse, trimSoul, timerRanToday, isToday } from '../constants/Functions'
 import * as Data from '../data/Data'
 import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
@@ -14,7 +14,7 @@ let pagesize = 5 // number of timers per `page`
 let days = [] // set of days containing timers
 let currentday = 0 // last day where timers were retrieved
 let page = [] // set of timers sectioned by day
-let running = { id: 'none', name: 'none', project: 'none' }
+let running = { id: 'none', name: 'none', project: 'none', count: 0 }
 let currentPage = 1
 let pagelocation = { x: 0, y: 0 }
 
@@ -29,6 +29,22 @@ const daylistHandler = (event) => {
         debug && console.log(days)
         // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
     }
+}
+
+const setRunning = (item) => {
+    running.project = item.project
+    running.name = item.name
+    running.id = item.id
+}
+
+const isRunning = (timer) => {
+    if (timer.status === 'running') { setRunning(timer); return true }
+    if (timerRanToday(timer) && timer.project === running.project) {
+        // running.count = running.count + totalTime(timer.started, timer.ended)
+        // messenger.emit(chain.running(), running)
+        return true
+    }
+    return false
 }
 
 // request days with timers
@@ -51,8 +67,16 @@ messenger.on("getPage", msg => {
         getPage()
     }
 })
+messenger.on("getPages", msg => getPages(msg))
+messenger.on(chain.running(), msg => {
+    if (msg && msg.status === 'running') {
+        console.log('running', msg)
+        setRunning(msg)
+        getPages({ currentday: 0, pagesize: 4 })
+    }
+})
 
-messenger.on("getPages", msg => {
+const getPages = (msg) => {
     if (msg) {
         pagesize = msg.pagesize
 
@@ -60,7 +84,12 @@ messenger.on("getPages", msg => {
         debug && console.log(msg)
 
         if (msg.currentday === 0) {
-            if (pages && pages.length === 0) {
+            if (msg.refresh) {
+                currentday = 0
+                debug && console.log('refreshing pages.')
+                getPage()
+            }
+            else if (pages && pages.length === 0) {
                 currentday = 0
                 debug && console.log('getting pages.')
                 getPage()
@@ -77,12 +106,12 @@ messenger.on("getPages", msg => {
             } else {
                 currentday = currentday + 1
             }
-            debug && console.log('getting pages.')
+            debug && console.log('adding pages.')
             getPage()
         }
 
     }
-})
+}
 
 
 const getPage = () => {
@@ -94,7 +123,7 @@ const getPage = () => {
         // put any remaining timers into the last page
         if (page.length > 0) {
             debug && console.log('Last Page ' + currentPage + ' Complete.')
-            messenger.emit('projectpage', page)
+            messenger.emit('page', page)
             pages.push(page)
             page = []
             currentPage++
@@ -136,7 +165,13 @@ const parseDayTimers = (daytimers, day) => {
                 addSection(section)
             }
             else if (found.status === 'done') {
-                getProject(found.project).then(project => parseProject(project, found, section))
+                // OPTIMIZE: only check today, not every timer
+                if (isRunning(found)) {
+                    // don't show timers from a project that has a running timer
+                    addSection(section)
+                } else {
+                    getProject(found.project).then(project => parseProject(project, found, section))
+                }
             }
         }
     }
@@ -219,10 +254,10 @@ const addSection = (section) => {
     //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
     if (!alreadyInTimers && days[currentday] === section.title) {
         debug && console.log(currentday, days[currentday], section.title)
-        console.log(section)
+        debug && console.log(section)
         if (section.data.length > 0) {
             page.push(section)
-        } 
+        }
         currentday++
         getPage()
     }
