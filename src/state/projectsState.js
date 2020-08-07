@@ -10,7 +10,7 @@ let state = {
 }
 
 messenger.on(`getProjects`, async msg => {
-    console.log('get projects')
+    debug && console.log('get projects')
     const projects = await getProjects()
     messenger.emit(`projects`, projects)
 })

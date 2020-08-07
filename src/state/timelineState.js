@@ -70,7 +70,7 @@ messenger.on("getPage", msg => {
 messenger.on("getPages", msg => getPages(msg))
 messenger.on(chain.running(), msg => {
     if (msg && msg.status === 'running') {
-        console.log('running', msg)
+        debug && console.log('running', msg)
         setRunning(msg)
         getPages({ currentday: 0, pagesize: 4 })
     }

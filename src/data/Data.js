@@ -3,7 +3,7 @@ import { isRunning, multiDay, newEntryPerDay, endRandTestGen, startRandTestGen, 
 import * as store from './Store'
 import * as chain from './Chains'
 
-const debug = false
+const debug = true
 
 export const createProject = (name, color) => {
     const project = newProject(name, color)
@@ -44,16 +44,18 @@ export const deleteProject = (project) => {
 /**
  * Generates a new timer using the standard timer model
  * TODO: consider doing a pre-create sync to eliminate unsynced running timers/deleted projects
- * @param {*} projectId 
+ * @param {*} project 
  */
-export const createTimer = (projectId) => {
-    if (!projectId || typeof projectId !== 'string' || projectId.length < 9) return false
-    debug && console.log('[react Data] Creating Timer', projectId)
-    const timer = newTimer(projectId)
+export const createTimer = (project) => {
+    if (!project || typeof project !== 'object' || !project.id || project.id.length < 9) return false
+    debug && console.log('[react Data] Creating Timer', project)
+    let timer = newTimer(project.id)
+    timer.name = project.name
+    timer.color = project.color
     debug && console.log('[react Data] Created Timer', timer)
     store.put(chain.running(), timer)
     store.set(chain.timerHistory(timer.id), timer)
-    return true
+    return timer
 }
 
 /**

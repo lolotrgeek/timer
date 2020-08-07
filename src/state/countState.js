@@ -2,15 +2,20 @@
 
 import * as store from '../service/store'
 import { getTimers, getProject } from '../service/data'
-import { createTimer, finishTimer  } from '../data/Data'
+import { createTimer, finishTimer } from '../data/Data'
 import { timerRanToday, totalTime, parse } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 const debug = true
 
-let timer
-let runningTimer = { id: 'none'}
-let runningProject = { id: 'none'}
+let counter
+let lastrun = { id: 'none' }
+let running = { id: 'none' }
 let count = 0
+
+messenger.on('getlastRun', msg => {
+    messenger.emit('lastRun', lastrun)
+})
+
 // Core Functions
 
 /**
@@ -19,26 +24,26 @@ let count = 0
  * @param {object} project 
  * @param {number} count 
  */
-const runTimer = (running, project) => {
+const runCounter = running => {
     debug && console.log('[Timer node] run timer ')
-    clearInterval(timer)
-    if (project && typeof project === 'object' && project.name) {
-        messenger.emit('notify', { title: project.name, subtitle: count.toString(), state: "start" })
-        timer = setInterval(() => {
+    clearInterval(counter)
+    if (running && running.name) {
+        messenger.emit('notify', { title: running.name, subtitle: count.toString(), state: "start" })
+        counter = setInterval(() => {
             if (!running || running.status !== 'running') {
-                clearInterval(timer)
+                clearInterval(counter)
                 return;
             }
-            debug && console.log(`running timer: ${running.id} | project: ${running.project}`)
+            debug && console.log(`running counter: ${running.id} | project: ${running.project}`)
             messenger.emit('count', count.toString())
             count++
         }, 1000)
     }
 }
 
-const stopTimer = (running) => {
+const stopCounter = () => {
     debug && console.log('[Timer node] Stop ', running)
-    clearInterval(timer)
+    clearInterval(counter)
     messenger.emit('notify', { state: "stop" })
 }
 
@@ -60,47 +65,59 @@ const findRunningProject = running => new Promise((resolve, reject) => {
     }
 })
 
-const getCount = (data) => new Promise((resolve, reject) => {
-    if (!data) reject('no data')
-    else if (runningTimer && runningTimer.project !== data.project) {
-        debug && console.log(`getting count ${runningTimer.project} != ${data.project}`)
-        getTimers(data.project).then(timers => {
-            debug && console.log(`Got count timers ${typeof timers} `, timers)
-            count = 0
-            timers.map(foundTimer => {
-                // debug && console.log(`Got count timer ${typeof foundTimer}`, foundTimer)
-                if (timerRanToday(foundTimer)) {
-                    let TIMERTOTAL = totalTime(foundTimer.started, foundTimer.ended)
-                    debug && console.log(`Got count ${foundTimer.project}/${foundTimer.id} , ${TIMERTOTAL}`)
-                    count = count + TIMERTOTAL
-                    debug && console.log('Updating count ', count)
-                }
-            })
-            debug && console.log(`count ${count}`)
-            resolve(count)
-        }).catch(err => console.error(err))
+/**
+ * Total count of timers that ran today 
+ * @param {string} projectId 
+ */
+const countTimersToday = (projectId) => new Promise((resolve, reject) => {
+    getTimers(projectId).then(timers => {
+        debug && console.log(`Counting Timers Today ${typeof timers} `, timers)
+        timers.map(foundTimer => {
+            // debug && console.log(`Got count timer ${typeof foundTimer}`, foundTimer)
+            if (timerRanToday(foundTimer)) {
+                let TIMERTOTAL = totalTime(foundTimer.started, foundTimer.ended)
+                debug && console.log(`Got count ${foundTimer.project}/${foundTimer.id} , ${TIMERTOTAL}`)
+                count = count + TIMERTOTAL
+                debug && console.log('Updating count ', count)
+            }
+        })
+        debug && console.log(`count ${count}`)
+        resolve(count)
+    }).catch(err => reject(err))
+})
 
-
+/**
+ * Set the count to pass along to the counter
+ * @param {*} timer 
+ */
+const getCount = timer => new Promise((resolve, reject) => {
+    if (!timer) reject('no running')
+    else if (running && running.project !== timer.project) {
+        debug && console.log(`updating count ${running.project} != ${timer.project}`)
+        count = 0
+        countTimersToday(running.project).then(counted => resolve(counted)).catch(err => reject(err))
     }
-    else if (runningTimer && runningTimer.project === data.project) {
-        debug && console.log(`same count ${runningTimer.project} = ${data.project}`)
+    else if (lastrun.id !== 'none' && lastrun.project === timer.project) {
+        debug && console.log(`same count ${lastrun.project} = ${timer.project}`)
         // count = count
         resolve(count)
         debug && console.log(`count ${count}`)
     }
     else {
-        debug && console.log(`new count ${data.project}`)
+        debug && console.log(`new count ${timer.project}`)
         count = 0
         resolve(count)
         debug && console.log(`count ${count}`)
     }
 })
 
-function updateRunning(runningTimer, runningProject) {
-    let running = runningTimer
-    running.color = runningProject.color
-    running.name = runningProject.name
-    messenger.emit('running', running)
+function createRunning(timer) {
+    findRunningProject(running).then(project => {
+        running = timer
+        running.color = project.color
+        running.name = project.name
+        messenger.emit('running', running)
+    })
 }
 
 // Remote Commands Handler, listens to finishTimer or createTimer
@@ -109,29 +126,25 @@ store.chainer('running', store.app).on((data, key) => {
     if (data && data.type === 'timer') {
         if (data.status === 'running') {
             getCount(data).then(count => {
-                runningTimer = data
-                debug && console.log('[NODE_DEBUG_PUT] : Running Timer ', runningTimer)
-                findRunningProject(runningTimer).then(found => {
-                    runningProject = found
-                    runTimer(runningTimer, runningProject, count)
-                    updateRunning(runningTimer, runningProject) // sends to react
-                })
-
+                debug && console.log('[NODE_DEBUG_PUT] : Running Timer ', running)
+                createRunning(data)
+                runCounter(running)
                 // debug && console.log('run timer: ', timer)
             })
 
         }
-        else if (data.status === 'done' && data.id === runningTimer.id) {
-            debug && console.log('[node STOP]')
-            runningTimer = data
-            stopTimer(runningTimer)
+        else if (data.status === 'done' && data.id === running.id) {
+            debug && console.log('[STOP] update state')
+            running = data
+            stopCounter()
         }
         else if (data.id === 'none') {
-            runningTimer = data
-            stopTimer(runningTimer)
+            running = data
+            stopCounter()
         }
         else {
-            stopTimer({ id: 'none', status: 'done' })
+            running = { id: 'none', status: 'done' }
+            stopCounter()
         }
     }
 })
@@ -140,11 +153,12 @@ store.chainer('running', store.app).on((data, key) => {
 messenger.on('stop', msg => {
     debug && console.log('[React node] incoming Stop: ' + typeof msg, msg)
     try {
-        runningTimer.status = 'done'
-        debug && console.log('[NODE_DEBUG_PUT] : Running Timer Stopped ', runningTimer)
-        stopTimer(runningTimer)
-        finishTimer(runningTimer)
-        debug && console.log('stop timer: ', timer)
+        running.status = 'done'
+        lastrun = running
+        debug && console.log('[NODE_DEBUG_PUT] : Running Timer Stopped ', running)
+        stopCounter()
+        finishTimer(running)
+        running = { id: 'none' }
     } catch (error) {
         debug && console.log('[Timer node] : Stop failed ' + error)
     }
@@ -153,15 +167,18 @@ messenger.on('stop', msg => {
 messenger.on('start', msg => {
     debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
     try {
-        if (runningTimer && runningTimer.status === 'running') finishTimer(runningTimer)
-        const runningNew = createTimer(runningTimer.project)
-        getCount(runningNew).then(count => {
-            runningTimer = runningNew
-            debug && console.log('[NODE_DEBUG_PUT] : Running Timer ', runningTimer)
-            findRunningProject(runningTimer).then(found => {
-                runningProject = found
-                runTimer(runningTimer, runningProject)
-            })
+        if (running && running.status === 'running') {
+            running.status = 'done'
+            lastrun = running
+            stopCounter()
+            finishTimer(running)
+        }
+        const timer = createTimer(msg.project)
+        running = timer
+        getCount(timer).then(count => {
+            debug && console.log('[NODE_DEBUG_PUT] : New Running  ', running)
+            createRunning(timer)
+            runCounter(running)
             debug && console.log('run timer: ', timer)
         })
 

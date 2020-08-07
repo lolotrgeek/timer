@@ -27,7 +27,6 @@ export const getProject = (projectId) => {
         resolve(foundData)
       })
     } catch (error) {
-      console.log(error)
       reject(error)
     }
   })

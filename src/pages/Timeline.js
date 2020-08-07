@@ -74,35 +74,34 @@ export default function Timeline({ useHistory }) {
         }
     }, [pages])
 
-    const RunningTimer = props => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
-                    <Text>{running.current.project ? running.current.project : ''}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{count}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    {!running.current || running.current.id === 'none' ?
-                        <Text>No Running Timer</Text> : running.current.status === 'done' ?
-                            //TODO: assuming that project exists on start... needs validation
-                            <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
-                            <Button title='stop' onPress={() => {
-                                Data.finishTimer(running.current)
-                                setDaytimers([])
-                                messenger.emit('getPages', { currentday: 0, refresh: true, pagesize: pagesize })
-                                // setOnline(!online)
-                            }} />
-                    }
-                </View>
+    const RunningTimer = () => (
+        <View style={{ flexDirection: 'row', margin: 10 }}>
+            <View style={{ width: '25%' }}>
+                <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
+                <Text>{running.current.project ? running.current.project : ''}</Text>
             </View>
-        )
-    }
+            <View style={{ width: '25%' }}>
+                <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
+            </View>
+            <View style={{ width: '25%' }}>
+                <Text>{count}</Text>
+            </View>
+            <View style={{ width: '25%' }}>
+                {!running.current || running.current.id === 'none' ?
+                    <Text>No Running Timer</Text> : running.current.status === 'done' ?
+                        //TODO: assuming that project exists on start... needs validation
+                        <Button title='start' onPress={() => {
+                            messenger.emit('start', { project: running.project })
+                            // Data.createTimer(running.current.project);
+                        }} /> :
+                        <Button title='stop' onPress={() => {
+                            messenger.emit('stop', { project: running.project })
+                            // Data.finishTimer(running.current)
+                        }} />
+                }
+            </View>
+        </View>
+    )
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
