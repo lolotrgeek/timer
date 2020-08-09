@@ -35,7 +35,7 @@ export default function Projects({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener('lastrun', event => lastrun.current = event)
-        return () => messenger.removeAllListeners(chain.running())
+        return () => messenger.removeAllListeners('lastrun')
     }, [])
 
     useEffect(() => {
@@ -75,18 +75,36 @@ export default function Projects({ useHistory, useParams }) {
         }
     }
     const RunningTimer = () => (
+        <View>
+        <View style={{ flexDirection: 'row' }}>
+        <View style={{ width: '20%' }}>
+                <Text style={{fontWeight:'bold'}}>Project</Text>
+            </View>
+            <View style={{ width: '20%' }}>
+                <Text style={{fontWeight:'bold'}}>Last Run</Text>
+            </View>
+            <View style={{ width: '20%' }}>
+                <Text style={{fontWeight:'bold'}}>Running </Text>
+            </View>
+            <View style={{ width: '10%' }}>
+                <Text style={{fontWeight:'bold'}}>Count</Text>
+            </View>
+            <View style={{ width: '20%' }}>
+
+            </View>   
+        </View>
         <View style={{ flexDirection: 'row', margin: 10 }}>
-            <View style={{ width: '25%' }}>
-                <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
+            <View style={{ width: '20%' }}>
+                <Text>{running.current.name ? running.current.name : 'None'}</Text>
                 <Text>{running.current.project ? running.current.project : ''}</Text>
             </View>
-            <View style={{ width: '25%' }}>
-                <Text>{'Last Run: ' + lastrun.current.id}</Text>
+            <View style={{ width: '20%' }}>
+                <Text>{lastrun.current.id}</Text>
             </View>
-            <View style={{ width: '25%' }}>
-                <Text>{'Running: ' + running.current.id}</Text>
+            <View style={{ width: '20%' }}>
+                <Text>{running.current.id}</Text>
             </View>
-            <View style={{ width: '5%' }}>
+            <View style={{ width: '10%' }}>
                 <Text>{count}</Text>
             </View>
             <View style={{ width: '20%' }}>
@@ -103,6 +121,7 @@ export default function Projects({ useHistory, useParams }) {
                         }} />
                 }
             </View>
+        </View>
         </View>
     )
 
@@ -147,7 +166,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
-                    style={{ width: '100%', marginTop: 170, height: Dimensions.get('window').height - 170 }}
+                    style={{ width: '100%', marginTop: 220, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
                     keyExtractor={project => project.id}

@@ -162,7 +162,7 @@ export const finishTimer = (timer) => {
     if (isRunning(timer)) {
         debug && console.log('[react Data STOP] Finishing', timer)
         let done = doneTimer(timer)
-        store.put(chain.running(), done)
+        store.put(chain.running(), {id: 'none'})
         // Danger zone until endTimer is called
         if (multiDay(done.started, done.ended)) {
             const dayEntries = newEntryPerDay(done.started, done.ended)
