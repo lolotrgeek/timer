@@ -15,13 +15,8 @@ export default function Projects({ useHistory, useParams }) {
     const [online, setOnline] = useState(false)
     const [projects, setProjects] = useState([])
     const [timers, setTimers] = useState([])
-    // const projects = useRef(projects[0])
     const [count, setCount] = useState(0)
-
-    const running = useRef({ id: 'none', name: 'none', project: 'none' })
-    const lastrun = useRef({ id: 'none', name: 'none', project: 'none' })
-
-    useEffect(() => Data.getRunning(), [])
+    const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })
 
     useEffect(() => {
         messenger.addListener("count", event => setCount(event))
@@ -29,13 +24,9 @@ export default function Projects({ useHistory, useParams }) {
     }, [])
 
     useEffect(() => {
-        messenger.addListener(chain.running(), event => running.current = event)
+        messenger.addListener(chain.running(), event => setRunning(event))
+        messenger.emit('getRunning')
         return () => messenger.removeAllListeners(chain.running())
-    }, [])
-
-    useEffect(() => {
-        messenger.addListener('lastrun', event => lastrun.current = event)
-        return () => messenger.removeAllListeners('lastrun')
     }, [])
 
     useEffect(() => {
@@ -81,9 +72,6 @@ export default function Projects({ useHistory, useParams }) {
                 <Text style={{fontWeight:'bold'}}>Project</Text>
             </View>
             <View style={{ width: '20%' }}>
-                <Text style={{fontWeight:'bold'}}>Last Run</Text>
-            </View>
-            <View style={{ width: '20%' }}>
                 <Text style={{fontWeight:'bold'}}>Running </Text>
             </View>
             <View style={{ width: '10%' }}>
@@ -95,29 +83,26 @@ export default function Projects({ useHistory, useParams }) {
         </View>
         <View style={{ flexDirection: 'row', margin: 10 }}>
             <View style={{ width: '20%' }}>
-                <Text>{running.current.name ? running.current.name : 'None'}</Text>
-                <Text>{running.current.project ? running.current.project : ''}</Text>
+                <Text>{running.name ? running.name : 'None'}</Text>
+                <Text>{running.project ? running.project : ''}</Text>
             </View>
             <View style={{ width: '20%' }}>
-                <Text>{lastrun.current.id}</Text>
-            </View>
-            <View style={{ width: '20%' }}>
-                <Text>{running.current.id}</Text>
+                <Text>{running.id}</Text>
             </View>
             <View style={{ width: '10%' }}>
                 <Text>{count}</Text>
             </View>
             <View style={{ width: '20%' }}>
-                {!running.current || running.current.id === 'none' ?
-                    <Text>No Running Timer</Text> : running.current.status === 'done' ?
+                {!running || running.id === 'none' ?
+                    <Text>No Running Timer</Text> : running.status === 'done' ?
                         //TODO: assuming that project exists on start... needs validation
                         <Button title='start' onPress={() => {
-                            messenger.emit('start', { projectId: running.project })
-                            // Data.createTimer(running.current.project);
+                            messenger.emit('start', running)
+                            // Data.createTimer(running.project);
                         }} /> :
                         <Button title='stop' onPress={() => {
-                            messenger.emit('stop', { projectId: running.project })
-                            // Data.finishTimer(running.current)
+                            messenger.emit('stop', running)
+                            // Data.finishTimer(running)
                         }} />
                 }
             </View>
@@ -133,8 +118,8 @@ export default function Projects({ useHistory, useParams }) {
                 </View>
                 <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {
-                        // if (running.current && running.current.status === 'running') Data.finishTimer(running.current)
-                        messenger.emit('start', { project: item})
+                        // if (running && running.status === 'running') Data.finishTimer(running)
+                        messenger.emit('start', item)
                         setOnline(!online)
                     }} />
                 </View>
@@ -147,7 +132,7 @@ export default function Projects({ useHistory, useParams }) {
             <Button title="Test" onPress={() => projects.length > 0 ? generateTimers() : debug && console.log('testing')} />
             <Button title='Refresh' onPress={() => setOnline(!online)} />
             <Button title='Clear' onPress={() => {
-                // running.current = { id: 'none', name: 'none', project: 'none' }
+                // running = { id: 'none', name: 'none', project: 'none' }
                 setProjects([])
                 setOnline(!online)
             }} />
