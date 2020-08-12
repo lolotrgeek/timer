@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions } from 'react-native';
+import Running from '../components/Running'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink, projectTrashlink } from '../routes'
-// import '../state/countState'
 import '../state/projectsState'
 
 const debug = false
@@ -15,19 +15,6 @@ export default function Projects({ useHistory, useParams }) {
     const [online, setOnline] = useState(false)
     const [projects, setProjects] = useState([])
     const [timers, setTimers] = useState([])
-    const [count, setCount] = useState(0)
-    const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })
-
-    useEffect(() => {
-        messenger.addListener("count", event => setCount(event))
-        return () => messenger.removeAllListeners("count")
-    }, [])
-
-    useEffect(() => {
-        messenger.addListener(chain.running(), event => setRunning(event))
-        messenger.emit('getRunning')
-        return () => messenger.removeAllListeners(chain.running())
-    }, [])
 
     useEffect(() => {
         messenger.addListener('projects', event => {
@@ -65,50 +52,6 @@ export default function Projects({ useHistory, useParams }) {
             }
         }
     }
-    const RunningTimer = () => (
-        <View>
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '20%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Project</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Running </Text>
-                </View>
-                <View style={{ width: '10%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Count</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-
-                </View>
-            </View>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <View style={{ width: '20%' }}>
-                    <Text>{running.name ? running.name : 'None'}</Text>
-                    <Text>{running.project ? running.project : ''}</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    <Text>{running.id}</Text>
-                </View>
-                <View style={{ width: '10%' }}>
-                    <Text>{count}</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    {!running || running.id === 'none' ?
-                        <Text>No Running Timer</Text> : running.status === 'done' ?
-                            //TODO: assuming that project exists on start... needs validation
-                            <Button title='start' onPress={() => {
-                                messenger.emit('start', {projectId: running.project})
-                                // Data.createTimer(running.project);
-                            }} /> :
-                            <Button title='stop' onPress={() => {
-                                messenger.emit('stop', {projectId: running.project})
-                                // Data.finishTimer(running)
-                            }} />
-                    }
-                </View>
-            </View>
-        </View>
-    )
 
     const renderRow = ({ item }) => {
         return (
@@ -142,7 +85,7 @@ export default function Projects({ useHistory, useParams }) {
     const Header = () => (
         <View style={styles.header}>
             <HeaderButtons />
-            <RunningTimer />
+            <Running />
         </View>
     )
 

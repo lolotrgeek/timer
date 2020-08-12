@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
-import { runningHandler } from '../data/Handlers'
+import Running from '../components/Running'
 import * as Data from '../data/Data'
 import { projectCreatelink, projectlink, timerlink } from '../routes'
 import messenger from '../constants/Messenger'
@@ -20,23 +20,9 @@ export default function Timeline({ useHistory }) {
     const [online, setOnline] = useState(false)
     const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
-    const [count, setCount] = useState(0)
     const [location, setLocation] = useState({ x: 0, y: 0 })
-    const running = useRef({ id: 'none', name: 'none', project: 'none' })
 
     const timelineList = useRef()
-
-    useEffect(() => Data.getRunning(), [online, count])
-
-    useEffect(() => {
-        messenger.addListener("count", event => setCount(event))
-        return () => messenger.removeAllListeners("count")
-    }, [])
-
-    useEffect(() => {
-        messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
-        return () => messenger.removeAllListeners(chain.running())
-    }, [])
 
     useEffect(() => {
         messenger.addListener("page", event => {
@@ -74,34 +60,6 @@ export default function Timeline({ useHistory }) {
         }
     }, [pages])
 
-    const RunningTimer = () => (
-        <View style={{ flexDirection: 'row', margin: 10 }}>
-            <View style={{ width: '25%' }}>
-                <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
-                <Text>{running.current.project ? running.current.project : ''}</Text>
-            </View>
-            <View style={{ width: '25%' }}>
-                <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
-            </View>
-            <View style={{ width: '25%' }}>
-                <Text>{count}</Text>
-            </View>
-            <View style={{ width: '25%' }}>
-                {!running.current || running.current.id === 'none' ?
-                    <Text>No Running Timer</Text> : running.current.status === 'done' ?
-                        //TODO: assuming that project exists on start... needs validation
-                        <Button title='start' onPress={() => {
-                            messenger.emit('start', { project: running.project })
-                            // Data.createTimer(running.current.project);
-                        }} /> :
-                        <Button title='stop' onPress={() => {
-                            messenger.emit('stop', { project: running.project })
-                            // Data.finishTimer(running.current)
-                        }} />
-                }
-            </View>
-        </View>
-    )
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
@@ -127,7 +85,6 @@ export default function Timeline({ useHistory }) {
                 setOnline(!online)
             }} />
             <Button title='Clear' onPress={() => {
-                running.current = { id: 'none', name: 'none', project: 'none' }
                 setDaytimers([])
                 setOnline(!online)
             }} />
@@ -136,7 +93,7 @@ export default function Timeline({ useHistory }) {
     const Header = () => (
         <View style={styles.header}>
             <HeaderButtons />
-            <RunningTimer />
+            <Running />
         </View>
     )
 

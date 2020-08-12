@@ -27,29 +27,6 @@ const stopRunning = async () => {
 
 }
 
-/**
- * Get the count to pass along to the counter
- * @param {*} timer 
- */
-const getCount = timer => {
-    if (!timer) return ('Unable to getCount: no running timer')
-    else if (running && running.project !== timer.project) {
-        debug && console.log(`finding count ${running.project} != ${timer.project}`)
-        setCount(running.count)
-    }
-    else if (running.id !== 'none' && running.project === timer.project) {
-        debug && console.log(`same count ${running.project} = ${timer.project}`)
-    }
-    else {
-        debug && console.log(`new count ${timer.project}`)
-        setCount(0)
-    }
-}
-
-//OPTIMIZE: 
-// after each timer finishes, update project with daily total, 
-// so when a new timer starts and gets the project, it will have the total pre-calculated.
-// project.totals = [{day: simpledate(), total: `0`}]
 
 // Commands Listener, listens to finishTimer or createTimer
 store.chainer('running', store.app).on((data, key) => {
@@ -59,10 +36,6 @@ store.chainer('running', store.app).on((data, key) => {
             if (data.status === 'running') {
                 running = data
                 if(running && running.id !== 'none') setCount(running.count)
-                // not needed, because when a start command is invoked it builds the entire running object, count included
-                // if (!runningproject || runningproject.id === 'none' || running.project.id !== running.project) {
-                //     runningproject = await getProject(running.project)
-                // }
                 runCounter()
             }
             else if (data.status === 'done' && data.id === running.id) {
