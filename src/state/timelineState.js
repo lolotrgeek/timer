@@ -7,8 +7,10 @@ import * as chain from '../data/Chains'
 // TODO: page position retained after navigation
 // TODO: test remote updating
 // TODO: fix replicated sections at beginning of new page
+// TODO: remove running references
 
 let debug = false
+let all = false // a toggle for dumping entire set of pages
 let pages = []
 let pagesize = 5 // number of timers per `page`
 let days = [] // set of days containing timers
@@ -18,7 +20,8 @@ let running = { id: 'none', name: 'none', project: 'none', count: 0 }
 let currentPage = 1
 let pagelocation = { x: 0, y: 0 }
 
-const daylistHandler = (event) => {
+// request days with timers
+messenger.on(chain.timerDates(), event => {
     if (!event) return
     let item = parse(event)
     debug && console.log('get dates ' + typeof item, item)
@@ -29,7 +32,8 @@ const daylistHandler = (event) => {
         debug && console.log(days)
         // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
     }
-}
+})
+store.getAllOnce(chain.timerDates())
 
 const setRunning = (item) => {
     running.project = item.project
@@ -47,9 +51,7 @@ const isRunning = (timer) => {
     return false
 }
 
-// request days with timers
-messenger.on(chain.timerDates(), event => daylistHandler(event))
-store.getAllOnce(chain.timerDates())
+
 
 messenger.on("pagelocation", msg => {
     if (msg) {
@@ -80,10 +82,12 @@ const getPages = (msg) => {
     if (msg) {
         pagesize = msg.pagesize
 
-        debug && console.log('getPages received')
-        debug && console.log(msg)
+        debug && console.log('getPages received', msg)
 
         if (msg.currentday === 0) {
+            if(msg.all) {
+                all = msg.all
+            }
             if (msg.refresh) {
                 currentday = 0
                 debug && console.log('refreshing pages.')
@@ -123,8 +127,11 @@ const getPage = () => {
         // put any remaining timers into the last page
         if (page.length > 0) {
             debug && console.log('Last Page ' + currentPage + ' Complete.')
+            debug && console.log('page', page)
             messenger.emit('page', page)
             pages.push(page)
+            if(all) messenger.emit('pages', pages)
+            all = false
             page = []
             currentPage++
         }

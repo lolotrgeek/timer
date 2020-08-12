@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Link, Switch, Route, useParams, useHistory } f
 import * as routes from './routes'
 import './service/timer'
 
-
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
 import Projects from './pages/Projects'
@@ -15,6 +14,7 @@ import ProjectTrash from './pages/ProjectTrash'
 import Timer from './pages/Timer'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
+
 
 export default function App() {
     return (
