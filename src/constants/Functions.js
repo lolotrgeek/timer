@@ -2,7 +2,7 @@ import {
     isValid,
     isSameDay,
     isDate,
-    differenceInSeconds,
+    // differenceInSeconds,
     startOfToday,
     compareAsc,
     isToday,
@@ -107,6 +107,12 @@ export const endRandTestGen = (start) => {
 
 export function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export const differenceInSeconds = (start, end) =>  {
+    let a = moment(start)
+    let b = moment(end)
+    return a.diff(b, 'seconds')
 }
 
 export const nameGen = () => {

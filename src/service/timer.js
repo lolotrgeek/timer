@@ -138,8 +138,8 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     debug && console.log('[react Data] Ending', timer)
     let endproject = project
     endproject.lastrun = simpleDate(new Date())
-    endproject.lastcount = totalTime(timer.started, timer.ended) 
-    debug && console.log('[react Data] Ending', endproject)
+    endproject.lastcount = endproject.lastcount + totalTime(timer.started, timer.ended) 
+    debug && console.log('[react Data] storing count', endproject.lastrun, endproject.lastcount)
     store.put(chain.project(endproject.id), endproject)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
