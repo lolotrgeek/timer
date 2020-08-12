@@ -67,46 +67,46 @@ export default function Projects({ useHistory, useParams }) {
     }
     const RunningTimer = () => (
         <View>
-        <View style={{ flexDirection: 'row' }}>
-        <View style={{ width: '20%' }}>
-                <Text style={{fontWeight:'bold'}}>Project</Text>
-            </View>
-            <View style={{ width: '20%' }}>
-                <Text style={{fontWeight:'bold'}}>Running </Text>
-            </View>
-            <View style={{ width: '10%' }}>
-                <Text style={{fontWeight:'bold'}}>Count</Text>
-            </View>
-            <View style={{ width: '20%' }}>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '20%' }}>
+                    <Text style={{ fontWeight: 'bold' }}>Project</Text>
+                </View>
+                <View style={{ width: '20%' }}>
+                    <Text style={{ fontWeight: 'bold' }}>Running </Text>
+                </View>
+                <View style={{ width: '10%' }}>
+                    <Text style={{ fontWeight: 'bold' }}>Count</Text>
+                </View>
+                <View style={{ width: '20%' }}>
 
-            </View>   
-        </View>
-        <View style={{ flexDirection: 'row', margin: 10 }}>
-            <View style={{ width: '20%' }}>
-                <Text>{running.name ? running.name : 'None'}</Text>
-                <Text>{running.project ? running.project : ''}</Text>
+                </View>
             </View>
-            <View style={{ width: '20%' }}>
-                <Text>{running.id}</Text>
+            <View style={{ flexDirection: 'row', margin: 10 }}>
+                <View style={{ width: '20%' }}>
+                    <Text>{running.name ? running.name : 'None'}</Text>
+                    <Text>{running.project ? running.project : ''}</Text>
+                </View>
+                <View style={{ width: '20%' }}>
+                    <Text>{running.id}</Text>
+                </View>
+                <View style={{ width: '10%' }}>
+                    <Text>{count}</Text>
+                </View>
+                <View style={{ width: '20%' }}>
+                    {!running || running.id === 'none' ?
+                        <Text>No Running Timer</Text> : running.status === 'done' ?
+                            //TODO: assuming that project exists on start... needs validation
+                            <Button title='start' onPress={() => {
+                                messenger.emit('start', {projectId: running.project})
+                                // Data.createTimer(running.project);
+                            }} /> :
+                            <Button title='stop' onPress={() => {
+                                messenger.emit('stop', {projectId: running.project})
+                                // Data.finishTimer(running)
+                            }} />
+                    }
+                </View>
             </View>
-            <View style={{ width: '10%' }}>
-                <Text>{count}</Text>
-            </View>
-            <View style={{ width: '20%' }}>
-                {!running || running.id === 'none' ?
-                    <Text>No Running Timer</Text> : running.status === 'done' ?
-                        //TODO: assuming that project exists on start... needs validation
-                        <Button title='start' onPress={() => {
-                            messenger.emit('start', running)
-                            // Data.createTimer(running.project);
-                        }} /> :
-                        <Button title='stop' onPress={() => {
-                            messenger.emit('stop', running)
-                            // Data.finishTimer(running)
-                        }} />
-                }
-            </View>
-        </View>
         </View>
     )
 
@@ -119,7 +119,7 @@ export default function Projects({ useHistory, useParams }) {
                 <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {
                         // if (running && running.status === 'running') Data.finishTimer(running)
-                        messenger.emit('start', item)
+                        messenger.emit('start', {projectId: item.id})
                         setOnline(!online)
                     }} />
                 </View>

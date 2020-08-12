@@ -227,6 +227,17 @@ export const timerRanToday = timer => isToday(new Date(timer.started))
 
 /**
  * 
+ * @param {string} date - pass a simpleDate 
+ * @param {number} total
+ */
+export const getTodaysCount = (date, total) => {
+    if (!date || !total) return 0
+    else if(date === simpleDate(new Date())) return total
+}
+
+
+/**
+ * 
  * @param {*} timer 
  */
 export const sayRunning = timer => timer.ended === timer.started ? 'running' : timer.ended

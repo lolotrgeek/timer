@@ -59,6 +59,8 @@ export const newProject = (name, color) => {
         name: name,
         color: color,
         edited: '',
+        lastcount: 0,
+        lastrun: ''
         // time: typeof time === 'string' && time.length > 0 ? parseInt(time) : time
     }
     return project

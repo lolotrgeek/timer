@@ -18,15 +18,14 @@ messenger.on(`getProjects`, async msg => {
 const getProjects = () => {
     return new Promise((resolve, reject) => {
         try {
-            let result = []
             store.chainer(chain.projects(), store.app).map().on((data, key) => {
                 let foundData = trimSoul(data)
                 debug && console.log('[GUN node] getProject Data Found: ', foundData)
-                if (foundData && foundData.type === 'project' && foundData.status === 'active') {
-                    result.push(foundData)
+                if (foundData && foundData.type === 'project' && foundData.status === 'active' && !state.projects.some(project => project.id === foundData.id)) {
+                    state.projects.push(foundData)
                 }
             })
-            resolve(result)
+            resolve(state.projects)
         } catch (error) {
             debug && console.debug && console.log(error)
             reject(error)

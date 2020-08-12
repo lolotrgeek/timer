@@ -21,11 +21,11 @@ export const stopCounter = () => {
 
 export const setCount = amount => {
     if(Number.isInteger(amount)) {
-        console.log('setting count amount')
+        console.log('setting count amount: ', amount)
         count = amount
     }
     else {
-        console.log('wrong amount')
+        console.log('wrong amount: ', amount)
         return false
     }
 }

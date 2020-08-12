@@ -1,16 +1,15 @@
 /* eslint-disable no-unused-vars */
 
 import * as store from './store'
-import { parse, isRunning, multiDay, newEntryPerDay, trimSoul } from '../constants/Functions'
+import { getTodaysCount, simpleDate, totalTime, parse, isRunning, multiDay, newEntryPerDay, trimSoul } from '../constants/Functions'
 import { runCounter, stopCounter, setCount } from './counter'
 import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 const debug = true
 
-
 let running = { id: 'none' }
-
+let runningproject = {id: 'none'}
 
 messenger.on('getRunning', () => {
     messenger.emit('running', running)
@@ -20,7 +19,7 @@ const stopRunning = async () => {
     try {
         if (running && running.status === 'running') {
             stopCounter()
-            await finishRunning(running)
+            await finishRunning(running, runningproject)
         }
     } catch (error) {
         debug && console.log('[Timer node] : Stop failed ' + error)
@@ -28,6 +27,29 @@ const stopRunning = async () => {
 
 }
 
+/**
+ * Get the count to pass along to the counter
+ * @param {*} timer 
+ */
+const getCount = timer => {
+    if (!timer) return ('Unable to getCount: no running timer')
+    else if (running && running.project !== timer.project) {
+        debug && console.log(`finding count ${running.project} != ${timer.project}`)
+        setCount(running.count)
+    }
+    else if (running.id !== 'none' && running.project === timer.project) {
+        debug && console.log(`same count ${running.project} = ${timer.project}`)
+    }
+    else {
+        debug && console.log(`new count ${timer.project}`)
+        setCount(0)
+    }
+}
+
+//OPTIMIZE: 
+// after each timer finishes, update project with daily total, 
+// so when a new timer starts and gets the project, it will have the total pre-calculated.
+// project.totals = [{day: simpledate(), total: `0`}]
 
 // Commands Listener, listens to finishTimer or createTimer
 store.chainer('running', store.app).on((data, key) => {
@@ -36,7 +58,11 @@ store.chainer('running', store.app).on((data, key) => {
         if (data && data.type === 'timer') {
             if (data.status === 'running') {
                 running = data
-                setCount(0)
+                if(running && running.id !== 'none') setCount(running.count)
+                // not needed, because when a start command is invoked it builds the entire running object, count included
+                // if (!runningproject || runningproject.id === 'none' || running.project.id !== running.project) {
+                //     runningproject = await getProject(running.project)
+                // }
                 runCounter()
             }
             else if (data.status === 'done' && data.id === running.id) {
@@ -74,11 +100,9 @@ messenger.on('start', async msg => {
     debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
     try {
         if (running && running.status === 'running') await stopRunning()
-        let project
-        if (!msg || typeof msg !== 'object') return false
-        else if (msg.type === 'project') project = msg
-        else if (msg.type === 'timer') project = await getProject(msg.project)
-        await createRunning(project) // emits 'running' which gets captured by the Commands Listener
+        if (!msg || typeof msg !== 'object' || !msg.projectId) return false
+        runningproject = await getProject(msg.projectId)
+        await createRunning(runningproject) // emits 'running' which gets captured by the Commands Listener
     } catch (error) {
         debug && console.log('[Timer node] : Create failed ' + error)
     }
@@ -93,21 +117,30 @@ messenger.on('start', async msg => {
 const createRunning = project => new Promise((resolve, reject) => {
     if (!project || typeof project !== 'object' || !project.id || project.id.length < 9) reject('invalid project')
     let timer = newTimer(project.id)
+    console.log('last run: ', project.lastrun , project.lastcount)
     timer.name = project.name
     timer.color = project.color
+    timer.count = project.lastrun && project.lastcount ? getTodaysCount(project.lastrun, project.lastcount) : 0
     debug && console.log('[react Data] Created Timer', timer)
     store.put(chain.running(), timer)
     store.set(chain.timerHistory(timer.id), timer)
     resolve(timer)
 })
 
+
 /**
  * creates and updates entries to end a timer
  * @param {*} timer 
  */
-const endTimer = (timer) => new Promise((resolve, reject) => {
-    if (!timer) reject('no timer')
+const endTimer = (timer, project) => new Promise((resolve, reject) => {
+    if (!timer|| timer.id === 'none') reject('no timer')
+    else if(!project || project.id === 'none') reject('no project')
     debug && console.log('[react Data] Ending', timer)
+    let endproject = project
+    endproject.lastrun = simpleDate(new Date())
+    endproject.lastcount = totalTime(timer.started, timer.ended) 
+    debug && console.log('[react Data] Ending', endproject)
+    store.put(chain.project(endproject.id), endproject)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
     store.set(chain.projectTimer(timer.project, timer.id), timer)
@@ -119,15 +152,15 @@ const endTimer = (timer) => new Promise((resolve, reject) => {
  * Generates a new timer using the given timer model
  * @param {String} projectId project hashid
  */
-const addTimer = timer => new Promise(async (resolve, reject) => {
+const addTimer = (timer, project) => new Promise(async (resolve, reject) => {
     if (!timer) reject('no timer to add')
     const clonedTimer = cloneTimer(timer)
     debug && console.log('[node Data] Storing Timer', clonedTimer)
-    await endTimer(clonedTimer)
+    await endTimer(clonedTimer, project)
     resolve(clonedTimer)
 })
 
-const finishRunning = (timer) => new Promise(async (resolve, reject) => {
+const finishRunning = (timer, project) => new Promise(async (resolve, reject) => {
     if (isRunning(timer)) {
         debug && console.log('[react Data STOP] Finishing', timer)
         let done = doneTimer(timer)
@@ -140,12 +173,12 @@ const finishRunning = (timer) => new Promise(async (resolve, reject) => {
                 splitTimer.started = dayEntry.start
                 splitTimer.ended = dayEntry.end
                 debug && console.log('[react Data] Split', i, splitTimer)
-                if (i === 0) { await endTimer(splitTimer) } // use initial timer id for first day
-                else { await addTimer(splitTimer) }
+                if (i === 0) { await endTimer(splitTimer, project) } // use initial timer id for first day
+                else { await addTimer(splitTimer, project) }
                 resolve(splitTimer)
             })
         } else {
-            await endTimer(done)
+            await endTimer(done, project)
             resolve(done)
         }
     } else { reject('Timer not running.') }
