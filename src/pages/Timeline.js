@@ -15,6 +15,8 @@ const test = false
 const loadAll = false
 const pagesize = 4
 
+messenger.emit('getPages', { currentday: 0, pagesize: pagesize })
+
 export default function Timeline({ useHistory }) {
     let history = useHistory()
     const [online, setOnline] = useState(false)
@@ -84,10 +86,6 @@ export default function Timeline({ useHistory }) {
                 messenger.emit('getPages', { currentday: 0, refresh: true, pagesize: pagesize })
                 setOnline(!online)
             }} />
-            <Button title='Clear' onPress={() => {
-                setDaytimers([])
-                setOnline(!online)
-            }} />
         </View>
     )
     const Header = () => (
@@ -105,7 +103,6 @@ export default function Timeline({ useHistory }) {
             />
         </View>
     )
-
     return (
         <SafeAreaView style={styles.container}>
             <Header />

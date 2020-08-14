@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import '../state/projectsState'
 
 const debug = false
 const test = false
@@ -48,7 +47,7 @@ export default function Running() {
                     <Text>{running.id}</Text>
                 </View>
                 <View style={{ width: '10%' }}>
-                    <Text>{!running || running.status === 'running' ? count : running.count}</Text>
+                    <Text>{count}</Text>
                 </View>
                 <View style={{ width: '20%' }}>
                     {!running || running.id === 'none' ?
@@ -56,11 +55,9 @@ export default function Running() {
                             //TODO: assuming that project exists on start... needs validation
                             <Button title='start' onPress={() => {
                                 messenger.emit('start', { projectId: running.project })
-                                // Data.createTimer(running.project);
                             }} /> :
                             <Button title='stop' onPress={() => {
                                 messenger.emit('stop', { projectId: running.project })
-                                // Data.finishTimer(running)
                             }} />
                     }
                 </View>

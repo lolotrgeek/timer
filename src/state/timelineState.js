@@ -9,7 +9,7 @@ import * as chain from '../data/Chains'
 // TODO: fix replicated sections at beginning of new page
 // TODO: remove running references
 
-let debug = false
+let debug = true
 let all = false // a toggle for dumping entire set of pages
 let pages = []
 let pagesize = 5 // number of timers per `page`
@@ -24,12 +24,10 @@ let pagelocation = { x: 0, y: 0 }
 messenger.on(chain.timerDates(), event => {
     if (!event) return
     let item = parse(event)
-    debug && console.log('get dates ' + typeof item, item)
     if (item && typeof item === 'object') {
         let found = Object.keys(item)
-        debug && console.log('found dates: ', found)
         days = found.sort((a, b) => new Date(b) - new Date(a))
-        debug && console.log(days)
+        debug && console.log('found dates: ', days)
         // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
     }
 })
@@ -50,8 +48,6 @@ const isRunning = (timer) => {
     }
     return false
 }
-
-
 
 messenger.on("pagelocation", msg => {
     if (msg) {
@@ -116,7 +112,6 @@ const getPages = (msg) => {
 
     }
 }
-
 
 const getPage = () => {
     // app reports page size, this gets number of timers until page size is full, sends as `page`

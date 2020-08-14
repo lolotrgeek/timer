@@ -242,6 +242,20 @@ export const getTodaysCount = (date, total) => {
     else return 0
 }
 
+/**
+ * Setting count from last project count and total timer count
+ * @param {Object} timer 
+ * @param {Object} project 
+ */
+export const settingCount = (timer, project) => {
+    if(project.lastrun === simpleDate(new Date()) ) {
+        console.log('Project Ran Today, adding count: ', project.lastcount , totalTime(timer.started, timer.ended))
+        return project.lastcount + totalTime(timer.started, timer.ended)
+    } else {
+        console.log('Project Did not Run Today, setting count: ', totalTime(timer.started, timer.ended))
+        return totalTime(timer.started, timer.ended)
+    }
+}
 
 /**
  * 
