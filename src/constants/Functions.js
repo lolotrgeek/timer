@@ -239,6 +239,7 @@ export const timerRanToday = timer => isToday(new Date(timer.started))
 export const getTodaysCount = (date, total) => {
     if (!date || !total) return 0
     else if(date === simpleDate(new Date())) return total
+    else return 0
 }
 
 

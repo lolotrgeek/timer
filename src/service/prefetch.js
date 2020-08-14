@@ -1,5 +1,10 @@
 import messenger from '../constants/Messenger'
 
+
+// sources: 
+// https://reactjs.org/docs/concurrent-mode-suspense.html#approach-3-render-as-you-fetch-using-suspense
+// https://codesandbox.io/s/frosty-hermann-bztrp?file=/src/index.js
+// 
 function wrapPromise(promise) {
     let status = "pending";
     let result;
