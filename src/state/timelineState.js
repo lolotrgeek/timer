@@ -1,4 +1,4 @@
-import { totalTime, simpleDate, sumProjectTimers, nextDay, parse, trimSoul, timerRanToday, isToday } from '../constants/Functions'
+import { totalTime, simpleDate, sumProjectTimers, nextDay, parse, trimSoul, isRunning, timerRanToday, isToday } from '../constants/Functions'
 import * as Data from '../data/Data'
 import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
@@ -7,7 +7,6 @@ import * as chain from '../data/Chains'
 // TODO: page position retained after navigation
 // TODO: test remote updating
 // TODO: fix replicated sections at beginning of new page
-// TODO: remove running references
 
 let debug = true
 let all = false // a toggle for dumping entire set of pages
@@ -16,7 +15,6 @@ let pagesize = 5 // number of timers per `page`
 let days = [] // set of days containing timers
 let currentday = 0 // last day where timers were retrieved
 let page = [] // set of timers sectioned by day
-let running = { id: 'none', name: 'none', project: 'none', count: 0 }
 let currentPage = 1
 let pagelocation = { x: 0, y: 0 }
 
@@ -33,21 +31,6 @@ messenger.on(chain.timerDates(), event => {
 })
 store.getAllOnce(chain.timerDates())
 
-const setRunning = (item) => {
-    running.project = item.project
-    running.name = item.name
-    running.id = item.id
-}
-
-const isRunning = (timer) => {
-    if (timer.status === 'running') { setRunning(timer); return true }
-    if (timerRanToday(timer) && timer.project === running.project) {
-        // running.count = running.count + totalTime(timer.started, timer.ended)
-        // messenger.emit(chain.running(), running)
-        return true
-    }
-    return false
-}
 
 messenger.on("pagelocation", msg => {
     if (msg) {
@@ -66,13 +49,7 @@ messenger.on("getPage", msg => {
     }
 })
 messenger.on("getPages", msg => getPages(msg))
-messenger.on(chain.running(), msg => {
-    if (msg && msg.status === 'running') {
-        debug && console.log('running', msg)
-        setRunning(msg)
-        getPages({ currentday: 0, pagesize: 4 })
-    }
-})
+
 
 const getPages = (msg) => {
     if (msg) {
@@ -190,14 +167,8 @@ const parseProject = (project, found, section) => {
         if (!alreadyInSection && found.status === 'done') {
             addSection({ title: section.title, data: sortDayTimers(found, data) })
         }
-        // running check
         else if (found.status === 'running') {
-            running = found
-        }
-        else if (found.status === 'done' && found.id === running.id) {
-            debug && console.log('[react] Setting last run Timer.')
-            debug && console.log(found)
-            running = found
+            
         }
     }
     else {
