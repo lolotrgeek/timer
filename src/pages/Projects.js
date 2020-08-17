@@ -19,9 +19,6 @@ export default function Projects({ useHistory, useParams }) {
     useEffect(() => {
         messenger.addListener('projects', event => {
             debug && console.log(event)
-            if (!event || event.length === 0) {
-                generateProjects()
-            }
             setProjects(event)
         })
         messenger.emit('getProjects', { all: true })
@@ -72,7 +69,7 @@ export default function Projects({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', margin: 10 }}>
-            <Button title="Test" onPress={() => projects.length > 0 ? generateTimers() : debug && console.log('testing')} />
+            <Button title="Test" onPress={() => projects.length > 0 ? generateTimers() : generateProjects()} />
             <Button title='Refresh' onPress={() => setOnline(!online)} />
             <Button title='Clear' onPress={() => {
                 // running = { id: 'none', name: 'none', project: 'none' }
