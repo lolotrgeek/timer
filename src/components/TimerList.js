@@ -14,17 +14,18 @@ export default function TimerList({ useHistory }) {
     const [location, setLocation] = useState({ x: 0, y: 0 })
     const timelineList = useRef()
 
+    //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
         messenger.addListener("page", event => {
             console.log('page:', event)
             setPages(pages => [...pages, event])
         })
-        // messenger.addListener("pages", event => {
-        //     if (event && Array.isArray(event)) {
-        //         console.log('Pages', event)
-        //         setPages(event)
-        //     }
-        // })
+        messenger.addListener("pages", event => {
+            if (event && Array.isArray(event)) {
+                console.log('Pages', event)
+                setPages(event)
+            }
+        })
 
         messenger.emit('getPage', { currentday: 0, pagesize: pagesize })
         messenger.addListener("pagelocation", event => {
@@ -61,7 +62,6 @@ export default function TimerList({ useHistory }) {
     };
     return (
         <View style={styles.listContainter}>
-            {console.log('rendering...', pages.flat(1))}
             <SectionList
                 ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
                 // TODO: simplify creating sticky header/footer with list
@@ -70,7 +70,6 @@ export default function TimerList({ useHistory }) {
                 // 20 + 20 + 50 + 100 = 190
                 style={styles.list}
                 ref={timelineList}
-                refresh={true}
                 onLayout={layout => {
                     debug && console.log(timelineList.current)
                 }}
@@ -78,18 +77,14 @@ export default function TimerList({ useHistory }) {
                 renderSectionHeader={({ section: { title } }) => {
                     return (<Text>{title}</Text>)
                 }}
-
-                renderItem={({ item }) => {
-                    console.log('passing: ', item)
-                    return (<RenderTimer item={item} />)
-                }}
+                renderItem={RenderTimer}
                 onEndReached={() => {
                     console.log('End Reached')
-                    if (pages && pages.length > 0) {
-                        console.log('Getting Next')
-                        debug && console.log(pages, typeof pages, Array.isArray(pages))
-                        messenger.emit('getPage', { currentday: pages.flat(1).length, pagesize: pagesize })
-                    }
+
+                    console.log('Getting Next')
+                    console.log(pages, typeof pages, Array.isArray(pages))
+                    messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
+
                 }}
                 onEndReachedThreshold={1}
                 keyExtractor={(item, index) => item.project}

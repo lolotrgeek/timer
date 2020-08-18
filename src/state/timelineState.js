@@ -6,7 +6,7 @@ import * as chain from '../data/Chains'
 let debug = {
     state: true,
     data: true,
-    listening: true,
+    listeners: true,
     parsing: true,
     sorting: true
 }
@@ -23,7 +23,6 @@ let
 
 
 // LISTENERS
-
 messenger.on(chain.timerDates(), event => {
     if (!event) return
     let item = parse(event)
@@ -44,7 +43,6 @@ messenger.on("pagelocation", msg => {
     }
 })
 messenger.on("getPage", msg => getPage(msg))
-
 
 /**
  * parses msg and sets the page to get
@@ -135,6 +133,12 @@ const setPage = () => {
     currentPage++
 }
 
+/**
+ * Add section and setup next
+ * @param {Object} section 
+ * @param {String} section.title 
+ * @param {Array} section.data 
+ */
 const addSection = (section) => new Promise((resolve, reject) => {
     let alreadyInTimers = page.some(entry => entry.title === section.title)
     if (alreadyInTimers) reject('section already in timeline')
@@ -151,18 +155,7 @@ const addSection = (section) => new Promise((resolve, reject) => {
 })
 
 
-
 // PARSING
-
-const createSection = (item, day) => new Promise(async (resolve, reject) => {
-    try {
-        let section = { title: day, data: item }
-        resolve(section)
-    } catch (error) {
-        reject(error)
-    }
-})
-
 /**
  * get timer entries for the `day`
  * @param {string} day simpledate `dd-mm-yyyy`
@@ -173,7 +166,7 @@ const getTimersInDay = async day => {
         let item = parse(event)
         debug.parsing && console.log('[Parsing] projectDates.', item)
         if (item && typeof item === 'object') {
-            let section = await createSection(item, day)
+            let section = { title: day, data: item }
             await addSection(section)
         }
     } catch (error) {
@@ -182,12 +175,10 @@ const getTimersInDay = async day => {
 }
 
 
-
 // SORTING
 
 
 // DATA
-
 
 /**
 * 

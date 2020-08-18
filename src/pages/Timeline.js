@@ -16,21 +16,10 @@ const pagesize = 4
 
 export default function Timeline({ useHistory }) {
     let history = useHistory()
-    const [ready, setReady] = useState(false)
     const [online, setOnline] = useState(false)
 
-    const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => {
-                // setDaytimers([])
-                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-                setOnline(!online)
-            }} />
-        </View>
-    )
     const Header = () => (
         <View style={styles.header}>
-            <HeaderButtons />
             <Running />
         </View>
     )
