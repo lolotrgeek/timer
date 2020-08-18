@@ -1,7 +1,7 @@
 // display a list of timers: timeline (date/timers), project records (project/timers)
 
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
 import Running from '../components/Running'
 import TimerList from '../components/TimerList'
@@ -13,9 +13,6 @@ const debug = false
 const test = false
 const loadAll = false
 const pagesize = 4
-
-messenger.emit('initial')
-
 
 export default function Timeline({ useHistory }) {
     let history = useHistory()

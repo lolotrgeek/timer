@@ -115,7 +115,7 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     store.put(chain.project(endproject.id), endproject)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
-    store.set(chain.projectTimer(timer.project, timer.id), timer)
+    store.put(chain.projectDate(timer.started, endproject.id), endproject)
     store.set(chain.dateTimer(timer.started, timer.id), timer)
     resolve(timer)
 })

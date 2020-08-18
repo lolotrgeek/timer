@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SectionList, Dimensions } from 'react-native';
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
-import '../state/timelineState'
 
 const debug = false
 const test = false
@@ -20,12 +19,14 @@ export default function TimerList({ useHistory }) {
             console.log('page:', event)
             setPages(pages => [...pages, event])
         })
-        messenger.addListener("pages", event => {
-            if (event && Array.isArray(event)) {
-                console.log('Pages', event)
-                setPages(event)
-            }
-        })
+        // messenger.addListener("pages", event => {
+        //     if (event && Array.isArray(event)) {
+        //         console.log('Pages', event)
+        //         setPages(event)
+        //     }
+        // })
+
+        messenger.emit('getPage', { currentday: 0, pagesize: pagesize })
         messenger.addListener("pagelocation", event => {
             setLocation({ x: event.x, y: event.y, animated: false })
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
@@ -34,7 +35,6 @@ export default function TimerList({ useHistory }) {
                 timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
-        messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
         return () => {
             messenger.removeAllListeners("page")
             messenger.removeAllListeners("pages")
@@ -43,7 +43,7 @@ export default function TimerList({ useHistory }) {
     }, [])
 
 
-    const renderTimer = ({ item }) => {
+    const RenderTimer = ({ item }) => {
         console.log('rendering:', item)
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
@@ -51,7 +51,7 @@ export default function TimerList({ useHistory }) {
                     <Text onPress={() => history.push(projectlink(item.project))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.total}</Text>
+                    <Text style={{ color: 'red' }}>{item.lastcount}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
 
@@ -61,7 +61,7 @@ export default function TimerList({ useHistory }) {
     };
     return (
         <View style={styles.listContainter}>
-            {console.log('rendering...', pages)}
+            {console.log('rendering...', pages.flat(1))}
             <SectionList
                 ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
                 // TODO: simplify creating sticky header/footer with list
@@ -70,17 +70,23 @@ export default function TimerList({ useHistory }) {
                 // 20 + 20 + 50 + 100 = 190
                 style={styles.list}
                 ref={timelineList}
+                refresh={true}
                 onLayout={layout => {
                     debug && console.log(timelineList.current)
                 }}
-                sections={pages && pages.length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+                sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
                 renderSectionHeader={({ section: { title } }) => {
                     return (<Text>{title}</Text>)
                 }}
-                renderItem={renderTimer}
+
+                renderItem={({ item }) => {
+                    console.log('passing: ', item)
+                    return (<RenderTimer item={item} />)
+                }}
                 onEndReached={() => {
-                    debug && console.log('End Reached')
-                    if (pages) {
+                    console.log('End Reached')
+                    if (pages && pages.length > 0) {
+                        console.log('Getting Next')
                         debug && console.log(pages, typeof pages, Array.isArray(pages))
                         messenger.emit('getPage', { currentday: pages.flat(1).length, pagesize: pagesize })
                     }

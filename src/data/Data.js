@@ -78,7 +78,6 @@ export const generateTimer = (projects) => {
     debug && console.log('[react Data] Generated Timer', timer)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
-    store.set(chain.projectTimer(projectId, timer.id), timer)
     store.set(chain.dateTimer(timer.started, timer.id), timer)
     return true
 }
@@ -104,7 +103,6 @@ export const updateTimer = (timer) => {
     debug && console.log('[react Data] Updating Timer', editedTimer)
     store.set(chain.timerHistory(editedTimer.id), editedTimer)
     store.put(chain.timer(editedTimer.id), editedTimer)
-    store.set(chain.projectTimer(editedTimer.project, editedTimer.id), editedTimer)
     if (timer.started !== editedTimer.started) {
         let timerMoved = timer
         timerMoved.deleted = new Date().toString()
@@ -123,7 +121,6 @@ export const restoreTimer = (timer) => {
     }
     debug && console.log('[react Data] Restoring Timer', restoredTimer)
     store.put(chain.timer(restoredTimer.id), restoredTimer)
-    store.set(chain.projectTimer(restoredTimer.project), restoredTimer)
     store.set(chain.dateTimer(restoredTimer.started, restoredTimer.id), restoredTimer)
 }
 
@@ -131,7 +128,6 @@ export const endTimer = (timer) => {
     debug && console.log('[react Data] Ending', timer)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
-    store.set(chain.projectTimer(timer.project, timer.id), timer)
     store.set(chain.dateTimer(timer.started, timer.id), timer)
 }
 
@@ -143,7 +139,6 @@ export const deleteTimer = (timer) => {
 
     store.set(chain.timerHistory(timer.id, timerDelete))
     store.put(chain.timer(timer.id), timerDelete)
-    // store.set(chain.projectTimer(timer.project, timer.id), timerDelete) 
     store.put(chain.dateTimer(timer.started, timer.id)+'/'+timer.key, timerDelete)
     console.log(timerDelete)
 }
@@ -201,11 +196,6 @@ export const getTimerDates = () => {
 
 export const getTimersForDate = (date) => {
     store.getAllOnce(`date/timers/${date}`)
-}
-
-export const getProjectTimers = projectId => {
-    store.getAllOnce(chain.projectTimers(projectId))
-    // store.getAll('timers', { key: 'project', value: projectId })
 }
 
 export const getTimer = timerId => {

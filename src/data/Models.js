@@ -60,7 +60,7 @@ export const newProject = (name, color) => {
         color: color,
         edited: '',
         lastcount: 0,
-        lastrun: ''
+        lastrun: '',
         // time: typeof time === 'string' && time.length > 0 ? parseInt(time) : time
     }
     return project
