@@ -174,10 +174,6 @@ const getTimersInDay = async day => {
     }
 }
 
-
-// SORTING
-
-
 // DATA
 
 /**

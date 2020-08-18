@@ -4,15 +4,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
 import { timeSpan } from '../constants/Functions'
-import { runningHandler, } from '../data/Handlers'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
 import { projectHistorylink, projectEditlink, timerlink, projectsListLink, timerTrashlink } from '../routes'
 import '../state/projectState'
 
-
-const debug = false
+const debug = true
 const test = false
 const loadAll = false
 
@@ -22,51 +19,24 @@ export default function Project({ useHistory, useParams }) {
     let { projectId } = useParams();
     const [online, setOnline] = useState(false)
     const [project, setProject] = useState({})
-    const [daytimers, setDaytimers] = useState([])
     const [pages, setPages] = useState([])
     const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
-    const [count, setCount] = useState(0)
-    const running = useRef({ id: 'none', name: 'none', project: 'none' })
     const timerList = useRef()
 
-
-    useEffect(() => Data.getRunning(), [online, count])
-
-    useEffect(() => {
-        messenger.addListener("count", event => setCount(event))
-        return () => messenger.removeAllListeners("count")
-    }, [])
-
-    useEffect(() => {
-        messenger.addListener(chain.running(), event => runningHandler(event, { running: running }))
-        return () => messenger.removeAllListeners(chain.running())
-    }, [])
     useEffect(() => {
         messenger.addListener(`${projectId}/project`, event => {
             console.log(event)
             if (event) setProject(event)
         })
-        return () => messenger.removeAllListeners(`${projectId}/project`)
-    }, [online])
-
-    useEffect(() => {
         messenger.addListener(`${projectId}/page`, event => {
             setPages(pages => [...pages, event])
         })
-        return () => messenger.removeAllListeners(`${projectId}/page`)
-    }, [])
-
-    useEffect(() => {
         messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
                 console.log('Pages', event)
                 setPages(event)
             }
         })
-        return () => messenger.removeAllListeners(`${projectId}/pages`)
-    }, [])
-
-    useEffect(() => {
         messenger.addListener(`${projectId}/lastpagelocation`, event => {
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             setLocation({ x: event.x, y: event.y, animated: false })
@@ -76,20 +46,18 @@ export default function Project({ useHistory, useParams }) {
                 timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
-        return () => messenger.removeAllListeners(`${projectId}/lastpagelocation`)
-    }, [daytimers])
-
-
-
-    useEffect(() => {
-        if (pages && Array.isArray(pages)) {
-            let flattened = pages.flat(1)
-            setDaytimers(flattened)
+        if (pages.length === 0) messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
+        return () => {
+            messenger.removeAllListeners(`${projectId}/project`)
+            messenger.removeAllListeners(`${projectId}/page`)
+            messenger.removeAllListeners(`${projectId}/pages`)
+            messenger.removeAllListeners(`${projectId}/lastpagelocation`)
         }
-    }, [pages])
+    }, [])
 
 
-    const renderTimer = ({ item }) => {
+
+    const RenderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
@@ -106,39 +74,9 @@ export default function Project({ useHistory, useParams }) {
         );
     };
 
-    const RunningTimer = () => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.name ? running.current.name : 'no Project'}</Text>
-                    <Text>{running.current.project ? running.current.project : ''}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{running.current.status === 'done' || running.current.id === 'none' ? 'Last Run: ' + running.current.id : 'Running: ' + running.current.id}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    <Text>{count}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                    {!running.current || running.current.id === 'none' ?
-                        <Text>No Running Timer</Text> : running.current.status === 'done' ?
-                            //TODO: assuming that project exists on start... needs validation
-                            <Button title='start' onPress={() => { Data.createTimer(running.current.project); setOnline(!online) }} /> :
-                            <Button title='stop' onPress={() => { Data.finishTimer(running.current); setOnline(!online) }} />
-                    }
-                </View>
-            </View>
-        )
-    }
-
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
             <Button title='Refresh' onPress={() => {
-                setOnline(!online)
-            }} />
-            <Button title='Clear' onPress={() => {
-                running.current = { id: 'none', name: 'none', project: 'none' }
-                setDaytimers([])
                 setOnline(!online)
             }} />
             <Button title='Edit' onPress={() => {
@@ -159,7 +97,6 @@ export default function Project({ useHistory, useParams }) {
     const Header = () => (
         <View style={styles.header}>
             <HeaderButtons />
-            <RunningTimer />
         </View>
     )
 
@@ -179,22 +116,18 @@ export default function Project({ useHistory, useParams }) {
                         // console.log(timerList.current)
                         // console.log(layout)
                     }}
-                    sections={daytimers && daytimers.length > 0 ? daytimers : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+                    sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
                     renderSectionHeader={({ section: { title } }) => {
                         return (<Text>{title}</Text>)
                     }}
-                    renderItem={renderTimer}
+                    renderItem={RenderTimer}
                     onEndReached={() => {
                         // TODO: decouple, put in separate function
                         console.log('End Reached')
-                        if (daytimers) {
-                            debug && console.log(daytimers, typeof daytimers, Array.isArray(daytimers))
-                            let msg = { projectId: projectId, currentday: daytimers.length, pagesize: 4 }
-                            console.log('Page requesting state: ', msg)
-                            messenger.emit("getProjectPages", msg)
-                        } else {
-                            setOnline(!online)
-                        }
+                        let msg = { projectId: projectId, currentday: pages.length, pagesize: 4 }
+                        console.log('Page requesting state: ', msg)
+                        messenger.emit("getProjectPages", msg)
+
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.id}

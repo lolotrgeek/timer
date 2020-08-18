@@ -109,7 +109,7 @@ export function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export const differenceInSeconds = (start, end) =>  {
+export const differenceInSeconds = (start, end) => {
     let a = moment(start)
     let b = moment(end)
     return a.diff(b, 'seconds')
@@ -238,7 +238,7 @@ export const timerRanToday = timer => isToday(new Date(timer.started))
  */
 export const getTodaysCount = (date, total) => {
     if (!date || !total) return 0
-    else if(date === simpleDate(new Date())) return total
+    else if (date === simpleDate(new Date())) return total
     else return 0
 }
 
@@ -248,12 +248,15 @@ export const getTodaysCount = (date, total) => {
  * @param {Object} project 
  */
 export const settingCount = (timer, project) => {
-    if(project.lastrun === simpleDate(new Date()) ) {
-        console.log('Project Ran Today, adding count: ', project.lastcount , totalTime(timer.started, timer.ended))
-        return project.lastcount + totalTime(timer.started, timer.ended)
-    } else {
-        console.log('Project Did not Run Today, setting count: ', totalTime(timer.started, timer.ended))
-        return totalTime(timer.started, timer.ended)
+    if (timer) {
+        let total = totalTime(timer.started, timer.ended)
+        if (project && project.lastrun === simpleDate(new Date())) {
+            console.log('Project Ran Today, adding count: ', project.lastcount, total)
+            return project.lastcount + total
+        } else {
+            console.log('setting count: ', total)
+            return total
+        }
     }
 }
 
@@ -272,7 +275,7 @@ export const isRunning = timer => timer && typeof timer === 'object' && timer.st
  * 
  * @param {*} date 
  */
-export {isToday}
+export { isToday }
 /**
  * Get amount of time since entry was started
  * @param {string} started datestring when entry was started
