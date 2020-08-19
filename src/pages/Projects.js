@@ -5,6 +5,7 @@ import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink, projectTrashlink } from '../routes'
+import {generateProject, generateTimer} from '../constants/Tests'
 import '../state/projectsState'
 
 const debug = false
@@ -32,7 +33,7 @@ export default function Projects({ useHistory, useParams }) {
         let amount = 5
         let i = 0
         while (i < amount) {
-            Data.generateProject()
+            generateProject()
             debug && console.log(i)
             i++
 
@@ -44,7 +45,7 @@ export default function Projects({ useHistory, useParams }) {
         if (projects.length > 0 && timers.length < amount) {
             let i = 0
             while (i < amount) {
-                Data.generateTimer(projects)
+                generateTimer(projects)
                 i++
             }
         }

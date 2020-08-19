@@ -29,7 +29,7 @@ const endTimer = (timer) => {
   set(chain.timerHistory(timer.id), timer)
   put(chain.timer(timer.id), timer)
   set(chain.projectTimer(timer.project, timer.id), timer)
-  set(chain.dateTimer(timer.started, timer.id), timer)
+  set(chain.timerDate(timer.started, timer.id), timer)
 }
 
 /**

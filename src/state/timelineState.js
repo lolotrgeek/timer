@@ -25,12 +25,13 @@ let
 // LISTENERS
 messenger.on(chain.timerDates(), event => {
     if (!event) return
+    debug && console.log('finding dates: ', event)
     let item = parse(event)
     if (item && typeof item === 'object') {
         let found = Object.keys(item)
         days = found.sort((a, b) => new Date(b) - new Date(a))
         debug && console.log('found dates: ', days)
-        // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
+        // days.forEach(day => messenger.addListener(chain.timerDate(day), event => timersInDayHandler(event, { day })))
     }
 })
 store.getAllOnce(chain.timerDates())

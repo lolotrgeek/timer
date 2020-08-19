@@ -12,6 +12,5 @@ export const projectTimers = projectId => `project/${projectId}/timers`
 export const projectTimer = (projectId, timerId) => `project/${projectId}/timers/${timerId}`
 export const projectDate = (date, projectId) => `date/projects/${dateSimple(date)}/${projectId}`
 export const projectDates = day => `date/projects/${day}`
-export const timerDates = () => `date/timers`
-export const dateTimer = (date, timerId) => `date/timers/${dateSimple(date)}/${timerId}`
-export const timersInDay = day => `date/timers/${day}`
+export const timerDates  = () => "date/timers"
+export const timerDate = (day, timerId) => `date/timers/${dateSimple(day)}/${timerId}`

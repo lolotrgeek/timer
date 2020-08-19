@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import * as store from './store'
-import { getTodaysCount, simpleDate, totalTime, settingCount, parse, isRunning, multiDay, newEntryPerDay, trimSoul } from '../constants/Functions'
+import { getTodaysCount, dateSimple, totalTime, settingCount, parse, isRunning, multiDay, newEntryPerDay, trimSoul } from '../constants/Functions'
 import { runCounter, stopCounter, setCount } from './counter'
 import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
@@ -110,13 +110,14 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     debug && console.log('[react Data] Ending', timer)
     let endproject = project
     endproject.lastcount = settingCount(timer, project)
-    endproject.lastrun = simpleDate(new Date())
+    endproject.lastrun = dateSimple(new Date())
     let endtimer = timer
     endtimer.total = totalTime(timer.started, timer.ended)
     debug && console.log('[react Data] storing count', endproject.lastrun, endproject.lastcount)
     debug && console.log('[react Data] storing endtimer', endtimer)
     store.put(chain.project(endproject.id), endproject)
     store.set(chain.timerHistory(timer.id), endtimer)
+    store.put(chain.timerDate(timer.started, endtimer.id), true) // maybe have a count here?
     store.put(chain.timer(timer.id), endtimer)
     store.put(chain.projectDate(timer.started, endproject.id), endproject)
     store.put(chain.projectTimer(timer.project, timer.id), endtimer)

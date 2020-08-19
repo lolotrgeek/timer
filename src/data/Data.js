@@ -2,7 +2,6 @@ import { cloneTimer, newProject, doneTimer, newTimer } from './Models'
 import { isRunning, multiDay, newEntryPerDay, settingCount, dateSimple, totalTime} from '../constants/Functions'
 import * as store from './Store'
 import * as chain from './Chains'
-import {endRandTestGen, startRandTestGen, nameGen} from '../constants/Tests'
 
 const debug = true
 
@@ -59,44 +58,6 @@ export const createTimer = (project) => {
     return timer
 }
 
-/**
- * Generates timer for testing
- * @param {array} projects 
- */
-export const generateTimer = (projects) => {
-    let project = projects[Math.floor(Math.random() * projects.length)]
-    debug && console.log('[react Data] Generating Timer', project.id)
-    let timer = newTimer(project.id)
-    // let start = randomDate(new Date(2020, 1, 1), new Date())
-    // let end = randomDate(start, new Date())
-    // let start = dateTestGen()
-    let start = startRandTestGen()
-    let end = endRandTestGen(start)
-    // debug && console.log('start gen: ', start)
-    timer.started = start.toString()
-    timer.ended = end.toString()
-    timer.status = 'done'
-    timer.total = totalTime(timer.started, timer.ended)
-    debug && console.log('[react Data] Generated Timer', timer)
-    let endproject = project
-    endproject.lastcount = settingCount(timer, project)
-    endproject.lastrun = dateSimple(timer.ended)
-    store.put(chain.project(endproject.id), endproject)
-    store.set(chain.timerHistory(timer.id), timer)
-    store.put(chain.timer(timer.id), timer)
-    store.put(chain.projectDate(timer.started, endproject.id), endproject)
-    store.put(chain.projectTimer(timer.project, timer.id), timer)
-    return true
-}
-
-export const generateProject = () => {
-    const project = newProject(nameGen(), '#ccc')
-    if (!project) return false
-    console.log('Generating Project', project)
-    store.set(chain.projectHistory(project.id), project)
-    store.put(chain.project(project.id), project)
-}
-
 export const runTimer = (timer) => {
     store.put('running/timer', JSON.stringify(timer))
 }
@@ -112,9 +73,9 @@ export const updateTimer = (timer) => {
         let timerMoved = timer
         timerMoved.deleted = new Date().toString()
         timerMoved.status = 'moved'
-        store.set(chain.dateTimer(timer.started, timer.id), timerMoved)
+        store.set(chain.timerDate(timer.started, timer.id), timerMoved)
     }
-    store.set(chain.dateTimer(editedTimer.started, editedTimer.id), editedTimer)
+    store.set(chain.timerDate(editedTimer.started, editedTimer.id), editedTimer)
 }
 
 export const restoreTimer = (timer) => {
@@ -126,14 +87,14 @@ export const restoreTimer = (timer) => {
     }
     debug && console.log('[react Data] Restoring Timer', restoredTimer)
     store.put(chain.timer(restoredTimer.id), restoredTimer)
-    store.set(chain.dateTimer(restoredTimer.started, restoredTimer.id), restoredTimer)
+    store.set(chain.timerDate(restoredTimer.started, restoredTimer.id), restoredTimer)
 }
 
 export const endTimer = (timer) => {
     debug && console.log('[react Data] Ending', timer)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
-    store.set(chain.dateTimer(timer.started, timer.id), timer)
+    store.set(chain.timerDate(timer.started, timer.id), timer)
 }
 
 export const deleteTimer = (timer) => {
@@ -144,7 +105,7 @@ export const deleteTimer = (timer) => {
 
     store.set(chain.timerHistory(timer.id, timerDelete))
     store.put(chain.timer(timer.id), timerDelete)
-    store.put(chain.dateTimer(timer.started, timer.id)+'/'+timer.key, timerDelete)
+    store.put(chain.timerDate(timer.started, timer.id)+'/'+timer.key, timerDelete)
     console.log(timerDelete)
 }
 
@@ -192,7 +153,7 @@ export const getProject = projectId => {
 }
 
 export const getTimers = () => {
-    store.getAllOnce(chain.timers())
+    store.getAll(chain.timers())
 }
 
 export const getTimerDates = () => {
@@ -220,5 +181,5 @@ export const getRunning = () => {
 }
 
 export const getDayTimer = (timer) => {
-    store.get(chain.dateTimer(timer.started, timer.id)+'/'+timer.key)
+    store.get(chain.timerDate(timer.started, timer.id)+'/'+timer.key)
 }

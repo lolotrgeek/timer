@@ -26,7 +26,7 @@ messenger.on(chain.timerDates(), event => {
         let found = Object.keys(item)
         days = found.sort((a, b) => new Date(b) - new Date(a))
         debug && console.log('found dates: ', days)
-        // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
+        // days.forEach(day => messenger.addListener(chain.timerDate(day), event => timersInDayHandler(event, { day })))
     }
 })
 store.getAllOnce(chain.timerDates())
@@ -282,7 +282,7 @@ const getDayTimers = (day) => {
     return new Promise((resolve, reject) => {
         try {
             let result = {}
-            store.chainer(chain.timersInDay(day), store.app).map().on((data, key) => {
+            store.chainer(chain.timerDate(day), store.app).map().on((data, key) => {
                 if (!data) {
                     debug && console.log('[GUN node] getAllOnce No Data Found',)
                 }

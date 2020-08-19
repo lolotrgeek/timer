@@ -1,4 +1,51 @@
 import { subHours, subMinutes, subSeconds, addHours } from 'date-fns'
+import { settingCount, dateSimple, totalTime} from './Functions'
+import { newProject, newTimer } from '../data/Models'
+import * as chain from '../data/Chains'
+import * as store from '../data/Store'
+
+let debug = true
+
+/**
+ * Generates timer for testing
+ * @param {array} projects 
+ */
+export const generateTimer = (projects) => {
+    let project = projects[Math.floor(Math.random() * projects.length)]
+    debug && console.log('[react Data] Generating Timer', project.id)
+    let timer = newTimer(project.id)
+    // let start = randomDate(new Date(2020, 1, 1), new Date())
+    // let end = randomDate(start, new Date())
+    // let start = dateTestGen()
+    let start = startRandTestGen()
+    let end = endRandTestGen(start)
+    // debug && console.log('start gen: ', start)
+    timer.started = start.toString()
+    timer.ended = end.toString()
+    timer.status = 'done'
+    timer.total = totalTime(timer.started, timer.ended)
+    timer.name = project.name
+    timer.color = project.color
+    debug && console.log('[react Data] Generated Timer', timer)
+    let endproject = project
+    endproject.lastcount = settingCount(timer, project)
+    endproject.lastrun = dateSimple(timer.ended)
+    store.put(chain.project(endproject.id), endproject)
+    store.set(chain.timerHistory(timer.id), timer)
+    store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
+    store.put(chain.timer(timer.id), timer)
+    store.put(chain.projectDate(timer.started, endproject.id), endproject)
+    store.put(chain.projectTimer(timer.project, timer.id), timer)
+    return true
+}
+
+export const generateProject = () => {
+    const project = newProject(nameGen(), '#ccc')
+    if (!project) return false
+    console.log('Generating Project', project)
+    store.set(chain.projectHistory(project.id), project)
+    store.put(chain.project(project.id), project)
+}
 
 export const dateTestGen = () => {
     let randHour = Math.floor(Math.random() * 3)

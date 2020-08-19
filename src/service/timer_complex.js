@@ -176,7 +176,7 @@ const endTimer = (timer) => {
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timer(timer.id), timer)
     store.set(chain.projectTimer(timer.project, timer.id), timer)
-    store.set(chain.dateTimer(timer.started, timer.id), timer)
+    store.set(chain.timerDate(timer.started, timer.id), timer)
 }
 
 /**

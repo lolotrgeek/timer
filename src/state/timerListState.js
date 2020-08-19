@@ -39,7 +39,7 @@ const daylistHandler = (event) => {
         let found = Object.keys(item)
         debug && console.log('found dates: ', found)
         days = found.sort((a, b) => new Date(b) - new Date(a))
-        // days.forEach(day => messenger.addListener(chain.timersInDay(day), event => timersInDayHandler(event, { day })))
+        // days.forEach(day => messenger.addListener(chain.timerDate(day), event => timersInDayHandler(event, { day })))
     }
 }
 
@@ -213,7 +213,7 @@ const getDayTimers = (day) => {
     return new Promise((resolve, reject) => {
         try {
             let result = {}
-            store.chainer(chain.timersInDay(day), store.app).map().on((data, key) => {
+            store.chainer(chain.timerDate(day), store.app).map().on((data, key) => {
                 if (!data) {
                     debug && console.log('[GUN node] getAllOnce No Data Found',)
                 }

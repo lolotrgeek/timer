@@ -110,10 +110,11 @@ const getOne = (msg) => {
 }
 
 /**
+ * `DEPRECATED`
  * getAll and apply any filters, return array of filtered data
  * @param {*} msg 
  */
-const getAll = (msg) => {
+const getAllOld = (msg) => {
     const input = inputParser(msg)
     debug && console.log('getAll input', input)
     const chain = chainer(input.key, app)
@@ -162,6 +163,23 @@ const getAllFilter = (msg) => {
             messenger.emit(input.key, foundData)
         })
     })
+}
+
+const getAll = (msg) => {
+    const input = inputParser(msg)
+    const chain = chainer(input, app)
+
+    let result = []
+    chain.map().on((data, key) => {
+        if (!data) {
+            debug && console.log('[GUN node] getAll No Data Found',)
+        }
+        let foundData = trimSoul(data)
+        result.push(foundData)
+        debug && console.log('[GUN node] getAll Data Found: ', typeof foundData, foundData)
+    })
+    messenger.emit(input, result)
+
 }
 
 const getAllOnce = (msg) => {
@@ -219,6 +237,7 @@ const setAll = (key, value) => {
     chain.set(value, ack => {
         const data = trimSoul(value)
         debug && console.log('[NODE_DEBUG_SET] ERR? ', ack.err)
+        console.log(key, value)
         messenger.emit(`${key}_set`, ack.err ? ack : data)
     })
 }
