@@ -17,7 +17,7 @@ export default function TimerList({ useHistory }) {
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
         messenger.addListener("page", event => {
-            console.log('page:', event)
+            debug && console.log('page:', event)
             setPages(pages => [...pages, event])
         })
         messenger.addListener("pages", event => {
@@ -26,23 +26,23 @@ export default function TimerList({ useHistory }) {
                 setPages(event)
             }
         })
+        // messenger.emit('getPage', { currentday: 0, pagesize: pagesize })
 
-        messenger.emit('getPage', { currentday: 0, pagesize: pagesize })
-        messenger.addListener("pagelocation", event => {
+        messenger.addListener("timelinelocation", event => {
+            console.log('location', event)
             setLocation({ x: event.x, y: event.y, animated: false })
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
-            if (timelineList.current._wrapperListRef) {
+            if (timelineList.current && timelineList.current._wrapperListRef) {
                 timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
         return () => {
             messenger.removeAllListeners("page")
             messenger.removeAllListeners("pages")
-            messenger.removeAllListeners("pagelocation")
+            messenger.removeAllListeners("timelinelocation")
         }
     }, [])
-
 
     const RenderTimer = ({ item }) => {
         return (
@@ -78,10 +78,10 @@ export default function TimerList({ useHistory }) {
                 }}
                 renderItem={RenderTimer}
                 onEndReached={() => {
-                    console.log('End Reached')
+                    debug && console.log('End Reached')
 
-                    console.log('Getting Next')
-                    console.log(pages, typeof pages, Array.isArray(pages))
+                    debug && console.log('Getting Next')
+                    debug && console.log(pages, typeof pages, Array.isArray(pages))
                     messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
 
                 }}

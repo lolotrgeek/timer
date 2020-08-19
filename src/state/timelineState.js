@@ -4,11 +4,11 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
 let debug = {
-    state: true,
-    data: true,
+    state: false,
+    data: false,
     listeners: true,
-    parsing: true,
-    sorting: true
+    parsing: false,
+    sorting: false
 }
 
 let
@@ -73,7 +73,7 @@ const getPage = (msg) => {
                 debug.listeners && console.log('[Listener] updating pages.')
                 messenger.emit("pages", pages)
                 debug.listeners && console.log('[Listener] locating...', pagelocation.y)
-                messenger.emit('location', pagelocation)
+                messenger.emit('timelinelocation', pagelocation)
             }
         }
         else if (msg.currentday > 0) {
