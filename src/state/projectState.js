@@ -4,11 +4,11 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
 let debug = {
-    state: true,
-    data: true,
+    state: false,
+    data: false,
     listeners: true,
-    parsing: true,
-    sorting: true
+    parsing: false,
+    sorting: false
 }
 
 let projectState = {}
@@ -46,7 +46,7 @@ const listenForPageLocation = current => {
         if (msg) {
             current.pagelocation.x = msg.x
             current.pagelocation.y = msg.y
-            debug && console.log(current.pagelocation.y)
+            debug.listeners && console.log(current.pagelocation.y)
         }
     })
 }
@@ -59,19 +59,11 @@ const setCurrentProject = (msg) => {
             current.project = foundproject
             debug && console.log('Project: ', current.project)
             messenger.emit(`${current.project.id}/project`, current.project)
-            handleProjectPages(msg)
+            getTimersInProject()
         })
     } else {
-        handleProjectPages(msg)
-    }
-}
-
-const handleProjectPages = msg => {
-    if (msg){
-        debug && console.log('getting pages.')
         getTimersInProject()
     }
-
 }
 
 // PARSING
@@ -102,7 +94,7 @@ const getProject = (projectId) => {
         try {
             store.chainer(chain.project(projectId), store.app).once((data, key) => {
                 const foundData = trimSoul(data)
-                //   debug && console.log('[GUN node] getProject Data Found: ', foundData)
+                  debug.data && console.log('[GUN node] getProject Data Found: ', foundData)
                 if (foundData && foundData.type === 'project') {
                     resolve(foundData)
                 }
@@ -125,10 +117,10 @@ const getProjectTimers = (projectId) => {
             let result = []
             store.chainer(chain.projectTimers(projectId), store.app).map().on((data, key) => {
                 if (!data) {
-                    debug && console.log('[GUN node] getTimers No Data Found')
+                    debug.data && console.log('[GUN node] getTimers No Data Found')
                 }
                 let foundData = trimSoul(data)
-                debug && console.log('[GUN node] getTimers Data Found: ', typeof foundData, foundData)
+                debug.data && console.log('[GUN node] getTimers Data Found: ', typeof foundData, foundData)
                 if (foundData.project === projectId) {
                     result.push(foundData)
                 }

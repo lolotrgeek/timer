@@ -28,30 +28,26 @@ export default function Project({ useHistory, useParams }) {
             console.log(event)
             if (event) setProject(event)
         })
-        messenger.addListener(`${projectId}/page`, event => {
-            setPages(pages => [...pages, event])
-        })
         messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
                 console.log('Pages', event)
                 setPages(event)
             }
         })
-        messenger.addListener(`${projectId}/lastpagelocation`, event => {
+        messenger.addListener(`${projectId}/pagelocation`, event => {
             console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             setLocation({ x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
             // DANGER: raw _functions, but it works
-            if (timerList.current._wrapperListRef) {
+            if (timerList.current && timerList.current._wrapperListRef) {
                 timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
         if (pages.length === 0) messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
         return () => {
             messenger.removeAllListeners(`${projectId}/project`)
-            messenger.removeAllListeners(`${projectId}/page`)
             messenger.removeAllListeners(`${projectId}/pages`)
-            messenger.removeAllListeners(`${projectId}/lastpagelocation`)
+            messenger.removeAllListeners(`${projectId}/pagelocation`)
         }
     }, [])
 
