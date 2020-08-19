@@ -17,7 +17,6 @@ export const stopCounter = () => {
     debug && console.log('[Timer node] Stop Counter')
     clearInterval(counter)
     messenger.emit('count', count.toString())
-    messenger.emit('notify', { state: "stop" })
 }
 
 export const setCount = amount => {

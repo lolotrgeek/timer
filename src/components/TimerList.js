@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SectionList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
+import { isToday } from '../constants/Functions';
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
 
@@ -16,11 +17,6 @@ export default function TimerList({ useHistory }) {
 
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
-        // messenger.on('notify', msg => {
-        //     if(msg && msg.state === 'stop') {
-        //         messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-        //     }
-        // })
         messenger.addListener("page", event => {
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
@@ -58,8 +54,10 @@ export default function TimerList({ useHistory }) {
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.lastcount}</Text>
                 </View>
-                <View style={{ width: '30%' }}>
-
+                <View style={{ width: '20%' }}>
+                    <Button title='start' onPress={() => {
+                        messenger.emit('start', { projectId: item.id })
+                    }} />
                 </View>
             </View>
         );

@@ -95,7 +95,7 @@ const createRunning = project => new Promise((resolve, reject) => {
     timer.count = project.lastrun && project.lastcount ? getTodaysCount(project.lastrun, project.lastcount) : 0
     debug && console.log('[react Data] Created Timer', timer)
     store.put(chain.running(), timer)
-    store.set(chain.timerHistory(timer.id), timer)
+    store.set(chain.timerHistory(timer.id), timer) // TODO: might be un-necessary...
     resolve(timer)
 })
 
