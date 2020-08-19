@@ -82,7 +82,7 @@ const handleProjectPages = msg => {
 const getTimersInProject = async () => {
     try {
         let event = await getProjectTimers(current.project.id)
-        let sorted = dayHeaders(event)
+        let sorted = dayHeaders(event).sort((a, b) => new Date(b.title) - new Date(a.title))
         current.pages = sorted
         console.log('[Parsing] daytimers', sorted)
         if (sorted && typeof sorted === 'object') {
