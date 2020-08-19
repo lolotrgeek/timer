@@ -192,7 +192,7 @@ export const timerRanToday = timer => isToday(new Date(timer.started))
  */
 export const getTodaysCount = (date, total) => {
     if (!date || !total) return 0
-    else if (date === simpleDate(new Date())) return total
+    else if (date === dateSimple(new Date())) return total
     else return 0
 }
 
@@ -204,7 +204,7 @@ export const getTodaysCount = (date, total) => {
 export const settingCount = (timer, project) => {
     if (timer) {
         let total = totalTime(timer.started, timer.ended)
-        if (project && project.lastrun === simpleDate(new Date())) {
+        if (project && project.lastrun === dateSimple(new Date())) {
             console.log('Project Ran Today, adding count: ', project.lastcount, total)
             return project.lastcount + total
         } else {

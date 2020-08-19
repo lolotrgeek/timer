@@ -16,6 +16,11 @@ export default function TimerList({ useHistory }) {
 
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
+        // messenger.on('notify', msg => {
+        //     if(msg && msg.state === 'stop') {
+        //         messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+        //     }
+        // })
         messenger.addListener("page", event => {
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
