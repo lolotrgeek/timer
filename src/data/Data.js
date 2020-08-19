@@ -1,7 +1,8 @@
 import { cloneTimer, newProject, doneTimer, newTimer } from './Models'
-import { isRunning, multiDay, newEntryPerDay, endRandTestGen, startRandTestGen, nameGen } from '../constants/Functions'
+import { isRunning, multiDay, newEntryPerDay, } from '../constants/Functions'
 import * as store from './Store'
 import * as chain from './Chains'
+import {endRandTestGen, startRandTestGen, nameGen} from '../constants/Tests'
 
 const debug = true
 
