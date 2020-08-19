@@ -45,7 +45,6 @@ export default function TimerList({ useHistory }) {
 
 
     const RenderTimer = ({ item }) => {
-        console.log('rendering:', item)
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '30%' }}>

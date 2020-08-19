@@ -25,7 +25,6 @@ let
 // LISTENERS
 messenger.on(chain.timerDates(), event => {
     if (!event) return
-    debug && console.log('finding dates: ', event)
     let item = parse(event)
     if (item && typeof item === 'object') {
         let found = Object.keys(item)

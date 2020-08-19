@@ -62,12 +62,12 @@ export const datetimeCreator = () => {
 export const dateSimple = date => {
     let parsedDate = date ? typeof date === 'string' ? new Date(date) : date : new Date()
     // const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
-    return moment(parsedDate).format('DD-MM-YYYY')
+    return moment(parsedDate).format('MM-DD-YYYY')
 }
 
 export const nextDay = date => {
     if (typeof date === 'string') date = new Date(date)
-    return moment(addDays(date, 1)).format('DD-MM-YYYY')
+    return moment(addDays(date, 1)).format('MM-DD-YYYY')
 }
 
 
@@ -103,7 +103,7 @@ export const getMonth = date => {
  * return date as a simplifed date string `dd month yyy`
  * @param {*} date optional, default: `today`
  */
-export const simpleDate = date => format(date ? date : new Date(), "d MMM yyyy")
+export const simpleDate = date => format(date ? date : new Date(), "MMM d yyyy")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
 export const fullDate = date => format(date, "EEE MMM d yyyy  hh:mm:ss aaa")

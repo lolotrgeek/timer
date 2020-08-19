@@ -124,10 +124,6 @@ export default function Project({ useHistory, useParams }) {
                     onEndReached={() => {
                         // TODO: decouple, put in separate function
                         console.log('End Reached')
-                        let msg = { projectId: projectId, currentday: pages.length, pagesize: 4 }
-                        console.log('Page requesting state: ', msg)
-                        messenger.emit("getProjectPages", msg)
-
                     }}
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.id}

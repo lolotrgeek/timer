@@ -89,7 +89,6 @@ export default function Timers() {
     return (
         <SafeAreaView style={styles.container}>
             <Header />
-            <Text>{JSON.stringify(timerdates)}</Text>
             <View style={styles.listContainer}>
                 <FlatList
                     style={styles.list}
