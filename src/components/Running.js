@@ -18,7 +18,7 @@ export default function Running() {
 
     useEffect(() => {
         messenger.addListener(chain.running(), event => setRunning(event))
-        messenger.emit('getRunning')
+        
         return () => messenger.removeAllListeners(chain.running())
     }, [])
 

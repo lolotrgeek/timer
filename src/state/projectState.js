@@ -115,13 +115,14 @@ const getProjectTimers = (projectId) => {
     return new Promise((resolve, reject) => {
         try {
             let result = []
-            store.chainer(chain.projectTimers(projectId), store.app).map().on((data, key) => {
+            store.chainer(`project/${projectId}/timers`, store.app).map().on((data, key) => {
+            // store.chainer(chain.projectTimers(projectId), store.app).map().on((data, key) => {
                 if (!data) {
                     debug.data && console.log('[GUN node] getProjectTimers No Data Found')
                 }
                 let foundData = trimSoul(data)
-                debug.data && console.log('[GUN node] getProjectTimers Data Found: ', key, foundData)
-                if (foundData.project === projectId && foundData.id === key) {
+                debug.data && console.log('[GUN node] getProjectTimers Data Found: ', key, data)
+                if (foundData.project === projectId) {
                     result.push(foundData)
                 }
             })

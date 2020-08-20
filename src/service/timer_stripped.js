@@ -16,7 +16,7 @@ const stopRunning = async () => {
     try {
         stopCounter()
         debug && console.log('[STOP] ', running, runningproject)
-        await finishRunning(running, runningproject)
+        await endTimer(running, runningproject)
     } catch (error) {
         debug && console.log('[Timer node] : Stop failed ' + error)
     }
@@ -26,6 +26,7 @@ const stopRunning = async () => {
 const parseRunning = async (data) => {
     if (data.status === 'running' && data.id) {
         running = data
+        console.log('Running' , running)
         try {
             runningproject = await getProject(data.project)
             if (runningproject && runningproject.status === 'active') {
@@ -56,14 +57,6 @@ const parseRunning = async (data) => {
         stopCounter()
     }
 }
-
-messenger.on('getRunning', async () => {
-    let data = await getRunning()
-    parseRunning(data)
-    if (running && running.id && running.project) {
-        messenger.emit('running', running)
-    }
-})
 
 
 // Native Command Handlers
@@ -128,16 +121,19 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     } else {
         project.lastcount = settingCount(timer, project)
         project.lastrun = dateSimple(new Date())
+        timer.status = 'done'
+        timer.ended = new Date().toString()
         timer.total = totalTime(timer.started, timer.ended)
         // debug && console.log('[react Data] storing count', project.lastrun, project.lastcount)
         debug && console.log('[react Data] storing timer', timer)
         // debug && console.log('[react Data] storing project', project)
-        store.put(chain.project(project.id), project)
+        // store.put(chain.project(project.id), project)
         store.put(chain.timer(timer.id), timer)
-        store.set(chain.timerHistory(timer.id), timer)
-        store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
-        store.put(chain.projectDate(timer.started, project.id), project)
-        store.put(chain.projectTimer(project.id, timer.id), timer)
+        // store.set(chain.timerHistory(timer.id), timer)
+        // store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
+        // store.put(chain.projectDate(timer.started, project.id), project)
+        // store.put(chain.projectTimer(project.id, timer.id), timer)
+        // store.put(chain.running(), timer)
         debug && console.log('[react Data] Ended', timer, project)
         resolve(timer)
     }
@@ -159,7 +155,7 @@ const finishRunning = (timer, project) => new Promise(async (resolve, reject) =>
     if (isRunning(timer)) {
         debug && console.log('[react Data STOP] Finishing', timer)
         let done = doneTimer(timer)
-        store.put(chain.running(), done)
+        // store.put(chain.running(), done)
         // Danger zone until endTimer is called
         debug && console.log('[react Data STOP] Checking for Multi-day...')
         if (multiDay(done.started, done.ended)) {
@@ -203,29 +199,14 @@ const getProject = (projectId) => {
     })
 }
 
-const getRunning = () => new Promise((resolve, reject) => {
-    store.chainer('running', store.app).once((data, key) => {
-        if (!data) reject('no Running')
-        data = parse(data)
-        if (data && data.type === 'timer') {
-            console.log('Got Running Timer...')
-            resolve(data)
-        }
-    })
-
-})
-
-messenger.on(chain.projectTimer(runningproject.id, running.id), msg => {
-    console.log('Project Timer Stored: ', msg)
-})
 
 // Listen for Remote or Offline changes
 store.chainer('running', store.app).on((data, key) => {
     if (!data) console.log('no Running')
-    data = trimSoul(data) // NOTE: always trimSoul of incoming data, soulFul data will destroy chains!!!
+    data = trimSoul(data)
     if (data && data.type === 'timer') {
         console.log('Received Running Timer...')
         parseRunning(data)
-        messenger.emit('running', running)
+        messenger.emit('gotRunning', running)
     }
 })

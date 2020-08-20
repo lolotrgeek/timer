@@ -20,31 +20,38 @@ export default function Timers() {
     const [timerdates, setTimerDates] = useState([]);
 
     useEffect(() => {
-        messenger.on(chain.timers(), event => {
-            // console.log('timers', event)
-            setTimers(event)
-        })
-        // Data.getTimers()
+        // messenger.on(chain.timers(), event => {
+        //     console.log('timers', event)
+        //     setTimers(event)
+        // })
+        // // Data.getTimers()
 
-        messenger.on(chain.timerDates(), event => {
-            if (!event) return
-            debug && console.log('finding dates: ', event)
-        })
+        // messenger.on(chain.timerDates(), event => {
+        //     if (!event) return
+        //     debug && console.log('finding dates: ', event)
+        // })
 
-        
-        store.chainer(chain.timerDates(), store.app).on((data, key) => {
+        store.chainer(chain.timers(), store.app).map().on((data, key) => {
             if (!data) {
-                console.log('[Timer Dates] No Data Found',)
+                console.log('[Timers] No Data Found',)
             }
-            setTimerDates(timerdates => [...timerdates, data])
-            console.log('[Timer Dates] Data Found: ', typeof data, data)
+            setTimers(timers => [...timers, data])
+            console.log('[Timers] Data Found: ', key, data)
         })
+        
+        // store.chainer(chain.timerDates(), store.app).on((data, key) => {
+        //     if (!data) {
+        //         console.log('[Timer Dates] No Data Found',)
+        //     }
+        //     setTimerDates(timerdates => [...timerdates, data])
+        //     console.log('[Timer Dates] Data Found: ', typeof data, data)
+        // })
 
         return () => {
             messenger.removeAllListeners(chain.timers())
             messenger.removeAllListeners(chain.timerDates())
         }
-    }, [online])
+    }, [])
 
 
     const HeaderButtons = () => (
@@ -76,7 +83,7 @@ export default function Timers() {
                     <Text>{dateSimple(item.started)}</Text>
                 </View>
                 <View style={{ width: '20%' }}>
-                    <Text>{item.project}</Text>
+                    <Text>{item.id}</Text>
 
                 </View>
                 <View style={{ width: '10%' }}>
