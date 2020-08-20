@@ -9,9 +9,9 @@ const test = false
 const loadAll = false
 const pagesize = 4
 
-export default function TimerList({ useHistory }) {
+export default function TimelineList({ useHistory }) {
     let history = useHistory()
-    const [pages, setPages] = useState([])
+    const [pages, setPages] = useState([]) // [[{title: 'mm-dd-yyyy', data: [{id, }]}, ...], ... ]
     const [location, setLocation] = useState({ x: 0, y: 0 })
     const timelineList = useRef()
 
@@ -27,7 +27,14 @@ export default function TimerList({ useHistory }) {
                 setPages(event)
             }
         })
-        // messenger.emit('getPage', { currentday: 0, pagesize: pagesize })
+        messenger.on('stop', msg => {
+            // NOTE: could listen on 'running' channel, but it breaks async flow on running timer
+            // TODO: will need to test how this integrates with a native messenger
+            setPages([])
+            messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+
+        })
+        if (pages.length === 0) messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
 
         messenger.addListener("timelinelocation", event => {
             console.log('location', event)
@@ -40,16 +47,21 @@ export default function TimerList({ useHistory }) {
         })
         return () => {
             messenger.removeAllListeners("page")
+            messenger.removeAllListeners("running")
             messenger.removeAllListeners("pages")
             messenger.removeAllListeners("timelinelocation")
         }
     }, [])
 
+    useEffect(() => {
+
+    }, [pages])
+
     const RenderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '30%' }}>
-                    <Text onPress={() => history.push(projectlink(item.project))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
+                    <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.lastcount}</Text>
@@ -62,6 +74,7 @@ export default function TimerList({ useHistory }) {
             </View>
         );
     };
+    if (pages.length === 0) return (<Text style={styles.list}>Loading ... </Text>)
     return (
         <View style={styles.listContainter}>
             <SectionList

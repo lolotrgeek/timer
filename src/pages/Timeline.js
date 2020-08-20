@@ -4,7 +4,7 @@
 import React, {useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button } from 'react-native';
 import Running from '../components/Running'
-import TimerList from '../components/TimerList'
+import TimelineList from '../components/TimelineList'
 import { projectCreatelink } from '../routes'
 import messenger from '../constants/Messenger'
 import '../state/timelineState'
@@ -36,7 +36,7 @@ export default function Timeline({ useHistory }) {
     return (
         <SafeAreaView style={styles.container}>
             <Header />
-            <TimerList useHistory={useHistory}/>
+            <TimelineList useHistory={useHistory}/>
             <Footer />
         </SafeAreaView>
     );

@@ -4,11 +4,11 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
 let debug = {
-    state: true,
-    data: true,
+    state: false,
+    data: false,
     listeners: true,
-    parsing: true,
-    sorting: true
+    parsing: false,
+    sorting: false
 }
 
 let
