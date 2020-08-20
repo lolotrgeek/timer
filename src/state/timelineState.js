@@ -6,7 +6,7 @@ import * as chain from '../data/Chains'
 let debug = {
     state: false,
     data: false,
-    listeners: true,
+    listeners: false,
     parsing: false,
     sorting: false
 }

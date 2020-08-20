@@ -1,6 +1,7 @@
 import Gun from 'gun'
 import messenger from '../constants/Messenger'
 
+const debug = false
 //TODO process to find signal server
 const port = '8765'
 const address = '192.168.1.109'
@@ -10,10 +11,8 @@ const gun = new Gun({
     peers: peers,
 })
 const app = gun.get('app')
-const debug = true
 
 debug && console.log('App prototype:', Object.getPrototypeOf(app))
-
 
 export const testGun = () => {
     app.put('hello')
@@ -220,7 +219,7 @@ const putAll = (key, value) => {
     // debug && console.log('[React node] Chain :', chain)
     chain.put(value, ack => {
         debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-        console.log(key, value)
+        debug && console.log(key, value)
         messenger.emit(key, ack.err ? ack : value)
     })
 
@@ -237,7 +236,7 @@ const setAll = (key, value) => {
     chain.set(value, ack => {
         const data = trimSoul(value)
         debug && console.log('[NODE_DEBUG_SET] ERR? ', ack.err)
-        console.log(key, value)
+        debug && console.log(key, value)
         messenger.emit(`${key}_set`, ack.err ? ack : data)
     })
 }

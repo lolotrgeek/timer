@@ -7,7 +7,7 @@ import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 
-const debug = true 
+const debug = false 
 
 let running = {}
 let runningproject = {}
@@ -56,14 +56,6 @@ const parseRunning = async (data) => {
         stopCounter()
     }
 }
-
-messenger.on('getRunning', async () => {
-    let data = await getRunning()
-    parseRunning(data)
-    if (running && running.id && running.project) {
-        messenger.emit('running', running)
-    }
-})
 
 
 // Native Command Handlers
@@ -208,23 +200,34 @@ const getRunning = () => new Promise((resolve, reject) => {
         if (!data) reject('no Running')
         data = parse(data)
         if (data && data.type === 'timer') {
-            console.log('Got Running Timer...')
+            debug && console.log('Got Running Timer...')
             resolve(data)
         }
     })
 
 })
 
-messenger.on(chain.projectTimer(runningproject.id, running.id), msg => {
-    console.log('Project Timer Stored: ', msg)
+/**
+ * Local Running Listener
+ */
+messenger.on('getRunning', async () => {
+    //TODO: might not need this? could be redundant
+    let data = await getRunning()
+    parseRunning(data)
+    if (running && running.id && running.project) {
+        messenger.emit('running', running)
+    }
 })
 
-// Listen for Remote or Offline changes
+
+/**
+ * Listener for Remote or Offline changes
+ */
 store.chainer('running', store.app).on((data, key) => {
-    if (!data) console.log('no Running')
+    if (!data) debug && console.log('no Running')
     data = trimSoul(data) // NOTE: always trimSoul of incoming data, soulFul data will destroy chains!!!
     if (data && data.type === 'timer') {
-        console.log('Received Running Timer...')
+        debug && console.log('Received Running Timer...')
         parseRunning(data)
         messenger.emit('running', running)
     }

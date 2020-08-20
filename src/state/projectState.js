@@ -5,8 +5,8 @@ import * as chain from '../data/Chains'
 
 let debug = {
     state: false,
-    data: true,
-    listeners: true,
+    data: false,
+    listeners: false,
     parsing: false,
     sorting: false
 }
@@ -76,7 +76,7 @@ const getTimersInProject = async () => {
         let event = await getProjectTimers(current.project.id)
         let sorted = dayHeaders(event).sort((a, b) => new Date(b.title) - new Date(a.title))
         current.pages = sorted
-        console.log('[Parsing] daytimers', sorted)
+        debug && console.log('[Parsing] daytimers', sorted)
         if (sorted && typeof sorted === 'object') {
             // await addSection(sorted) // would have to find day first...
             messenger.emit(`${current.project.id}/pages`, current.pages)

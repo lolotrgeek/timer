@@ -23,7 +23,7 @@ export default function TimelineList({ useHistory }) {
         })
         messenger.addListener("pages", event => {
             if (event && Array.isArray(event)) {
-                console.log('Pages', event)
+                debug && console.log('Pages', event)
                 setPages(event)
             }
         })
@@ -37,9 +37,9 @@ export default function TimelineList({ useHistory }) {
         if (pages.length === 0) messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
 
         messenger.addListener("timelinelocation", event => {
-            console.log('location', event)
+            debug && console.log('location', event)
             setLocation({ x: event.x, y: event.y, animated: false })
-            console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
+            debug && console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
             if (timelineList.current && timelineList.current._wrapperListRef) {
                 timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
@@ -95,8 +95,6 @@ export default function TimelineList({ useHistory }) {
                 renderItem={RenderTimer}
                 onEndReached={() => {
                     debug && console.log('End Reached')
-
-                    debug && console.log('Getting Next')
                     debug && console.log(pages, typeof pages, Array.isArray(pages))
                     messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
 

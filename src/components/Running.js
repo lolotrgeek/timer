@@ -17,8 +17,8 @@ export default function Running() {
     }, [])
 
     useEffect(() => {
-        messenger.addListener(chain.running(), event => setRunning(event))
-        
+        messenger.addListener(chain.running(), event => setRunning(event)) // this hooks to chained store emission that fires when changes to `running` are stored...
+
         return () => messenger.removeAllListeners(chain.running())
     }, [])
 
