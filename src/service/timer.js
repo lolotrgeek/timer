@@ -32,24 +32,25 @@ const parseRunning = async (data) => {
                 setCount(count)
                 runCounter()
             }
+            // TODO: handle if a project gets deleted offline/remotely -> stop and store it?
         } catch (error) {
             console.log(error)
         }
 
+    }
+    else if (!data.id) {
+        debug && console.log('[STOP] running cleared')
+        running = data
+        stopCounter()
     }
     else if (data.status === 'done' && data.id === running.id) {
         debug && console.log('[STOP] running stopped')
         running = data
         stopCounter()
     }
-    else if (data.id === 'none') {
-        debug && console.log('[STOP] running cleared')
-        running = data
-        stopCounter()
-    }
     else {
         debug && console.log('[STOP] running timer')
-        running = { id: 'none', status: 'done' }
+        running = {}
         stopCounter()
     }
 }
@@ -69,7 +70,7 @@ messenger.on('getRunning', async () => {
 messenger.on('stop', async msg => {
     debug && console.log('[React node] incoming Stop: ' + typeof msg, msg)
     try {
-        stopRunning()
+        await stopRunning()
     } catch (error) {
         debug && console.log('[Timer node] : Stop failed ' + error)
     }
@@ -84,7 +85,7 @@ messenger.on('start', async msg => {
     try {
         if (running && running.status === 'running') await stopRunning()
         runningproject = await getProject(msg.projectId)
-        await createRunning(runningproject) // emits 'running' which gets captured by the Commands Listener
+        await createRunning(runningproject)
     } catch (error) {
         debug && console.log('[Timer node] : Create failed ' + error)
     }
@@ -93,7 +94,7 @@ messenger.on('start', async msg => {
 
 // DATA
 /**
- * creates a running timer entry
+ * creates a running timer entry, emits 'running'
  * @param {Object} project 
  */
 const createRunning = project => new Promise((resolve, reject) => {
@@ -131,14 +132,14 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
         let endtimer = timer
         endtimer.total = totalTime(timer.started, timer.ended)
         // debug && console.log('[react Data] storing count', endproject.lastrun, endproject.lastcount)
-        // debug && console.log('[react Data] storing endtimer', endtimer)
+        debug && console.log('[react Data] storing endtimer', endtimer)
         // debug && console.log('[react Data] storing endproject', endproject)
         store.put(chain.project(endproject.id), endproject)
         store.set(chain.timerHistory(timer.id), endtimer)
         store.put(chain.timerDate(timer.started, endtimer.id), true) // maybe have a count here?
         store.put(chain.timer(timer.id), endtimer)
         store.put(chain.projectDate(timer.started, endproject.id), endproject)
-        store.put(chain.projectTimer(timer.project, timer.id), endtimer)
+        store.put(chain.projectTimer(endproject.id, endtimer.id), endtimer)
         debug && console.log('[react Data] Ended', endtimer, endproject)
         resolve(timer)
     }

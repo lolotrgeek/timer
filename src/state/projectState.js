@@ -5,7 +5,7 @@ import * as chain from '../data/Chains'
 
 let debug = {
     state: false,
-    data: false,
+    data: true,
     listeners: true,
     parsing: false,
     sorting: false
@@ -117,11 +117,11 @@ const getProjectTimers = (projectId) => {
             let result = []
             store.chainer(chain.projectTimers(projectId), store.app).map().on((data, key) => {
                 if (!data) {
-                    debug.data && console.log('[GUN node] getTimers No Data Found')
+                    debug.data && console.log('[GUN node] getProjectTimers No Data Found')
                 }
                 let foundData = trimSoul(data)
-                debug.data && console.log('[GUN node] getTimers Data Found: ', typeof foundData, foundData)
-                if (foundData.project === projectId) {
+                debug.data && console.log('[GUN node] getProjectTimers Data Found: ', key, foundData)
+                if (foundData.project === projectId && foundData.id === key) {
                     result.push(foundData)
                 }
             })
