@@ -4,6 +4,7 @@ export const cloneTimer = timer => {
     const hashids = new Hashids()
     let clone = timer
     clone.id = hashids.encode(Date.now().toString())
+    clone.count = 0
     return clone
 }
 

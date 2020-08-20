@@ -4,11 +4,11 @@ import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
 let debug = {
-    state: false,
-    data: false,
-    listeners: false,
-    parsing: false,
-    sorting: false
+    state: true,
+    data: true,
+    listeners: true,
+    parsing: true,
+    sorting: true
 }
 
 let
@@ -203,7 +203,9 @@ const getProjectDates = (day) => new Promise((resolve, reject) => {
                 debug.data && console.log('[GUN node] getProjectDates No Data Found',)
             }
             let foundData = trimSoul(data)
-            result.push(foundData)
+            if(foundData.type === 'project') {
+                result.push(foundData)
+            }
             debug.data && console.log('[GUN node] getDayTimers Data Found: ', typeof foundData, foundData)
         })
         resolve(result)

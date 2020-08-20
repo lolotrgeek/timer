@@ -10,7 +10,7 @@ const gun = new Gun({
     peers: peers,
 })
 const app = gun.get('app')
-const debug = true
+const debug = false
 
 debug && console.log('App prototype:', Object.getPrototypeOf(app))
 

@@ -196,6 +196,7 @@ export const getTodaysCount = (date, total) => {
     else return 0
 }
 
+////FIX HERE
 /**
  * Setting count from last project count and total timer count
  * @param {Object} timer 

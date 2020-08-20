@@ -50,7 +50,7 @@ export default function Running() {
                     <Text>{count}</Text>
                 </View>
                 <View style={{ width: '20%' }}>
-                    {!running || running.id === 'none' ?
+                    {!running || !running.id ?
                         <Text>No Running Timer</Text> : running.status === 'done' ?
                             //TODO: assuming that project exists on start... needs validation
                             <Button title='start' onPress={() => {

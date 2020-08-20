@@ -74,7 +74,6 @@ export default function Projects({ useHistory, useParams }) {
             <Button title="Timers" onPress={() => generateTimers()} />
             <Button title='Refresh' onPress={() => setOnline(!online)} />
             <Button title='Clear' onPress={() => {
-                // running = { id: 'none', name: 'none', project: 'none' }
                 setProjects([])
                 setOnline(!online)
             }} />
