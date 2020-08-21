@@ -2,8 +2,8 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions } from 'react-native';
-import { timeSpan, totalTime } from '../constants/Functions'
+import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, TextInput } from 'react-native';
+import { timeSpan, totalTime, timeString, dateSimple } from '../constants/Functions'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
@@ -19,26 +19,25 @@ const loadAll = false
 export default function Timer({ useHistory, useParams }) {
     let history = useHistory();
     let { timerId } = useParams();
-    const [online, setOnline] = useState(false)
-    const [timer, setTimer] = useState();
+    const [refresh, setRefresh] = useState(false)
+    const [timer, setTimer] = useState({});
 
     useEffect(() => {
+        // TODO: destroys edits on refresh, keep state through refresh
         messenger.addListener(`${timerId}`, event => {
             setTimer(event)
+            console.log(timer)
         })
         messenger.emit('getTimer', { timerId })
         return () => messenger.removeAllListeners(`${timerId}`)
-    }, [online])
-
+    }, [])
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
             <Button title='Refresh' onPress={() => {
-                setOnline(!online)
             }} />
             <Button title='Clear' onPress={() => {
                 setTimer([])
-                setOnline(!online)
             }} />
             <Button title='Delete' onPress={() => {
                 Data.deleteTimer(timer)
@@ -55,20 +54,35 @@ export default function Timer({ useHistory, useParams }) {
             <HeaderButtons />
         </View>
     )
-
+    if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={styles.list}>
-                {timer ? <View>
-                    <Text>{timer.project}</Text>
-                    <Text>{timer.started}</Text>
-                    <Text>{timer.ended}</Text>
-                    <Text>{totalTime(timer.started, timer.ended)}</Text>
-                    <Text>{timer.mood}</Text>
-                    <Text>{timer.energy}</Text>
+
+                <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
+
+                <View style={{ flexDirection: 'row' }}>
+                    <Button title='<' onPress={() => {messenger.emit('prevDay', timer); setRefresh(!refresh)}} />
+                    <Text>{dateSimple(timer.started)}</Text>
+                    <Button title='>' onPress={() => {messenger.emit('nextDay', timer); setRefresh(!refresh)}} />
                 </View>
-                    : <Text>No Timer</Text>}
+
+                <View style={{ flexDirection: 'row' }}>
+                    <Button title='<' onPress={() => {messenger.emit('decreaseStarted', timer); setRefresh(!refresh)}} />
+                    <Text>{timeString(timer.started)}</Text>
+                    <Button title='>' onPress={() => {messenger.emit('increaseStarted', timer); setRefresh(!refresh)}} />
+                </View>
+
+                <View style={{ flexDirection: 'row' }}>
+                    <Button title='<' onPress={() => {messenger.emit('decreaseEnded', timer); setRefresh(!refresh)}} />
+                    <Text>{timeString(timer.ended)}</Text>
+                    <Button title='>' onPress={() => {messenger.emit('increaseEnded', timer); setRefresh(!refresh)}} />
+                </View>
+
+                <Text>{timer.mood}</Text>
+                <Text>{timer.energy}</Text>
+
             </View>
         </SafeAreaView>
     );
@@ -84,7 +98,8 @@ const styles = StyleSheet.create({
         width: '100%',
         background: 'white',
         zIndex: 10000,
-        flexDirection: 'column'
+        flexDirection: 'column',
+
     },
     container: {
         backgroundColor: '#fff',
@@ -94,7 +109,8 @@ const styles = StyleSheet.create({
     list: {
         marginTop: 170,
         height: Dimensions.get('window').height - 170,
-        flexDirection: 'row',
+        flexDirection: 'column',
+        alignItems: 'center',
         width: '100%',
         backgroundColor: '#ccc'
     },

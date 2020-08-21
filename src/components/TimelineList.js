@@ -53,10 +53,6 @@ export default function TimelineList({ useHistory }) {
         }
     }, [])
 
-    useEffect(() => {
-
-    }, [pages])
-
     const RenderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>

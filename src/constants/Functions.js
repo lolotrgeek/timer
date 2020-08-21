@@ -128,7 +128,12 @@ export const dateRules = date => compareAsc(date, new Date()) === 1 ? false : da
  * 
  * @param {*} date 
  */
-export const timeString = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
+export const timeStringOld = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
+export const timeString = date => {
+    if (typeof date === 'string') date = new Date(date)
+    return moment(date).format('hh:mm:ss a')
+}
+
 /**
  * get number of seconds between two dates
  * @param {*} start 
