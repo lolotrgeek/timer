@@ -122,7 +122,7 @@ const getProjectTimers = (projectId) => {
                 }
                 let foundData = trimSoul(data)
                 debug.data && console.log('[GUN node] getProjectTimers Data Found: ', key, data)
-                if (foundData.project === projectId) {
+                if (foundData.project === projectId && foundData.status !== 'deleted') {
                     result.push(foundData)
                 }
             })

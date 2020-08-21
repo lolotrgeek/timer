@@ -24,21 +24,28 @@ const setTotal = number => current.total = number
 
 //LISTENING
 messenger.on('getTimer', msg => {
-    console.log('timer', msg.timerId)
+    debug && console.log('timer', msg.timerId)
     getTimer(msg.timerId).then(found => {
         current = found
         previous.total = found.total
         previous.started = found.started
-        console.log(current)
+        debug && console.log(current)
         messenger.emit(`${msg.timerId}`, current)
 
         getProjectDate(dateSimple(current.started), current.project).then(projectfound => {
             project = projectfound
-            console.log(project)
-            console.log(`${current.id}/saveEdits`)
+            debug && console.log(project)
+            debug && console.log(`${current.id}/saveEdits`)
             messenger.on(`${current.id}/saveEdits`, msg => {
-                console.log('edit', msg)
+                debug && console.log('edit', msg)
                 editComplete()
+            })
+            messenger.on(`${current.id}/delete`, msg => {
+                if (msg && msg.id === current.id) {
+                    removeTimer(current)
+                    current = {}
+                    messenger.emit(`${current.id}/deleted`, current)
+                }
             })
         })
     })
@@ -110,7 +117,7 @@ const chooseNewDate = (newDate, timer) => {
             let oldStart = isValid(timer.started) ? timer.started : new Date(timer.started)
             let oldEnd = isValid(timer.ended) ? timer.ended : new Date(timer.ended)
             let newStart = new Date(getYear(newDate), getMonth(newDate), getDate(newDate), getHours(oldStart), getMinutes(oldStart), getSeconds(oldStart))
-            console.log(isValid(newStart))
+            debug && console.log(isValid(newStart))
             setStarted(newStart)
             let newEnd = new Date(getYear(newDate), getMonth(newDate), getDate(newDate), getHours(oldEnd), getMinutes(oldEnd), getSeconds(oldEnd))
             setEnded(newEnd)
@@ -199,13 +206,11 @@ const editComplete = () => {
     // updatedtimer.total = totalTime(current.started, current.ended)
     let updatedproject = project
     updatedproject.lastrun = sameDay(previous.started, project.lastrun) ? current.started : project.lastrun
-    console.log('current total', current.total,' before total', previous.total)
+    debug && console.log('current total', current.total, ' before total', previous.total)
     let prevcount = project.lastcount - previous.total // remove previous count
-    console.log(previous.total)
     let lastcount = prevcount + current.total
-    console.log(lastcount)
-    updatedproject.lastcount = lastcount 
-    console.log('updatedproject', updatedproject)
+    updatedproject.lastcount = lastcount
+    debug && console.log('updatedproject', updatedproject)
     if (current && current.type === 'timer') {
         Data.updateTimer(current)
         setAlert(['Success', 'Timer Updated!',])
@@ -225,20 +230,23 @@ const editComplete = () => {
 
 const removeTimer = timer => {
     Data.deleteTimer(timer)
+    // project.lastrun = sameDay(previous.started, project.lastrun) ? current.started : project.lastrun
+    project.lastcount = project.lastcount - previous.total
+    store.put(chain.projectDate(project.lastrun, project.id), project)
     setAlert(['Success', 'Timer Deleted!'])
 }
 
 messenger.on('nextDay', msg => {
     if (msg && msg.id === current.id) {
         nextDay(current)
-        console.log('nextDay:', current)
+        debug && console.log('nextDay:', current)
         messenger.emit(`${current.id}`, current)
     }
 })
 messenger.on('prevDay', msg => {
     if (msg && msg.id === current.id) {
         previousDay(current)
-        console.log('prevDay:', current)
+        debug && console.log('prevDay:', current)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -246,7 +254,7 @@ messenger.on('increaseStarted', msg => {
     if (msg && msg.id === current.id) {
         increaseStarted(current)
         current.total = totalTime(current.started, current.ended)
-        console.log(current.total, previous.total)
+        debug && console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -254,7 +262,7 @@ messenger.on('decreaseStarted', msg => {
     if (msg && msg.id === current.id) {
         decreaseStarted(current)
         current.total = totalTime(current.started, current.ended)
-        console.log(current.total, previous.total)
+        debug && console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -262,7 +270,7 @@ messenger.on('increaseEnded', msg => {
     if (msg && msg.id === current.id) {
         increaseEnded(current)
         current.total = totalTime(current.started, current.ended)
-        console.log(current.total, previous.total)
+        debug && console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -270,14 +278,7 @@ messenger.on('decreaseEnded', msg => {
     if (msg && msg.id === current.id) {
         decreaseEnded(current)
         current.total = totalTime(current.started, current.ended)
-        console.log(current.total, previous.total)
-        messenger.emit(`${current.id}`, current)
-    }
-})
-messenger.on('removeTimer', msg => {
-    if (msg && msg.id === current.id) {
-        removeTimer(current)
-        setTimer({})
+        debug && console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -290,9 +291,9 @@ const getTimer = timerId => {
         try {
             // OPTIMIZE: listen for changes with 'on' then update state in the background
             store.chainer(chain.timer(timerId), store.app).once((data, key) => {
-                console.log(key)
+                debug && console.log(key)
                 const foundData = trimSoul(data)
-                console.log('foundTimer', foundData) // left off here try to debug with 'ack'
+                debug && console.log('foundTimer', foundData) // left off here try to debug with 'ack'
                 if (foundData && foundData.type === 'timer') {
                     resolve(foundData)
                 }

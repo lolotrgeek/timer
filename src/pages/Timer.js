@@ -31,15 +31,16 @@ export default function Timer({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => {
-            }} />
-            <Button title='Clear' onPress={() => {
-                setTimer([])
-            }} />
-            <Button title='Delete' onPress={() => {
-                messenger.emit(`${timerId}/delete`, timer)
-                history.push(projectlink(timer.project))
-            }} />
+            <Button title='Refresh' onPress={() => setRefresh(!refresh) } />
+            {timer && timer.status !== 'deleted' ?
+                <Button title='Delete' onPress={() => {
+                    messenger.emit(`${timerId}/delete`, timer)
+                    // history.push(projectlink(timer.project))
+                }} />
+                : timer.status === 'deleted' ?
+                    <Button title='Restore' onPress={() => { }} />
+                    : <Text></Text>
+            }
             <Button title='History' onPress={() => {
                 history.push(timerHistorylink(timerId))
             }} />
@@ -58,7 +59,7 @@ export default function Timer({ useHistory, useParams }) {
             <View style={styles.list}>
 
                 <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
-
+                <Text>{timer.status}</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Button title='<' onPress={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }} />
                     <Text>{dateSimple(timer.started)}</Text>
