@@ -6,8 +6,7 @@ import * as store from '../data/Store'
 
 let debug = true
 let timerState = {}
-let current // current project in view state
-let running = { id: 'none', name: 'none', project: 'none' }
+let current
 
 messenger.on('getTimer', msg => {
     console.log('timer', msg.timerId)

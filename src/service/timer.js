@@ -128,7 +128,7 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
         store.put(chain.timer(timer.id), timer)
         store.set(chain.timerHistory(timer.id), timer)
         store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
-        store.put(chain.projectDate(timer.started, project.id), project)
+        store.put(chain.projectDate(project.lastrun, project.id), project)
         store.put(chain.projectTimer(project.id, timer.id), timer)
         debug && console.log('[react Data] Ended', timer, project)
         resolve(timer)
@@ -198,7 +198,7 @@ const getProject = (projectId) => {
 const getRunning = () => new Promise((resolve, reject) => {
     store.chainer('running', store.app).once((data, key) => {
         if (!data) reject('no Running')
-        data = parse(data)
+        data = trimSoul(data)
         if (data && data.type === 'timer') {
             debug && console.log('Got Running Timer...')
             resolve(data)

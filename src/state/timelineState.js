@@ -5,7 +5,7 @@ import * as chain from '../data/Chains'
 
 let debug = {
     state: false,
-    data: false,
+    data: true,
     listeners: false,
     parsing: false,
     sorting: false
@@ -206,7 +206,7 @@ const getProjectDates = (day) => new Promise((resolve, reject) => {
             if(foundData.type === 'project') {
                 result.push(foundData)
             }
-            debug.data && console.log('[GUN node] getDayTimers Data Found: ', typeof foundData, foundData)
+            debug.data && console.log('[GUN node] getDayTimers Data Found: ', key, foundData)
         })
         resolve(result)
     } catch (err) {
