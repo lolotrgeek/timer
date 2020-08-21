@@ -1,6 +1,6 @@
 
 import { addMinutes, isValid, sub, add, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } from 'date-fns'
-import { timeRules, dateRules, totalTime, trimSoul, isRunning, fullDate } from '../constants/Functions'
+import { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import * as Data from '../data/Data'
 import * as chain from '../data/Chains'
@@ -10,7 +10,9 @@ import * as store from '../data/Store'
 let debug = true
 // STATE
 let timerState = {}
+let previous = {}
 let current = {}
+let project = {}
 
 const setAlert = alert => console.log(alert)
 const setTimer = object => current.timer = object
@@ -25,11 +27,22 @@ messenger.on('getTimer', msg => {
     console.log('timer', msg.timerId)
     getTimer(msg.timerId).then(found => {
         current = found
-        // setStarted(new Date(current.started))
-        // setEnded(new Date(current.ended))
+        previous.total = found.total
+        previous.started = found.started
         console.log(current)
         messenger.emit(`${msg.timerId}`, current)
+
+        getProjectDate(dateSimple(current.started), current.project).then(projectfound => {
+            project = projectfound
+            console.log(project)
+            console.log(`${current.id}/saveEdits`)
+            messenger.on(`${current.id}/saveEdits`, msg => {
+                console.log('edit', msg)
+                editComplete()
+            })
+        })
     })
+
 })
 
 // PARSING
@@ -142,23 +155,6 @@ const timeRulesEnforcer = (start, end) => {
     }
 }
 
-const editComplete = timer => {
-    if (!timeRulesEnforcer(timer.started, timer.ended)) return false
-    let updatedTimer = timer
-    updatedTimer.started = timer.started.toString()
-    updatedTimer.ended = timer.ended.toString()
-    updatedTimer.mood = timer.mood
-    updatedTimer.energy = timer.energy
-    updatedTimer.total = totalTime(timer.started, timer.ended)
-    if (updatedTimer && updatedTimer.type === 'timer') {
-        Data.updateTimer(updatedTimer)
-        setAlert(['Success', 'Timer Updated!',])
-    }
-    else {
-        setAlert(['Error', 'Timer Invalid!',])
-    }
-}
-
 const nextDay = timer => {
     let newDate = add(new Date(timer.started), { days: 1 })
     return chooseNewDate(newDate, timer) ? newDate : timer.started
@@ -193,6 +189,40 @@ const increaseEnded = timer => {
     return timeRulesEnforcer(checkedStart, newEnded) ? setEnded(newEnded) : timer.ended
 }
 
+const editComplete = () => {
+    if (!timeRulesEnforcer(current.started, current.ended)) return false
+    // let updatedtimer = current
+    // updatedtimer.started = current.started.toString()
+    // updatedtimer.ended = current.ended.toString()
+    // updatedtimer.mood = current.mood
+    // updatedtimer.energy = current.energy
+    // updatedtimer.total = totalTime(current.started, current.ended)
+    let updatedproject = project
+    updatedproject.lastrun = sameDay(previous.started, project.lastrun) ? current.started : project.lastrun
+    console.log('current total', current.total,' before total', previous.total)
+    let prevcount = project.lastcount - previous.total // remove previous count
+    console.log(previous.total)
+    let lastcount = prevcount + current.total
+    console.log(lastcount)
+    updatedproject.lastcount = lastcount 
+    console.log('updatedproject', updatedproject)
+    if (current && current.type === 'timer') {
+        Data.updateTimer(current)
+        setAlert(['Success', 'Timer Updated!',])
+    }
+    else {
+        setAlert(['Error', 'Timer Invalid!',])
+    }
+    if (updatedproject) {
+        store.put(chain.projectDate(updatedproject.lastrun, project.id), updatedproject)
+        setAlert(['Success', 'Project Updated!',])
+    }
+    else {
+        setAlert(['Error', 'Project Invalid!',])
+    }
+
+}
+
 const removeTimer = timer => {
     Data.deleteTimer(timer)
     setAlert(['Success', 'Timer Deleted!'])
@@ -215,24 +245,32 @@ messenger.on('prevDay', msg => {
 messenger.on('increaseStarted', msg => {
     if (msg && msg.id === current.id) {
         increaseStarted(current)
+        current.total = totalTime(current.started, current.ended)
+        console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
 messenger.on('decreaseStarted', msg => {
     if (msg && msg.id === current.id) {
         decreaseStarted(current)
+        current.total = totalTime(current.started, current.ended)
+        console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
 messenger.on('increaseEnded', msg => {
     if (msg && msg.id === current.id) {
         increaseEnded(current)
+        current.total = totalTime(current.started, current.ended)
+        console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
 messenger.on('decreaseEnded', msg => {
     if (msg && msg.id === current.id) {
         decreaseEnded(current)
+        current.total = totalTime(current.started, current.ended)
+        console.log(current.total, previous.total)
         messenger.emit(`${current.id}`, current)
     }
 })
@@ -243,6 +281,7 @@ messenger.on('removeTimer', msg => {
         messenger.emit(`${current.id}`, current)
     }
 })
+
 
 // DATA
 const getTimer = timerId => {
@@ -264,3 +303,27 @@ const getTimer = timerId => {
         }
     })
 }
+
+
+/**
+* 
+* @param {string} day simpledate `dd-mm-yyyy` 
+*/
+const getProjectDate = (day, projectId) => new Promise((resolve, reject) => {
+    try {
+        store.chainer(chain.projectDate(day, projectId), store.app).on((data, key) => {
+            if (!data) {
+                debug.data && console.log('[GUN node] getProjectDate No Data Found',)
+            }
+            let foundData = trimSoul(data)
+            if (foundData.type === 'project') {
+                debug.data && console.log('[GUN node] getProjectDate Data Found: ', key, foundData)
+
+                resolve(foundData)
+            }
+        })
+    } catch (err) {
+        reject(err)
+    }
+
+})

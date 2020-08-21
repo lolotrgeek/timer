@@ -206,7 +206,7 @@ const getProjectDates = (day) => new Promise((resolve, reject) => {
             if(foundData.type === 'project') {
                 result.push(foundData)
             }
-            debug.data && console.log('[GUN node] getDayTimers Data Found: ', key, foundData)
+            debug.data && console.log('[GUN node] getProjectDates Data Found: ', key, foundData)
         })
         resolve(result)
     } catch (err) {

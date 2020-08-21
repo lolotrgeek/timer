@@ -10,11 +10,9 @@ import * as chain from '../data/Chains'
 import { timerHistorylink, projectlink } from '../routes'
 import '../state/timerState'
 
-
 const debug = false
 const test = false
 const loadAll = false
-
 
 export default function Timer({ useHistory, useParams }) {
     let history = useHistory();
@@ -26,7 +24,6 @@ export default function Timer({ useHistory, useParams }) {
         // TODO: destroys edits on refresh, keep state through refresh
         messenger.addListener(`${timerId}`, event => {
             setTimer(event)
-            console.log(timer)
         })
         messenger.emit('getTimer', { timerId })
         return () => messenger.removeAllListeners(`${timerId}`)
@@ -40,7 +37,7 @@ export default function Timer({ useHistory, useParams }) {
                 setTimer([])
             }} />
             <Button title='Delete' onPress={() => {
-                Data.deleteTimer(timer)
+                messenger.emit(`${timerId}/delete`, timer)
                 history.push(projectlink(timer.project))
             }} />
             <Button title='History' onPress={() => {
@@ -63,25 +60,30 @@ export default function Timer({ useHistory, useParams }) {
                 <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
 
                 <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => {messenger.emit('prevDay', timer); setRefresh(!refresh)}} />
+                    <Button title='<' onPress={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }} />
                     <Text>{dateSimple(timer.started)}</Text>
-                    <Button title='>' onPress={() => {messenger.emit('nextDay', timer); setRefresh(!refresh)}} />
+                    <Button title='>' onPress={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }} />
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => {messenger.emit('decreaseStarted', timer); setRefresh(!refresh)}} />
+                    <Button title='<' onPress={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }} />
                     <Text>{timeString(timer.started)}</Text>
-                    <Button title='>' onPress={() => {messenger.emit('increaseStarted', timer); setRefresh(!refresh)}} />
+                    <Button title='>' onPress={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }} />
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => {messenger.emit('decreaseEnded', timer); setRefresh(!refresh)}} />
+                    <Button title='<' onPress={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }} />
                     <Text>{timeString(timer.ended)}</Text>
-                    <Button title='>' onPress={() => {messenger.emit('increaseEnded', timer); setRefresh(!refresh)}} />
+                    <Button title='>' onPress={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }} />
                 </View>
 
                 <Text>{timer.mood}</Text>
                 <Text>{timer.energy}</Text>
+
+                <Button title='Save' onPress={() => {
+                    messenger.emit(`${timerId}/saveEdits`, { timerId })
+                    console.log(`${timerId}/saveEdits`)
+                }} />
 
             </View>
         </SafeAreaView>

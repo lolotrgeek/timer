@@ -69,6 +69,8 @@ export const updateTimer = (timer) => {
     debug && console.log('[react Data] Updating Timer', editedTimer)
     store.set(chain.timerHistory(editedTimer.id), editedTimer)
     store.put(chain.timer(editedTimer.id), editedTimer)
+    store.put(chain.timerDate(editedTimer.started, editedTimer.id), true)
+    store.put(chain.projectTimer(editedTimer.project, editedTimer.id), editedTimer)
     if (timer.started !== editedTimer.started) {
         let timerMoved = timer
         timerMoved.deleted = new Date().toString()

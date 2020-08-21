@@ -70,6 +70,7 @@ export const nextDay = date => {
     return moment(addDays(date, 1)).format('MM-DD-YYYY')
 }
 
+export const sameDay = (a, b) => moment(a).isSame(b, 'day')
 
 export const differenceInSeconds = (start, end) => {
     let a = moment(start)
@@ -201,7 +202,6 @@ export const getTodaysCount = (date, total) => {
     else return 0
 }
 
-////FIX HERE
 /**
  * Setting count from last project count and total timer count
  * @param {Object} timer 
