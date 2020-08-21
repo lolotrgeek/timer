@@ -4,7 +4,7 @@ import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink } from '../routes'
 import Messenger from '../constants/Messenger'
 import '../state/projectCreateState'
-import '../state/projectEditState'
+
 
 export default function ProjectCreate({ useHistory, useParams }) {
   let history = useHistory()

@@ -42,6 +42,18 @@ messenger.on('ProjectEdit', event => {
     //TODO unhappy paths
 })
 
+messenger.on('ProjectDelete', event => {
+    if (event && event.id && event.type === 'project') {
+        deleteProject(event)
+    }
+})
+
+messenger.on('ProjectRestore', event => {
+    if (event && event.id && event.type === 'project') {
+        restoreProject(event)
+    }
+})
+
 // DATA \\
 const getProject = (projectId) => {
     return new Promise((resolve, reject) => {
@@ -92,6 +104,76 @@ const updateProject = (projectEdit) => {
         // TODO: make this part of chaining?
         messenger.on(`project/${projectEdit.id}`, event => {
             if (event === projectEdit) resolve(projectEdit)
+            else reject(event)
+        })
+    })
+}
+
+const deleteProject = (projectDelete) => {
+    return new Promise(async (resolve, reject) => {
+        projectDelete.status = 'deleted'
+        projectDelete.deleted = new Date().toString()
+        debug && console.log('[react Data] Deleting Project', projectDelete)
+        store.set(chain.projectHistory(projectDelete.id), projectDelete)
+        store.put(chain.project(projectDelete.id), projectDelete)
+        try {
+            let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
+            console.log(days)
+            if (days && days.length > 0) {
+                days.forEach(async day => {
+                    let projectDates = await getProjectDates(day)
+                    console.log('projectDates: ', projectDates)
+                    projectDates.forEach(projectDate => {
+                        if (projectDate.id === projectDelete.id) {
+                            console.log('Deleting projectDate: ', projectDate)
+                            store.put(chain.projectDate(day, projectDelete.id), projectDelete)
+                        }
+                    })
+                })
+            }
+        } catch (error) {
+            reject('could not delete ', error)
+        }
+
+        // Callback message from UI
+        // TODO: make this part of chaining?
+        messenger.on(`project/${projectDelete.id}`, event => {
+            if (event === projectDelete) resolve(projectDelete)
+            else reject(event)
+        })
+    })
+}
+
+const restoreProject = (project) => {
+    return new Promise(async (resolve, reject) => {
+        project.status = 'active'
+        project.deleted = new Date().toString()
+        debug && console.log('[react Data] Restoring Project', project)
+        store.set(chain.projectHistory(project.id), project)
+        store.put(chain.project(project.id), project)
+        try {
+            let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
+            console.log(days)
+            if (days && days.length > 0) {
+                days.forEach(async day => {
+                    let projectDates = await getProjectDates(day)
+                    console.log('projectDates: ', projectDates)
+                    projectDates.forEach(projectDate => {
+                        if (projectDate.id === project.id) {
+                            console.log('Restoring projectDate: ', projectDate)
+                            store.put(chain.projectDate(day, project.id), project)
+                        }
+                    })
+                })
+            }
+        } catch (error) {
+            reject('could not restore ', error)
+        }
+
+        // Callback message from UI
+        // TODO: make this part of chaining?
+        messenger.on(`project/${project.id}`, event => {
+            if (event === project) resolve(project)
             else reject(event)
         })
     })

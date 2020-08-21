@@ -8,6 +8,7 @@ import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectEditlink, timerlink, projectsListLink, timerTrashlink } from '../routes'
 import '../state/projectState'
+import '../state/projectEditState'
 
 const debug = true
 const test = false
@@ -81,10 +82,15 @@ export default function Project({ useHistory, useParams }) {
             <Button title='History' onPress={() => {
                 history.push(projectHistorylink(projectId))
             }} />
-            <Button title='Delete' onPress={() => {
-                Data.deleteProject(project)
-                history.push(projectsListLink())
-            }} />
+            {project && project.status !== 'deleted' ?
+                <Button title='Delete' onPress={() => {
+                    messenger.emit('ProjectDelete', project)
+                    // history.push(projectlink(timer.project))
+                }} />
+                : project.status === 'deleted' ?
+                    <Button title='Restore' onPress={() => { messenger.emit('ProjectRestore', project)}} />
+                    : <Text></Text>
+            }
             <Button title='Trash' onPress={() => history.push(timerTrashlink(projectId))} />
 
         </View>
