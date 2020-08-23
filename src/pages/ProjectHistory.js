@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
-import '../state/projectHistoryState'
 
 export default function ProjectHistory({ useHistory, useParams }) {
     let history = useHistory()
@@ -34,11 +33,11 @@ export default function ProjectHistory({ useHistory, useParams }) {
                     <Text>{item.edited}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                {edits.length - 1 === index ?
+                    {edits.length - 1 === index ?
                         <Text>Active</Text> :
                         <Button onPress={() => { messenger.emit('ProjectRestore', item); setRefresh(!refresh) }} title='Restore' />
                     }
-                    
+
                 </View>
             </View>
         );

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, TextInput, Text, Button, StyleSheet } from 'react-native'
+import { View, TextInput, Text, Button, StyleSheet, } from 'react-native'
 import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink } from '../routes'
 import Messenger from '../constants/Messenger'
-import '../state/projectCreateState'
 
 
 export default function ProjectCreate({ useHistory, useParams }) {
@@ -44,7 +43,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{color: color,}}>{name.length > 0 ? name : 'New Project'}</Text>
+      <Text style={{ color: color, }}>{name.length > 0 ? name : 'New Project'}</Text>
       <TextInput
         style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
         value={name}

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } from 'react-native';
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import * as routes from '../routes'
-import '../state/projectTrashState'
 
 export default function ProjectTrash({ useHistory, useParams }) {
     let history = useHistory()

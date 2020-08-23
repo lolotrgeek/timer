@@ -26,7 +26,7 @@ const gun = new Gun({
 })
 debug && console.log('Relay peer started on port ' + config.port + ' with /gun');
 
-const native = require('../native-bridge');
+const native = require('./native-bridge');
 const { node } = require('gun');
 const app = gun.get('app')
 

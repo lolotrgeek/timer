@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform} from 'react-native';
 import Running from '../components/Running'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { projectlink, projectTrashlink } from '../routes'
 import {generateProject, generateTimer} from '../constants/Tests'
-import '../state/projectsState'
 
 const debug = false
 const test = false
@@ -111,7 +110,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         width: '100%',
-        background: 'white',
+        backgroundColor: 'white',
         zIndex: 10000,
         flexDirection: 'column'
     },

@@ -2,13 +2,12 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, TextInput } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
 import { timeSpan, totalTime, timeString, dateSimple } from '../constants/Functions'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import { timerHistorylink, projectlink } from '../routes'
-import '../state/timerState'
 
 const debug = false
 const test = false
@@ -31,7 +30,7 @@ export default function Timer({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => setRefresh(!refresh) } />
+            <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
             {timer && timer.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
                     messenger.emit(`${timerId}/delete`, timer)
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         width: '100%',
-        background: 'white',
+        backgroundColor: 'white',
         zIndex: 10000,
         flexDirection: 'column',
 

@@ -1,15 +1,13 @@
 const native = require('./native-bridge')
 
-function emit(channelname, event) {
+exports.emit = (channelname, event) => {
     native.channel.post(channelname, event)
 }
 
-function addListener (channelname, event) {
+exports.addListener =(channelname, event)=> {
     native.channel.on(channelname, event)
 }
 
-function on (channelname, event) {
+exports.on = (channelname, event) => {
     native.channel.on(channelname, event)
 }
-
-exports = {emit, addListener, on}

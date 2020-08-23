@@ -2,13 +2,13 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
 import { timeSpan } from '../constants/Functions'
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectEditlink, timerlink, projectsListLink, timerTrashlink } from '../routes'
-import '../state/projectState'
-import '../state/projectEditState'
+
+
 
 const debug = true
 const test = false

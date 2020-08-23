@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } from 'react-native';
 import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import * as routes from '../routes'
-import '../state/timerTrashState'
 
 export default function TimerTrash({ useHistory, useParams }) {
     let history = useHistory()
@@ -20,7 +19,7 @@ export default function TimerTrash({ useHistory, useParams }) {
             }
         })
 
-        messenger.emit('getTimerTrash', {projectId: projectId })
+        messenger.emit('getTimerTrash', { projectId: projectId })
     }, [])
 
 
@@ -76,7 +75,7 @@ export default function TimerTrash({ useHistory, useParams }) {
 
 const styles = StyleSheet.create({
     header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
-    
+
     container: {
         flex: 1,
         marginTop: 50,
@@ -85,8 +84,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
-        marginTop: 170, 
-        height: Dimensions.get('window').height - 170 ,
+        marginTop: 170,
+        height: Dimensions.get('window').height - 170,
         flexDirection: 'row',
         width: '100%',
         backgroundColor: '#fff'
