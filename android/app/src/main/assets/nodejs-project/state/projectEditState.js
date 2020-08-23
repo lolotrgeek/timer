@@ -1,8 +1,10 @@
-const messenger = require('../Messenger')
-const { colorValid, nameValid, projectValid } = require('../Validators')
-const { trimSoul } = require('../Functions')
-const chain = require('../Chains')
-const store = require('../Store')
+/* eslint-disable no-async-promise-executor */
+/* eslint-disable no-unused-vars */
+const messenger = require('../src/Messenger')
+const { colorValid, nameValid, projectValid } = require('../src/Validators')
+const { trimSoul } = require('../src/Functions')
+const chain = require('../src/Chains')
+const store = require('../src/Store')
 
 let debug = false
 let state = {

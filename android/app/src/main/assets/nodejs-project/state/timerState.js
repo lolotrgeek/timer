@@ -1,10 +1,10 @@
-
-const { addMinutes, isValid, sub, add, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } = require('date-fns')
-const { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } = require('../Functions')
-const messenger = require('../Messenger')
-const Data = require('../Data')
-const chain = require('../Chains')
-const store = require('../Store')
+/* eslint-disable no-unused-vars */
+const { addMinutes, subMinutes, isValid, subDays, addDays, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } = require('../src/Functions')
+const { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } = require('../src/Functions')
+const messenger = require('../src/Messenger')
+const Data = require('../src/Data')
+const chain = require('../src/Chains')
+const store = require('../src/Store')
 
 
 let debug = true
@@ -163,17 +163,17 @@ const timeRulesEnforcer = (start, end) => {
 }
 
 const nextDay = timer => {
-    let newDate = add(new Date(timer.started), { days: 1 })
+    let newDate = addDays(new Date(timer.started),1 )
     return chooseNewDate(newDate, timer) ? newDate : timer.started
 }
 
 const previousDay = timer => {
-    let newDate = sub(new Date(timer.started), { days: 1 })
+    let newDate = subDays(new Date(timer.started), 1 )
     return chooseNewDate(newDate, timer) ? newDate : timer.started
 }
 
 const decreaseStarted = timer => {
-    let newStarted = addMinutes(new Date(timer.started), -5)
+    let newStarted = subMinutes(new Date(timer.started), 5)
     let checkedEnd = isRunning(timer) ? new Date() : new Date(timer.ended)
     return timeRulesEnforcer(newStarted, checkedEnd) ? setStarted(newStarted) : timer.started
 }
@@ -185,7 +185,7 @@ const increaseStarted = timer => {
 }
 
 const decreaseEnded = timer => {
-    let newEnded = isRunning(timer) ? new Date() : addMinutes(new Date(timer.ended), -5)
+    let newEnded = isRunning(timer) ? new Date() : subMinutes(new Date(timer.ended), 5)
     let checkedStart = isRunning(timer) ? new Date() : new Date(timer.started)
     return timeRulesEnforcer(checkedStart, newEnded) ? setEnded(newEnded) : timer.ended
 }

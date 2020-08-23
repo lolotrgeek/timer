@@ -1,7 +1,8 @@
-const { totalTime, parse, trimSoul, isRunning, dayHeaders, dateRules, dateSimple } = require('../Functions')
-const store = require('../Store')
-const messenger = require('../Messenger')
-const chain = require('../Chains')
+/* eslint-disable no-unused-vars */
+const { totalTime, parse, trimSoul, isRunning, dayHeaders, dateRules, dateSimple } = require('../src/Functions')
+const store = require('../src/Store')
+const messenger = require('../src/Messenger')
+const chain = require('../src/Chains')
 
 let debug = {
     state: false,

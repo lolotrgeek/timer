@@ -1,3 +1,11 @@
 
 require('./timer')
-
+require('./state/timelineState')
+require('./state/projectCreateState')
+require('./state/projectHistoryState')
+require('./state/projectTrashState')
+require('./state/timerState')
+require('./state/timerHistoryState')
+require('./state/timerTrashState')
+require('./state/projectState')
+require('./state/projectEditState')

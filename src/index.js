@@ -9,6 +9,7 @@ AppRegistry.registerComponent('Notify', () => App);
 if (Platform.OS === 'web') {
   const rootTag = document.getElementById('root') || document.getElementById('main');
   AppRegistry.runApplication('Notify', { rootTag });
+  require('./service/timer')
   require('./state/timelineState')
   require('./state/projectCreateState')
   require('./state/projectHistoryState')

@@ -216,7 +216,7 @@ const getAll = (msg) => {
       result.push(foundData)
       debug && console.log('[GUN node] getAll Data Found: ', typeof foundData, foundData)
   })
-  native.channel.post(input, data)
+  native.channel.post(input, result)
   eventEmitter.emit(input, result)
 
 }
@@ -234,8 +234,8 @@ const getAllOnce = (msg) => {
       result[key] = foundData
       debug && console.log('[GUN node] getAllOnce Data Found: ', typeof foundData, foundData)
     })
-    native.channel.post(input, data)
-    eventEmitter.emit(msg, data)
+    native.channel.post(input, result)
+    eventEmitter.emit(input, result)
 }
 
 /**

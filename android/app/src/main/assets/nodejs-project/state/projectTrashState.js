@@ -1,7 +1,8 @@
-const messenger = require('../Messenger')
-const {trimSoul} = require('../Functions')
-const chain = require('../Chains')
-const store = require('../Store')
+/* eslint-disable no-unused-vars */
+const messenger = require('../src/Messenger')
+const {trimSoul} = require('../src/Functions')
+const chain = require('../src/Chains')
+const store = require('../src/Store')
 let debug = true
 let state = {
     trash: []

@@ -1,8 +1,9 @@
-const messenger = require('../Messenger')
-const { colorValid, nameValid } = require('../Validators')
-const chain = require('../Chains')
-const store = require('../Store')
-const { newProject } = require('../Models')
+/* eslint-disable no-unused-vars */
+const messenger = require('../src/Messenger')
+const { colorValid, nameValid } = require('../src/Validators')
+const chain = require('../src/Chains')
+const store = require('../src/Store')
+const { newProject } = require('../src/Models')
 
 let debug = true
 let state = {}

@@ -1,11 +1,12 @@
+/* eslint-disable no-unused-vars */
 // this generates the state for any timerlist
 
 // features: pagination, sorting, last scroll position, async data requests, mutable state, background state changes   
 
-const { totalTime, parse, trimSoul } = require('../Functions')
-const store = require('../Store')
-const messenger = require('../Messenger')
-const chain = require('../Chains')
+const { totalTime, parse, trimSoul } = require('../src/Functions')
+const store = require('../src/Store')
+const messenger = require('../src/Messenger')
+const chain = require('../src/Chains')
 
 // TODO: page position retained after navigation
 // TODO: test remote updating
