@@ -8,6 +8,7 @@ import '../state/projectHistoryState'
 export default function ProjectHistory({ useHistory, useParams }) {
     let history = useHistory()
     let { projectId } = useParams()
+    const [refresh, setRefresh] = useState(false)
     const [edits, setEdits] = useState([{ id: 'none' }])
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function ProjectHistory({ useHistory, useParams }) {
     }, [])
 
 
-    const renderProject = ({ item }) => {
+    const renderProject = ({ item, index }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
 
@@ -33,7 +34,11 @@ export default function ProjectHistory({ useHistory, useParams }) {
                     <Text>{item.edited}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Button onPress={() => { Data.restoreProject(item) }} title='Restore' />
+                {edits.length - 1 === index ?
+                        <Text>Active</Text> :
+                        <Button onPress={() => { messenger.emit('ProjectRestore', item); setRefresh(!refresh) }} title='Restore' />
+                    }
+                    
                 </View>
             </View>
         );

@@ -35,8 +35,8 @@ export default function ProjectTrash({ useHistory, useParams }) {
                 </View>
                 <View style={{ width: '30%' }}>
                     <Button title='Restore' onPress={() => {
-                        Data.restoreProject(item)
-                        history.push(routes.projectlink(item.id))
+                        messenger.emit('ProjectRestore', item)
+                        // history.push(routes.projectlink(item.id))
                     }} />
                 </View>
             </View>

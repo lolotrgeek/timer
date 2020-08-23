@@ -8,6 +8,7 @@ import '../state/timerHistoryState'
 export default function TimerHistory({ useHistory, useParams }) {
     let history = useHistory()
     let { timerId } = useParams()
+    const [refresh, setRefresh] = useState(false)
     const [edits, setEdits] = useState([{ id: 'none' }])
 
     useEffect(() => {
@@ -22,16 +23,19 @@ export default function TimerHistory({ useHistory, useParams }) {
     }, [])
 
 
-    const renderTimer = ({ item }) => {
+    const renderTimer = ({ item, index }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
-
+                <View style={{ width: '5%' }}>
+                    {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
+                    <Text>{index + 1}</Text>
+                </View>
                 <View style={{ width: '20%' }}>
                     {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
                     <Text>{item.status}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text>{item.started}</Text>
+                    <Text>{item.edited}</Text>
                 </View>
                 <View style={{ width: '15%' }}>
                     <Text>{item.mood}</Text>
@@ -40,8 +44,12 @@ export default function TimerHistory({ useHistory, useParams }) {
                 <View style={{ width: '10%' }}>
                     <Text>{item.energy}</Text>
                 </View>
-                <View style={{ width: '20%' }}>
-                    <Button onPress={() =>{Data.restoreTimer(item)}} title='Restore' />
+                <View style={{ width: '15%' }}>
+                    {edits.length - 1 === index ?
+                        <Text>Active</Text> :
+                        <Button onPress={() => { messenger.emit('TimerRestore', item); setRefresh(!refresh)}} title='Restore' />
+                    }
+
                 </View>
             </View>
         );

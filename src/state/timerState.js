@@ -229,12 +229,30 @@ const editComplete = () => {
 }
 
 const removeTimer = timer => {
-    Data.deleteTimer(timer)
+    let timerDelete = timer
+    timerDelete.deleted = new Date().toString()
+    timerDelete.status = 'deleted'
+    store.set(chain.timerHistory(timerDelete.id), timerDelete)
+    store.put(chain.timer(timerDelete.id), timerDelete)
+    store.put(chain.timerDate(timerDelete.started, timerDelete.id), false)
+    store.put(chain.projectTimer(timerDelete.project, timerDelete.id), timerDelete)
     // project.lastrun = sameDay(previous.started, project.lastrun) ? current.started : project.lastrun
     project.lastcount = project.lastcount - previous.total
     store.put(chain.projectDate(project.lastrun, project.id), project)
     setAlert(['Success', 'Timer Deleted!'])
 }
+
+const restoreTimer = timer => {
+    timer.status = 'done'
+    store.put(chain.timer(timer.id), timer)
+    store.set(chain.timerHistory(timer.id), timer)
+    store.put(chain.projectTimer(timer.project, timer.id), timer)
+    store.put(chain.timerDate(timer.started, timer.id), true)
+    project.lastcount = project.lastcount + timer.total
+    store.put(chain.projectDate(project.lastrun, project.id), project)
+    setAlert(['Success', 'Timer Restored!'])
+}
+
 
 messenger.on('nextDay', msg => {
     if (msg && msg.id === current.id) {
@@ -282,7 +300,11 @@ messenger.on('decreaseEnded', msg => {
         messenger.emit(`${current.id}`, current)
     }
 })
-
+messenger.on('TimerRestore', msg => {
+    if (msg && msg.id && msg.type === 'timer') {
+        restoreTimer(msg)
+    }
+})
 
 // DATA
 const getTimer = timerId => {

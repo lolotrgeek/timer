@@ -203,7 +203,7 @@ const getProjectDates = (day) => new Promise((resolve, reject) => {
                 debug.data && console.log('[GUN node] getProjectDates No Data Found',)
             }
             let foundData = trimSoul(data)
-            if(foundData.type === 'project') {
+            if(foundData.type === 'project' && foundData.status === 'active') {
                 result.push(foundData)
             }
             debug.data && console.log('[GUN node] getProjectDates Data Found: ', key, foundData)
