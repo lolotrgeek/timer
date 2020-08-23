@@ -41,9 +41,9 @@ export function get(key) {
  * @param {*} filter.value
  * @issue gets all data then filters, would be better to ignore while getting not after
  */
-export function getAll(key, filter) {
+export function getAll(key) {
     // do validation here...
-    store.getAll(key, JSON.stringify(filter))
+    store.getAll(key)
 }
 
 

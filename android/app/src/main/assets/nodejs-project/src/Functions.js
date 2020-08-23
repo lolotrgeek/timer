@@ -2,18 +2,17 @@
 const moment = require('moment')
 const debug = false
 
+/**
+ * removes soul from given data
+ * @param {*} data 
+ */
+const trimSoul = data => {
+    if (!data || !data['_'] || typeof data['_'] !== 'object') return data
+    delete data['_']
+    return data
+}
 
 const formatDate = date => moment(date).format("YYYY-MM-DD")
-
-/**
- * Create a date String of date
- * `MM-DD-YYYY`
- */
-const dateSimple = date => {
-    let parsedDate = date ? typeof date === 'string' ? new Date(date) : date : new Date()
-    // const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
-    return moment(parsedDate).format('DD-MM-YYYY')
-}
 
 /**
  * reference : https://stackoverflow.com/questions/24883760/moment-js-check-a-date-is-today/24884339
@@ -102,6 +101,51 @@ const sumTimers = timers => {
 const isRunning = timer => timer && typeof timer === 'object' && timer.status === 'running' ? true : false
 
 /**
+ * get number of seconds between two dates
+ * @param {*} start 
+ * @param {*} end 
+ */
+const totalTime = (start, end) => differenceInSeconds(new Date(end), new Date(start))
+
+/**
+ * Create a date String of date
+ * `DD-MM-YYYY`
+ */
+const dateSimple = date => {
+    let parsedDate = date ? typeof date === 'string' ? new Date(date) : date : new Date()
+    // const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
+    return moment(parsedDate).format('MM-DD-YYYY')
+}
+
+/**
+ * 
+ * @param {string} date - pass a simpleDate 
+ * @param {number} total
+ */
+const getTodaysCount = (date, total) => {
+    if (!date || !total) return 0
+    else if (date === dateSimple(new Date())) return total
+    else return 0
+}
+/**
+ * Setting count from last project count and total timer count
+ * @param {Object} timer 
+ * @param {Object} project 
+ */
+const settingCount = (timer, project) => {
+    if (timer) {
+        let total = totalTime(timer.started, timer.ended)
+        if (project && project.lastrun === dateSimple(new Date())) {
+            console.log('Project Ran Today, adding count: ', project.lastcount, total)
+            return project.lastcount + total
+        } else {
+            console.log('setting count: ', total)
+            return total
+        }
+    }
+}
+
+/**
  * Split a timer into one timer per day
  * @param {*} started 
  * @param {*} ended
@@ -152,12 +196,16 @@ exports.newEntryPerDay = (started, ended) => {
 
 
 module.exports = {
-    differenceInSeconds: differenceInSeconds,
-    isToday: isToday,
-    isRunning : isRunning,
-    getTimersForToday: getTimersForToday,
-    sumTimers: sumTimers,
-    timerRanToday: timerRanToday,
-    formatDate: formatDate,
-    dateSimple : dateSimple
+    differenceInSeconds,
+    isToday,
+    isRunning,
+    getTimersForToday,
+    sumTimers,
+    timerRanToday,
+    formatDate,
+    dateSimple,
+    trimSoul,
+    getTodaysCount,
+    settingCount,
+    totalTime
 }

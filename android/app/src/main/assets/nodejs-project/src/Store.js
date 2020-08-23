@@ -141,7 +141,12 @@ const getOne = (msg) => {
   })
 }
 
-const getAll = (msg) => {
+/**
+ * `DEPRECATED`
+ * getAll and apply any filters, return array of filtered data
+ * @param {*} msg 
+ */
+const getAllOld = (msg) => {
   const input = inputParser(msg)
   debug && console.log('getAll input', input)
   const chain = chainer(input.key, app)
@@ -196,6 +201,24 @@ const getAllFilter = (msg) => {
     native.channel.post(input.key, dataFiltered)
     eventEmitter.emit(input.key, dataFiltered)
   })
+}
+
+const getAll = (msg) => {
+  const input = inputParser(msg)
+  const chain = chainer(input, app)
+
+  let result = []
+  chain.map().on((data, key) => {
+      if (!data) {
+          debug && console.log('[GUN node] getAll No Data Found',)
+      }
+      let foundData = trimSoul(data)
+      result.push(foundData)
+      debug && console.log('[GUN node] getAll Data Found: ', typeof foundData, foundData)
+  })
+  native.channel.post(input, data)
+  eventEmitter.emit(input, result)
+
 }
 
 const getAllOnce = (msg) => {
