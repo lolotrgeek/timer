@@ -11,7 +11,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
     const [trash, setTrash] = useState([{ id: 'none' }])
 
     useEffect(() => {
-        messenger.on(`projectTrash`, event => {
+        messenger.addListener(`projectTrash`, event => {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)

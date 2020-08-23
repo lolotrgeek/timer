@@ -27,7 +27,7 @@ export default function TimelineList({ useHistory }) {
                 setPages(event)
             }
         })
-        messenger.on('stop', msg => {
+        messenger.addListener('stop', msg => {
             // NOTE: could listen on 'running' channel, but it breaks async flow on running timer
             // TODO: will need to test how this integrates with a native messenger
             setPages([])

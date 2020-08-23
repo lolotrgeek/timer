@@ -11,7 +11,7 @@ export default function ProjectHistory({ useHistory, useParams }) {
     const [edits, setEdits] = useState([{ id: 'none' }])
 
     useEffect(() => {
-        messenger.on(`${projectId}_ProjectHistory`, event => {
+        messenger.addListener(`${projectId}_ProjectHistory`, event => {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setEdits(event)

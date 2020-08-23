@@ -12,7 +12,7 @@ export default function TimerTrash({ useHistory, useParams }) {
     const [trash, setTrash] = useState([{ id: 'none' }])
 
     useEffect(() => {
-        messenger.on(`timerTrash`, event => {
+        messenger.addListener(`timerTrash`, event => {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)

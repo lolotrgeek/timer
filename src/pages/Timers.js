@@ -20,13 +20,13 @@ export default function Timers() {
     const [timerdates, setTimerDates] = useState([]);
 
     useEffect(() => {
-        // messenger.on(chain.timers(), event => {
+        // messenger.addListener(chain.timers(), event => {
         //     console.log('timers', event)
         //     setTimers(event)
         // })
         // // Data.getTimers()
 
-        // messenger.on(chain.timerDates(), event => {
+        // messenger.addListener(chain.timerDates(), event => {
         //     if (!event) return
         //     debug && console.log('finding dates: ', event)
         // })
