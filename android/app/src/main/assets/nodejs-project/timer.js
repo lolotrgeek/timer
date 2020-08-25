@@ -8,7 +8,7 @@ const { cloneTimer, doneTimer, newTimer } = require('./src/Models')
 const { getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul } = require('./src/Functions')
 const { runCounter, stopCounter, setCount } = require('./counter')
 
-const debug = false 
+const debug = true
 
 let running = {}
 let runningproject = {}
@@ -34,6 +34,7 @@ const parseRunning = async (data) => {
                 debug && console.log('[START] running found, setting count, ', count)
                 setCount(count)
                 runCounter()
+                messenger.emit('notify', { title: runningproject.name, state: "start" })
             }
             // TODO: handle if a project gets deleted offline/remotely -> stop and store it?
         } catch (error) {
@@ -45,16 +46,22 @@ const parseRunning = async (data) => {
         debug && console.log('[STOP] running cleared')
         running = data
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
+
     }
     else if (data.status === 'done' && data.id === running.id) {
         debug && console.log('[STOP] running stopped')
         running = data
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
+
     }
     else {
         debug && console.log('[STOP] running timer')
         running = {}
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
+
     }
 }
 
@@ -71,16 +78,18 @@ messenger.on('stop', async msg => {
 
 messenger.on('start', async msg => {
     debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
-    if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
-        debug && console.log('Start Failed')
-        return false
-    }
     try {
         if (running && running.status === 'running') await stopRunning()
-        runningproject = await getProject(msg.projectId)
-        await createRunning(runningproject)
+        if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
+            if (runningproject && runningproject.id && runningproject.type === 'project') {
+                await createRunning(runningproject)
+            }
+        } else {
+            runningproject = await getProject(msg.projectId)
+            await createRunning(runningproject)
+        }
     } catch (error) {
-        debug && console.log('[Timer node] : Create failed ' + error)
+        debug && console.log('[Timer node] : Start failed ', error)
     }
 })
 
@@ -92,7 +101,7 @@ messenger.on('start', async msg => {
  */
 const createRunning = project => new Promise((resolve, reject) => {
     if (!project || typeof project !== 'object' || !project.id || project.id.length < 9) {
-        reject('invalid project')
+        reject(' cannot create invalid project')
         return
     }
     let timer = newTimer(project.id)

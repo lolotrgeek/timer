@@ -12,7 +12,6 @@ const setState = (key, value) => state[key] = value
 
 messenger.on('ProjectCreate', event => {
     event = parse(event)
-    console.log('Node ProjectCreate', typeof event, event)
     if (typeof event === 'object' && event.name && event.color) {
         state = event
         if (!nameValid(state.name)) {
@@ -45,12 +44,10 @@ const createProject = (name, color) => {
         if (!project) reject(false)
         debug && console.log('[react Data] Creating Project', project)
         // store.set(chain.projectHistory(project.id), project)
-        store.put(chain.project(project.id), project)
-        // TODO: make this part of chaining?
-        messenger.on(`projects/${project.id}`, event => {
-            debug && console.log(event)
-            if (event === project) resolve(project)
-            else reject(event)
+        store.chainer(chain.project(project.id), store.app).put(project, ack => {
+            debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
+            if(!ack.err) resolve(project)
+            else reject(ack.err)
         })
     })
 }

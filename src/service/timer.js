@@ -70,16 +70,18 @@ messenger.on('stop', async msg => {
 
 messenger.on('start', async msg => {
     debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
-    if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
-        debug && console.log('Start Failed')
-        return false
-    }
     try {
         if (running && running.status === 'running') await stopRunning()
-        runningproject = await getProject(msg.projectId)
-        await createRunning(runningproject)
+        if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
+            if (runningproject && runningproject.id && runningproject.type === 'project') {
+                await createRunning(runningproject)
+            }
+        } else {
+            runningproject = await getProject(msg.projectId)
+            await createRunning(runningproject)
+        }
     } catch (error) {
-        debug && console.log('[Timer node] : Create failed ' + error)
+        debug && console.log('[Timer node] : Start failed ', error)
     }
 })
 

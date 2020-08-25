@@ -165,6 +165,19 @@ const settingCount = (timer, project) => {
         }
     }
 }
+const sameDay = (a, b) => moment(a).isSame(b, 'day')
+
+/**
+ * 
+ * @param {*} started 
+ * @param {*} ended 
+ */
+function multiDay (started, ended) {
+    if (typeof started === 'string') started = new Date(started)
+    if (typeof ended === 'string') ended = new Date(ended)
+    if (!ended) ended = new Date()
+    return sameDay(started, ended)
+}
 
 /**
  * Split a timer into one timer per day
@@ -218,6 +231,8 @@ exports.newEntryPerDay = (started, ended) => {
 
 module.exports = {
     parse,
+    sameDay,
+    multiDay,
     differenceInSeconds,
     isToday,
     isRunning,

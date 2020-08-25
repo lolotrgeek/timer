@@ -21,6 +21,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
     }
     Messenger.addListener('ProjectCreateSuccess', msg => {
       // TODO: being pushed multiple times...
+      console.log('ProjectCreateSuccess', msg )
       if (projectValid(msg)) history.push(projectlink(msg.id))
     })
 

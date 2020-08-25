@@ -19,7 +19,15 @@ function emit(channel, event) {
  * @param {Function} listener 
  */
 function addListener(channel, listener) {
-    emitter.addListener(channel, listener)
+    emitter.addListener(channel, event => {
+        let payload
+        try {
+            payload = JSON.parse(event);
+        } catch (e) {
+            payload = event
+        }
+        listener(payload)
+    })
 }
 
 /**

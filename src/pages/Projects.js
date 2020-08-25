@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform} from 'react-native';
 import Running from '../components/Running'
-import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
 import { projectlink, projectTrashlink } from '../routes'
 import {generateProject, generateTimer} from '../constants/Tests'
 
-const debug = false
+const debug = true
 const test = false
 
 export default function Projects({ useHistory, useParams }) {
@@ -18,8 +16,10 @@ export default function Projects({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener('projects', event => {
-            debug && console.log(event)
-            setProjects(event)
+            debug && console.log(typeof event , event)
+            if(event && typeof event === 'object' && event.length > 0) {
+                setProjects(event)
+            }
         })
         messenger.emit('getProjects', { all: true })
 

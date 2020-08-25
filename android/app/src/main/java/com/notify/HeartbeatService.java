@@ -28,15 +28,15 @@ public class HeartbeatService extends NodeJS {
 
     private static final int SERVICE_NOTIFICATION_ID = 12345;
     private static final String CHANNEL_ID = "HEARTBEAT";
-    public static String TITLE = "Title";
-    public static String SUBTITLE = "Subtitle";
+    public String TITLE;
+    public String SUBTITLE;
     private static int INTERVAL = 1000;
     public static int COUNT = 0;
     private static HeartbeatService instance;
     private static String TAG = "HEARTBEAT-SERVICE";
     private static boolean DEBUG = true;
     private static boolean DEBUG_PUT = true;
-    private static boolean DEBUG_COUNT = false;
+    private static boolean DEBUG_COUNT = true;
     public static boolean ISRUNNING;
 
     // Used to load the 'native-lib' library on application startup.
@@ -228,6 +228,7 @@ public class HeartbeatService extends NodeJS {
                         JSONArray payload = new JSONArray(obj.get("payload").toString());
                         String count = payload.get(0).toString();
                         SUBTITLE = count;
+                        if (DEBUG_COUNT) Log.d(TAG, TITLE + " " + SUBTITLE);
                         notificationUpdate();
                         sendMessageToReact("count", SUBTITLE);
                         break;
