@@ -214,7 +214,7 @@ public class HeartbeatService extends NodeJS {
                                     String subtitle = update.get("subtitle").toString();
                                     TITLE = title;
                                     SUBTITLE = subtitle;
-                                    if (DEBUG || DEBUG_COUNT) Log.d(TAG, TITLE + " " + SUBTITLE);
+                                    if (DEBUG || DEBUG_COUNT) Log.d(TAG, "SETTING NOTIFICATION" + TITLE + " " + SUBTITLE);
                                     notificationUpdate();
                                 }
                             } catch (Exception e) {

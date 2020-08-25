@@ -34,7 +34,7 @@ const parseRunning = async (data) => {
                 debug && console.log('[START] running found, setting count, ', count)
                 setCount(count)
                 runCounter()
-                messenger.emit('notify', { title: runningproject.name, state: "start" })
+                messenger.emit('notify', { title: runningproject.name, subtitle: count, state: "start" })
             }
             // TODO: handle if a project gets deleted offline/remotely -> stop and store it?
         } catch (error) {
