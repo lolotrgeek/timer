@@ -2,6 +2,16 @@
 const moment = require('moment')
 const debug = false
 
+
+const parse = event => {
+    try {
+        return JSON.parse(event)
+    } catch (error) {
+        console.error('NODE failed to parse ', error)
+        return event
+    }
+}
+
 /**
  * removes soul from given data
  * @param {*} data 
@@ -207,6 +217,7 @@ exports.newEntryPerDay = (started, ended) => {
 
 
 module.exports = {
+    parse,
     differenceInSeconds,
     isToday,
     isRunning,

@@ -4,12 +4,15 @@ const { colorValid, nameValid } = require('../src/Validators')
 const chain = require('../src/Chains')
 const store = require('../src/Store')
 const { newProject } = require('../src/Models')
+const { parse } = require('../src/Functions')
 
 let debug = true
 let state = {}
 const setState = (key, value) => state[key] = value
 
 messenger.on('ProjectCreate', event => {
+    event = parse(event)
+    console.log('Node ProjectCreate', typeof event, event)
     if (typeof event === 'object' && event.name && event.color) {
         state = event
         if (!nameValid(state.name)) {
@@ -21,11 +24,16 @@ messenger.on('ProjectCreate', event => {
             messenger.emit('ProjectCreateError', `${state.color} is not valid color`)
             return false
         }
-        else {
-            createProject(state.name, state.color).then(project => {
-                console.log(`success! ${project.id}`)
-                messenger.emit('ProjectCreateSuccess', project)
-            })
+        else { 
+            try {
+                createProject(state.name, state.color).then(project => {
+                    console.log(`success! ${project.id}`)
+                    messenger.emit('ProjectCreateSuccess', project)
+                })
+            } catch (error) {
+                console.error(error)
+            }
+
 
         }
     }

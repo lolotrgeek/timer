@@ -32,6 +32,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
 
   const submit = () => {
     if (nameValid(name) && colorValid(color)) {
+      
       if (projectId && typeof projectId === 'string') {
         Messenger.emit('ProjectEdit', { name, color })
       } else {

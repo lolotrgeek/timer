@@ -19,7 +19,7 @@ import android.R.mipmap;
 
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
+
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ public class HeartbeatModule extends ReactContextBaseJavaModule {
     private static String STATUS = "STOPPED";
     private static String COUNT = "PAUSED";
     private static String TICK;
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
     private static HeartbeatModule instance;
 
     public HeartbeatModule(@Nonnull ReactApplicationContext reactContext) {
@@ -67,9 +67,16 @@ public class HeartbeatModule extends ReactContextBaseJavaModule {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @ReactMethod
-    public void sendToNode(String msg) {
-        HeartbeatService.getInstance().sendMessageToNode("React", msg);
+    public void sendToNode(String event, String msg) {
+        try {
+            if (DEBUG) Log.i("HEARTBEAT-MODULE", "msg from react : "+ event);
+            HeartbeatService.getInstance().sendMessageToNode(event, msg);
+        } catch (Exception e) {
+            Log.e("HEARTBEAT-MODULE",  "sendToNode - " + e.getMessage());
+        }
+
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @ReactMethod

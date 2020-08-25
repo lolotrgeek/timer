@@ -1,4 +1,9 @@
 
+const messenger = require('./src/Messenger')
+messenger.addListener('React', msg => {
+    console.log('React Msg', typeof msg, msg)
+    messenger.emit("App", {test: 'received'})
+})
 require('./timer')
 require('./state/timelineState')
 require('./state/projectCreateState')

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 'use strict';
 
 const EventEmitter = require('events');
@@ -28,14 +29,14 @@ class MessageCodec {
   constructor(_event, ..._payload) {
     this.event = _event;
     this.payload = JSON.stringify(_payload);
-  };
+  }
 
   // Serialize the message payload and the message.
   static serialize(event, ...payload) {
     const envelope = new MessageCodec(event, ...payload);
     // Return the serialized message, that can be sent through a channel.
     return JSON.stringify(envelope);
-  };
+  }
 
   // Deserialize the message and the message payload.
   static deserialize(message) {
@@ -44,8 +45,8 @@ class MessageCodec {
       envelope.payload = JSON.parse(envelope.payload);
     }
     return envelope;
-  };
-};
+  }
+}
 
 /**
  * Channel super class.
@@ -60,15 +61,15 @@ class ChannelSuper extends EventEmitter {
     // the event to Node.
     this.emitLocal = this.emit;
     delete this.emit;
-  };
+  }
 
   emitWrapper(type, ...msg) {
     const _this = this;
     setImmediate( () => {
       _this.emitLocal(type, ...msg);
      });
-  };
-};
+  }
+}
 
 /**
  * Events channel class that supports user defined event types with
@@ -81,19 +82,19 @@ class ChannelSuper extends EventEmitter {
 class EventChannel extends ChannelSuper {
   post(event, ...msg) {
     NativeBridge.sendMessage(this.name, MessageCodec.serialize(event, ...msg));
-  };
+  }
 
   // Posts a 'message' event, to be backward compatible with old code.
   send(...msg) {
     this.post('message', ...msg);
-  };
+  }
 
   processData(data) {
     // The data contains the serialized message envelope.
     var envelope = MessageCodec.deserialize(data);
     this.emitWrapper(envelope.event, ...(envelope.payload));
-  };
-};
+  }
+}
 
 /**
  * System event Lock class
@@ -132,7 +133,7 @@ class SystemChannel extends ChannelSuper {
     super(name);
     // datadir should not change during runtime, so we cache it.
     this._cacheDataDir = null;
-  };
+  }
 
   emitWrapper(type) {
     // Overload the emitWrapper to handle the pause event locks.
@@ -160,12 +161,12 @@ class SystemChannel extends ChannelSuper {
         _this.emitLocal(type);
       });
     }
-  };
+  }
 
   processData(data) {
     // The data is the event.
     this.emitWrapper(data);
-  };
+  }
 
   // Get a writable data directory for persistent file storage.
   datadir() {
@@ -173,8 +174,8 @@ class SystemChannel extends ChannelSuper {
       this._cacheDataDir=NativeBridge.getDataDir();
     }
     return this._cacheDataDir;
-  };
-};
+  }
+}
 
 /**
  * Manage the registered channels to emit events/messages received by the
@@ -187,12 +188,13 @@ var channels = {};
  * from the Native app.
  */
 function bridgeListener(channelName, data) {
+  // eslint-disable-next-line no-prototype-builtins
   if (channels.hasOwnProperty(channelName)) {
     channels[channelName].processData(data);
   } else {
     console.error('ERROR: Channel not found:', channelName);
   }
-};
+}
 
 /*
  * The bridge's native code processes each channel's messages in a dedicated
@@ -202,7 +204,7 @@ function bridgeListener(channelName, data) {
 function registerChannel(channel) {
   channels[channel.name] = channel;
   NativeBridge.registerChannel(channel.name, bridgeListener);
-};
+}
 
 /**
  * Module exports.

@@ -20,6 +20,7 @@ export default function Timeline({ useHistory }) {
     const Header = () => (
         <View style={styles.header}>
             <Running />
+            <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} />
         </View>
     )
 

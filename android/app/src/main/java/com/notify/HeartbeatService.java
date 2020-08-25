@@ -34,8 +34,8 @@ public class HeartbeatService extends NodeJS {
     public static int COUNT = 0;
     private static HeartbeatService instance;
     private static String TAG = "HEARTBEAT-SERVICE";
-    private static boolean DEBUG = false;
-    private static boolean DEBUG_PUT = false;
+    private static boolean DEBUG = true;
+    private static boolean DEBUG_PUT = true;
     private static boolean DEBUG_COUNT = false;
     public static boolean ISRUNNING;
 
@@ -190,50 +190,54 @@ public class HeartbeatService extends NodeJS {
     @Override
     public void handleIncomingMessages(String msg) {
         super.handleIncomingMessages(msg);
-        try {
-            JSONObject obj = msgParse(msg);
-            String event = eventParse(obj);
-            switch (event) {
-                case "notify":
-                    try {
-                        JSONObject update = heartbeatPayloadParse(obj);
-                        if (DEBUG) Log.d(TAG, "notify - " + update.toString());
-
+        if(msg.equals("ready-for-app-events")) {
+            sendMessageToReact("App", msg);
+        } else {
+            try {
+                JSONObject obj = msgParse(msg);
+                String event = eventParse(obj);
+                switch (event) {
+                    case "notify":
                         try {
-                            String state = update.get("state").toString();
-                            if (DEBUG) Log.d(TAG, "notify STATE - " + state);
+                            JSONObject update = heartbeatPayloadParse(obj);
+                            if (DEBUG) Log.d(TAG, "notify - " + update.toString());
 
-                            if (state.equals("stop")) {
-                                notificationPaused();
-                            }
-                            if (state.equals("start")) {
-                                String title = update.get("title").toString();
-                                String subtitle = update.get("subtitle").toString();
-                                TITLE = title;
-                                SUBTITLE = subtitle;
-                                if (DEBUG || DEBUG_COUNT) Log.d(TAG, TITLE + " " + SUBTITLE);
-                                notificationUpdate();
+                            try {
+                                String state = update.get("state").toString();
+                                if (DEBUG) Log.d(TAG, "notify STATE - " + state);
+
+                                if (state.equals("stop")) {
+                                    notificationPaused();
+                                }
+                                if (state.equals("start")) {
+                                    String title = update.get("title").toString();
+                                    String subtitle = update.get("subtitle").toString();
+                                    TITLE = title;
+                                    SUBTITLE = subtitle;
+                                    if (DEBUG || DEBUG_COUNT) Log.d(TAG, TITLE + " " + SUBTITLE);
+                                    notificationUpdate();
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, e.getMessage());
                             }
                         } catch (Exception e) {
                             Log.e(TAG, e.getMessage());
                         }
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-                    break;
-                case "count":
-                    JSONArray payload = new JSONArray(obj.get("payload").toString());
-                    String count = payload.get(0).toString();
-                    SUBTITLE = count;
-                    notificationUpdate();
-                    sendMessageToReact("count", SUBTITLE);
-                    break;
-                default :
-                    routeMessage(event, obj);
-                    break;
+                        break;
+                    case "count":
+                        JSONArray payload = new JSONArray(obj.get("payload").toString());
+                        String count = payload.get(0).toString();
+                        SUBTITLE = count;
+                        notificationUpdate();
+                        sendMessageToReact("count", SUBTITLE);
+                        break;
+                    default:
+                        routeMessage(event, obj);
+                        break;
+                }
+            } catch (Throwable t) {
+                Log.e(TAG, "Could not parse malformed JSON: \"" + msg + "\"");
             }
-        } catch (Throwable t) {
-            Log.e(TAG, "Could not parse malformed JSON: \"" + msg + "\"");
         }
     }
 
