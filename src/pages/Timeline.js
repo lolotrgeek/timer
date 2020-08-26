@@ -43,7 +43,7 @@ export default function Timeline({ useHistory }) {
 }
 
 const styles = StyleSheet.create({
-    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
+    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column', height: 50 },
     container: {
         flex: 1,
         backgroundColor: '#fff',

@@ -9,7 +9,7 @@ import * as Data from '../data/Data'
 import * as store from '../data/Store'
 import * as chain from '../data/Chains'
 
-const debug = false
+const debug = true
 const test = false
 const loadAll = false
 
@@ -20,25 +20,27 @@ export default function Timers() {
     const [timerdates, setTimerDates] = useState([]);
 
     useEffect(() => {
-        // messenger.addListener(chain.timers(), event => {
-        //     console.log('timers', event)
-        //     setTimers(event)
-        // })
-        // // Data.getTimers()
-
-        // messenger.addListener(chain.timerDates(), event => {
-        //     if (!event) return
-        //     debug && console.log('finding dates: ', event)
-        // })
-
-        store.chainer(chain.timers(), store.app).map().on((data, key) => {
-            if (!data) {
-                console.log('[Timers] No Data Found',)
-            }
-            setTimers(timers => [...timers, data])
-            console.log('[Timers] Data Found: ', key, data)
+        messenger.addListener(chain.timers(), event => {
+            console.log('timers', event)
+            setTimers(event)
         })
+        Data.getTimers()
+
+        messenger.addListener(chain.timerDates(), event => {
+            if (!event) return
+            debug && console.log('finding dates: ', event)
+        })
+
+        // TIMERS
+        // store.chainer(chain.timers(), store.app).map().on((data, key) => {
+        //     if (!data) {
+        //         console.log('[Timers] No Data Found',)
+        //     }
+        //     setTimers(timers => [...timers, data])
+        //     console.log('[Timers] Data Found: ', key, data)
+        // })
         
+        // TIMER DATES
         // store.chainer(chain.timerDates(), store.app).on((data, key) => {
         //     if (!data) {
         //         console.log('[Timer Dates] No Data Found',)
@@ -112,14 +114,11 @@ export default function Timers() {
 
 const styles = StyleSheet.create({
     header: {
-        position: 'absolute',
-        marginTop: 50,
-        top: 0,
+        marginTop: 30,
         flexDirection: 'row',
         padding: 10,
         width: '100%',
         backgroundColor: 'white',
-        zIndex: 10000,
         flexDirection: 'column'
     },
     container: {
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc'
     },
     list: {
-        marginTop: 170, height: Dimensions.get('window').height - 170
+        marginTop: 30, height: Dimensions.get('window').height - 170
     },
     button: {
         margin: 20,

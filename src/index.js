@@ -1,3 +1,4 @@
+// WEB version
 import React from 'react';
 import { AppRegistry, Platform } from 'react-native';
 import App from './App';
@@ -18,5 +19,6 @@ if (Platform.OS === 'web') {
   require('./state/timerHistoryState')
   require('./state/timerTrashState')
   require('./state/projectState')
+  require('./state/projectsState')
   require('./state/projectEditState')
 }

@@ -3,7 +3,25 @@ const moment = require('moment')
 const debug = false
 
 
-const parse = event => {
+
+
+/**
+ * 
+ * @param {*} input
+ * @returns {object | undefined} 
+ */
+const parse = (input) => {
+    let output
+    if (typeof input === 'string') {
+        try { output = JSON.parse(input) }
+        catch (error) { console.error(error) }
+    } else if (typeof input === 'object') {
+        output = input
+    }
+    return output
+}
+
+const parseOld = event => {
     try {
         return JSON.parse(event)
     } catch (error) {

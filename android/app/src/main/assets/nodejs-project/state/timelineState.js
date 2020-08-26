@@ -5,11 +5,11 @@ const messenger = require('../src/Messenger')
 const chain = require('../src/Chains')
 
 let debug = {
-    state: false,
+    state: true,
     data: true,
-    listeners: false,
-    parsing: false,
-    sorting: false
+    listeners: true,
+    parsing: true,
+    sorting: true
 }
 
 let
@@ -34,21 +34,6 @@ messenger.on(chain.timerDates(), event => {
     }
 })
 store.getAllOnce(chain.timerDates())
-
-// messenger.on('running', msg => {
-//     console.log('pages:', pages)
-//     let indextoday = pages.findIndex(page => isToday(new Date(page.title)))
-//     console.log('today?', indextoday)
-
-//     if (indextoday >= 0) {
-//         let sectiontoday = pages[indextoday]
-//         console.log('timer section today ', sectiontoday)
-//         let index = sectiontoday.data.findIndex(project => project.id === msg.project)
-//         // pages.splice(indextoday, 1) 
-//         sectiontoday.splice(index, 1) // remove running project = section in page
-//         messenger.emit('pages', pages)
-//     }
-// })
 
 
 messenger.on("pagelocation", msg => {

@@ -2,7 +2,6 @@
 /* eslint-disable no-undef */
 const Gun = require('gun')
 const path = require('path')
-const events = require('events');
 const messenger = require('./Messenger')
 
 const debug = true
@@ -10,7 +9,7 @@ const config = {
   port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
   host: 'localhost'
 };
-const eventEmitter = new events.EventEmitter();
+
 config.server = require('http').createServer(Gun.serve(__dirname))
 // debug && console.log('GUN config ', config)
 const gun = new Gun({
@@ -263,60 +262,6 @@ const offAll = msg => {
     const chain = chainer(input.key)
     chain.off()
 }
-
-messenger.on('get', msg => {
-    debug && console.log('[React node] incoming get: ' + typeof msg, msg)
-    try {
-        debug && console.log('[GUN node] Getting : ' + msg)
-        getOne(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Getting failed' + error)
-    }
-})
-
-messenger.on('getAll', msg => {
-    debug && console.log('[React node] incoming getAll: ' + typeof msg, msg)
-    try {
-        debug && console.log('[GUN node] Getting All: ' + msg)
-        getAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Getting All failed ' + error)
-    }
-})
-
-messenger.on('put', msg => {
-    debug && console.log('[React node] incoming put: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] storing - ' , msg)
-        let input = parse(msg)
-        if(input && typeof input === 'object')
-        putAll(input.key, input.value)
-    } catch (error) {
-        debug && console.log('[GUN node] : Putting failed ' + error)
-    }
-})
-
-messenger.on('set', msg => {
-    debug && console.log('[React node] incoming set: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] storing - ' , msg)
-        let input = parse(msg)
-        if(input && typeof input === 'object')
-        setAll(input.key, input.value)
-    } catch (error) {
-        debug && console.log('[GUN node] : Setting failed ' + error)
-    }
-})
-
-messenger.on('off', msg => {
-    debug && console.log('[React node] incoming off: ' + typeof msg, msg)
-    try {
-        debug && console.log('[React node] Off - ' + msg)
-        offAll(msg)
-    } catch (error) {
-        debug && console.log('[GUN node] : Off failed ' + error)
-    }
-})
 
 module.exports = {
   chainer,

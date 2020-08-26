@@ -91,11 +91,10 @@ public class HeartbeatModule extends ReactContextBaseJavaModule {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @ReactMethod
-    private void getAll(String key, String filter) {
+    private void getAll(String key) {
         try {
             JSONObject msg = new JSONObject();
             msg.put("key", key);
-            msg.put("filter", filter);
             HeartbeatService.getInstance().sendMessageToNode("getAll", msg.toString());
         } catch (Exception e) {
             Log.e("HEARTBEAT-MODULE", "getAll - " + e.getMessage());

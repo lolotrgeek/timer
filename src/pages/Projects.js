@@ -91,7 +91,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
-                    style={{ width: '100%', marginTop: 220, height: Dimensions.get('window').height - 170 }}
+                    style={{ width: '100%', marginTop:30, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
                     keyExtractor={project => project.id}
@@ -104,14 +104,11 @@ export default function Projects({ useHistory, useParams }) {
 
 const styles = StyleSheet.create({
     header: {
-        position: 'absolute',
-        marginTop: 50,
-        top: 0,
+        marginTop: 30,
         flexDirection: 'row',
         padding: 10,
         width: '100%',
         backgroundColor: 'white',
-        zIndex: 10000,
         flexDirection: 'column'
     },
     container: {
