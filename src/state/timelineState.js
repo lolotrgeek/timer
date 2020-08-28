@@ -1,7 +1,8 @@
-import { totalTime, parse, trimSoul, isRunning, isToday } from '../constants/Functions'
 import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
+
+const { parse, trimSoul } = require('../cjs/Functions')
+const chain = require('../cjs/Chains')
 
 let debug = {
     state: false,
@@ -179,7 +180,7 @@ const getTimersInDay = async day => {
     try {
         let event = await getProjectDates(day)
         let item = parse(event)
-        debug.parsing && console.log('[Parsing] projectDates ' , day , item)
+        debug.parsing && console.log('[Parsing] projectDates ', day, item)
         if (item && typeof item === 'object') {
             let section = { title: day, data: item }
             await addSection(section)
@@ -203,7 +204,7 @@ const getProjectDates = (day) => new Promise((resolve, reject) => {
                 debug.data && console.log('[GUN node] getProjectDates No Data Found',)
             }
             let foundData = trimSoul(data)
-            if(foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active') {
+            if (foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active') {
                 result.push(foundData)
             }
             debug.data && console.log('[GUN node] getProjectDates Data Found: ', day, key, foundData)
