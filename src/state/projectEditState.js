@@ -90,8 +90,11 @@ const updateProject = (projectEdit) => {
                     console.log('projectDates: ', projectDates)
                     projectDates.forEach(projectDate => {
                         if (projectDate.id === projectEdit.id) {
-                            console.log('Editing projectDate: ', projectDate)
-                            store.put(chain.projectDate(day, projectEdit.id), projectEdit)
+                            projectDate.name = projectEdit.name
+                            projectDate.color = projectEdit.color
+                            projectDate.edited = projectEdit.edited
+                            console.log('Edited projectDate: ', projectDate)
+                            store.put(chain.projectDate(day, projectEdit.id), projectDate)
                         }
                     })
                 })
@@ -125,8 +128,10 @@ const deleteProject = (projectDelete) => {
                     console.log('projectDates: ', projectDates)
                     projectDates.forEach(projectDate => {
                         if (projectDate.id === projectDelete.id) {
-                            console.log('Deleting projectDate: ', projectDate)
-                            store.put(chain.projectDate(day, projectDelete.id), projectDelete)
+                            projectDate.status = projectDelete.status
+                            projectDate.deleted = projectDelete.deleted
+                            console.log('Deleted projectDate: ', projectDate)
+                            store.put(chain.projectDate(day, projectDelete.id), projectDate)
                         }
                     })
                 })
@@ -147,7 +152,6 @@ const deleteProject = (projectDelete) => {
 const restoreProject = (project) => {
     return new Promise(async (resolve, reject) => {
         project.status = 'active'
-        project.deleted = new Date().toString()
         debug && console.log('[react Data] Restoring Project', project)
         store.set(chain.projectHistory(project.id), project)
         store.put(chain.project(project.id), project)
@@ -160,8 +164,9 @@ const restoreProject = (project) => {
                     console.log('projectDates: ', projectDates)
                     projectDates.forEach(projectDate => {
                         if (projectDate.id === project.id) {
+                            projectDate.status = 'active'
                             console.log('Restoring projectDate: ', projectDate)
-                            store.put(chain.projectDate(day, project.id), project)
+                            store.put(chain.projectDate(day, project.id), projectDate)
                         }
                     })
                 })
