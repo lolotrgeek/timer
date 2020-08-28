@@ -35,7 +35,7 @@ const createProject = (name, color) => {
         const project = newProject(name, color)
         if (!project) reject(false)
         debug && console.log('[react Data] Creating Project', project)
-        // store.set(chain.projectHistory(project.id), project)
+        store.set(chain.projectHistory(project.id), project)
         store.put(chain.project(project.id), project)
         // TODO: make this part of chaining?
         messenger.on(`projects/${project.id}`, event => {

@@ -3,16 +3,14 @@ import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Pla
 import Running from '../components/Running'
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink } from '../routes'
-import {generateProject, generateTimer} from '../constants/Tests'
+import {generateTimers} from '../constants/Tests'
 
 const debug = true
-const test = false
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()
     const [online, setOnline] = useState(false)
     const [projects, setProjects] = useState([])
-    const [timers, setTimers] = useState([])
 
     useEffect(() => {
         messenger.addListener('projects', event => {
@@ -26,29 +24,8 @@ export default function Projects({ useHistory, useParams }) {
         return () => {
             messenger.removeAllListeners('projects')
         }
-    }, [online])
+    }, [])
 
-    const generateProjects = () => {
-        let amount = 5
-        let i = 0
-        while (i < amount) {
-            generateProject()
-            debug && console.log(i)
-            i++
-
-        }
-    }
-
-    const generateTimers = () => {
-        let amount = 100
-        if (projects.length > 0 && timers.length < amount) {
-            let i = 0
-            while (i < amount) {
-                generateTimer(projects)
-                i++
-            }
-        }
-    }
 
     const renderRow = ({ item }) => {
         return (
@@ -69,8 +46,7 @@ export default function Projects({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', margin: 10 }}>
-            <Button title="Project" onPress={() => generateProjects()} />
-            <Button title="Timers" onPress={() => generateTimers()} />
+            <Button title='Add Timers' onPress={() => generateTimers(projects)} />
             <Button title='Refresh' onPress={() => setOnline(!online)} />
             <Button title='Clear' onPress={() => {
                 setProjects([])
@@ -82,7 +58,6 @@ export default function Projects({ useHistory, useParams }) {
     const Header = () => (
         <View style={styles.header}>
             <HeaderButtons />
-            <Running />
         </View>
     )
 
@@ -104,7 +79,7 @@ export default function Projects({ useHistory, useParams }) {
 
 const styles = StyleSheet.create({
     header: {
-        marginTop: 30,
+        marginTop: 50,
         flexDirection: 'row',
         padding: 10,
         width: '100%',

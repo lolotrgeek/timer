@@ -7,7 +7,7 @@ import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 
-const debug = false 
+const debug = true 
 
 let running = {}
 let runningproject = {}
@@ -120,19 +120,20 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     else if (!project || !project.id || project.id === 'none' || project.id.length < 9) {
         reject('no project')
     } else {
-        project.lastcount = settingCount(timer, project)
-        project.lastrun = dateSimple(new Date())
+        let endproject = project
+        endproject.lastcount = settingCount(timer, project)
+        endproject.lastrun = dateSimple(new Date())
         timer.total = totalTime(timer.started, timer.ended)
         // debug && console.log('[react Data] storing count', project.lastrun, project.lastcount)
         debug && console.log('[react Data] storing timer', timer)
         // debug && console.log('[react Data] storing project', project)
-        store.put(chain.project(project.id), project)
+        store.put(chain.project(endproject.id), endproject)
         store.put(chain.timer(timer.id), timer)
         store.set(chain.timerHistory(timer.id), timer)
         store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
-        store.put(chain.projectDate(project.lastrun, project.id), project)
-        store.put(chain.projectTimer(project.id, timer.id), timer)
-        debug && console.log('[react Data] Ended', timer, project)
+        store.put(chain.projectDate(endproject.lastrun, endproject.id), endproject)
+        store.put(chain.projectTimer(endproject.id, timer.id), timer)
+        debug && console.log('[react Data] Ended', timer, endproject)
         resolve(timer)
     }
 })

@@ -7,6 +7,7 @@ import Running from '../components/Running'
 import TimelineList from '../components/TimelineList'
 import { projectCreatelink } from '../routes'
 import messenger from '../constants/Messenger'
+import {generateProjects} from '../constants/Tests'
 
 const debug = false
 const test = false
@@ -16,11 +17,17 @@ const pagesize = 4
 export default function Timeline({ useHistory }) {
     let history = useHistory()
     const [online, setOnline] = useState(false)
+    
+    useEffect(() => {
+        messenger.emit('getRunning')
+        return () => {}
+    },[])
 
     const Header = () => (
         <View style={styles.header}>
             <Running />
-            <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} />
+            {/* <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} /> */}
+            <Button title='Test Projects' onPress={() => generateProjects()} />
         </View>
     )
 
@@ -43,7 +50,7 @@ export default function Timeline({ useHistory }) {
 }
 
 const styles = StyleSheet.create({
-    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column', height: 50 },
+    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
     container: {
         flex: 1,
         backgroundColor: '#fff',

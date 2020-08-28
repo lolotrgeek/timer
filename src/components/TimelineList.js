@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
-import { isToday } from '../constants/Functions';
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
 
@@ -12,6 +11,7 @@ const pagesize = 4
 export default function TimelineList({ useHistory }) {
     let history = useHistory()
     const [pages, setPages] = useState([]) // [[{title: 'mm-dd-yyyy', data: [{id, }]}, ...], ... ]
+    const [refresh, setRefresh] = useState(false)
     const [location, setLocation] = useState({ x: 0, y: 0 })
     const timelineList = useRef()
 
@@ -20,7 +20,6 @@ export default function TimelineList({ useHistory }) {
         messenger.addListener('App', event => {
             console.log('App', event)
         })
-
         messenger.addListener("page", event => {
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
@@ -36,7 +35,7 @@ export default function TimelineList({ useHistory }) {
             // TODO: will need to test how this integrates with a native messenger
             setPages([])
             messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-
+            // setRefresh(!refresh)
         })
         if (pages.length === 0) messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
 
@@ -101,7 +100,7 @@ export default function TimelineList({ useHistory }) {
 
                 }}
                 onEndReachedThreshold={1}
-                keyExtractor={(item, index) => item.project}
+                keyExtractor={(item, index) => item.id + index}
                 onScroll={scroll => {
                     // console.log(scroll.nativeEvent.contentOffset.y)
                     messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)
@@ -118,6 +117,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc'
     },
     list: {
-        marginTop: 170, height: Dimensions.get('window').height - 170
+        marginTop: 200, height: Dimensions.get('window').height - 200
     }
 });

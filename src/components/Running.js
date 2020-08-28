@@ -68,32 +68,5 @@ export default function Running() {
 }
 
 const styles = StyleSheet.create({
-    header: {
-        position: 'absolute',
-        marginTop: 50,
-        top: 0,
-        flexDirection: 'row',
-        padding: 10,
-        width: '100%',
-        backgroundColor: 'white',
-        zIndex: 10000,
-        flexDirection: 'column'
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    list: {
-        width: '100%',
-        flexDirection: 'row',
-        backgroundColor: '#ccc'
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
+
 });

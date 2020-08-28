@@ -4,7 +4,32 @@ import { newProject, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 
+
 let debug = true
+
+let timers = []
+
+export const generateProjects = () => {
+    let amount = 5
+    let i = 0
+    while (i < amount) {
+        generateProject()
+        debug && console.log(i)
+        i++
+
+    }
+}
+
+export const generateTimers = (projects) => {
+    let amount = 100
+    if (projects.length > 0 && timers.length < amount) {
+        let i = 0
+        while (i < amount) {
+            generateTimer(projects)
+            i++
+        }
+    }
+}
 
 /**
  * Generates timer for testing
@@ -31,11 +56,13 @@ export const generateTimer = (projects) => {
     endproject.lastcount = settingCount(timer, project)
     endproject.lastrun = dateSimple(timer.ended)
     store.put(chain.project(endproject.id), endproject)
+    store.put(chain.timer(timer.id), timer)
     store.set(chain.timerHistory(timer.id), timer)
     store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
-    store.put(chain.timer(timer.id), timer)
-    store.put(chain.projectDate(timer.started, endproject.id), endproject)
-    store.put(chain.projectTimer(timer.project, timer.id), timer)
+    store.put(chain.projectDate(endproject.lastrun, endproject.id), endproject)
+    store.put(chain.projectTimer(endproject.id, timer.id), timer)
+    debug && console.log('[react Data] Ended', timer, endproject)
+    timers.push(timer)
     return true
 }
 
