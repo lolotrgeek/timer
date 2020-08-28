@@ -50,8 +50,15 @@
     "metro": "^0.59.0",
     "metro-core": "^0.59.0",
     "metro-react-native-babel-preset": "^0.56.0",
+    "react-app-rewire-alias": "^0.1.6",
     "react-app-rewired": "^2.1.6",
     "react-test-renderer": "16.9.0"
+  },
+  "workspaces": {
+    "nohoist": [
+      "state",
+      "expo-yarn-workspaces"
+    ]
   },
   "private": true,
   "browserslist": {

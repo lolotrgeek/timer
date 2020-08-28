@@ -3,6 +3,7 @@
 const path = require('path');
 const { override, addBabelPlugins, addBabelPresets, babelInclude, disableEsLint, addWebpackModuleRule, babelExclude } = require('customize-cra');
 const fs = require("fs");
+const {alias} = require('react-app-rewire-alias')
 
 // Toolbar fix for react-native-vector-icons
 // https://github.com/oblador/react-native-vector-icons/issues/1104#issuecomment-599393489
@@ -72,7 +73,10 @@ module.exports = function override(config, env) {
                 ]
             }
         }
-    });
+    })
+    alias({
+        node: './android/app/src/main/assets/nodejs-project'
+    })(config)
 
     return config;
 };
