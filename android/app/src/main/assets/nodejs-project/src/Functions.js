@@ -42,8 +42,8 @@ const trimSoul = data => {
 exports.isValid = date => Object.prototype.toString.call(date) === "[object Date]"
 exports.addMinutes  = (date, number) => moment(date).add(number, 'minutes')
 exports.subMinutes  = (date, number) => moment(date).subtract(number, 'minutes')
-exports.sub = (date, number) => moment(date).subtract(number, 'days')
-exports.add = (date, number) => moment(date).add(number, 'days')
+exports.sub = (date, amount) => moment(date).subtract(amount.days, 'days')
+exports.add = (date, amount) => moment(date).add(amount.days, 'days')
 exports.getMonth = date => new Date(date).getMonth()
 exports.getYear= date => new Date(date).getYear()
 exports.getHours= date => new Date(date).getHours()

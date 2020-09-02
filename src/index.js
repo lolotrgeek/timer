@@ -17,7 +17,7 @@ if (Platform.OS === 'web') {
   require('./state/projectTrashWeb')
   require('./state/timerWeb')
   require('./state/timerHistoryWeb')
-  require('./state/timerTrashState')
+  require('./state/timerTrashWeb')
   require('./state/projectWeb')
   require('./state/projectsStateWeb')
   require('./state/projectEditWeb')

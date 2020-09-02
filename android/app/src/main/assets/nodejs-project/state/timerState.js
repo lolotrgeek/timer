@@ -1,7 +1,4 @@
 /* eslint-disable no-unused-vars */
-const { addMinutes, subMinutes, isValid, sub, add, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } = require('../src/Functions')
-const { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, sameDay } = require('../src/Functions')
-const chain = require('../src/Chains')
 
 exports.timerState = p => {
     //LISTENING
@@ -9,14 +6,14 @@ exports.timerState = p => {
         p.debug && console.log('timer', msg.timerId)
         getTimer(msg.timerId).then(found => {
             p.current = found
-            previous.total = found.total
-            previous.started = found.started
+            p.previous.total = found.total
+            p.previous.started = found.started
             p.debug && console.log(p.current)
             p.messenger.emit(`${msg.timerId}`, p.current)
 
-            getProjectDate(dateSimple(p.current.started), p.current.project).then(projectfound => {
-                project = projectfound
-                p.debug && console.log(project)
+            getProjectDate(p.dateSimple(p.current.started), p.current.project).then(projectfound => {
+                p.project = projectfound
+                p.debug && console.log(p.project)
                 p.debug && console.log(`${p.current.id}/saveEdits`)
                 p.messenger.on(`${p.current.id}/saveEdits`, msg => {
                     p.debug && console.log('edit', msg)
@@ -36,79 +33,79 @@ exports.timerState = p => {
 
     // PARSING
     const chooseNewStart = (newTime, ended) => {
-        if (!timeRules(newTime, ended)) {
-            setAlert([
+        if (!p.timeRules(newTime, ended)) {
+            p.setAlert([
                 'Error',
                 'Cannot Start after End.',
             ])
         }
-        else if (!timeRules(newTime, new Date())) {
-            setAlert([
+        else if (!p.timeRules(newTime, new Date())) {
+            p.setAlert([
                 'Error',
                 'Cannot Start before now.',
             ])
         }
-        else if (newTime && !dateRules(newTime)) {
+        else if (newTime && !p.dateRules(newTime)) {
 
-            setAlert([
+            p.setAlert([
                 'Error',
                 'Cannot Pick Date before Today.',
             ])
         }
         else {
 
-            setAlert(false)
-            return isValid(newTime) ? setStarted(newTime) : false
+            p.setAlert(false)
+            return p.isValid(newTime) ? p.setStarted(newTime) : false
         }
     }
 
     const chooseNewEnd = (newTime, started) => {
-        if (!timeRules(started, newTime)) {
+        if (!p.timeRules(started, newTime)) {
 
-            setAlert([
+            p.setAlert([
                 'Error',
                 'Cannot Start after End.',
             ])
         }
-        else if (!timeRules(newTime, new Date())) {
+        else if (!p.timeRules(newTime, new Date())) {
 
-            setAlert([
+            p.setAlert([
                 'Error',
                 'Cannot End before now.',
             ])
         }
-        else if (newTime && !dateRules(newTime)) {
+        else if (newTime && !p.dateRules(newTime)) {
 
-            setAlert([
+            p.setAlert([
                 'Error',
                 'Cannot Pick Date before Today.',
             ])
         }
         else {
 
-            setAlert(false)
-            return isValid(newTime) ? setEnded(newTime) : false
+            p.setAlert(false)
+            return p.isValid(newTime) ? p.setEnded(newTime) : false
         }
     }
 
     const chooseNewDate = (newDate, timer) => {
-        if (dateRules(newDate)) {
-            if (isValid(newDate)) {
+        if (p.dateRules(newDate)) {
+            if (p.isValid(newDate)) {
                 // objective, change day, keep time
                 // TODO: move to a separate function
-                let oldStart = isValid(timer.started) ? timer.started : new Date(timer.started)
-                let oldEnd = isValid(timer.ended) ? timer.ended : new Date(timer.ended)
-                let newStart = new Date(getYear(newDate), getMonth(newDate), getDate(newDate), getHours(oldStart), getMinutes(oldStart), getSeconds(oldStart))
-                p.debug && console.log(isValid(newStart))
-                setStarted(newStart)
-                let newEnd = new Date(getYear(newDate), getMonth(newDate), getDate(newDate), getHours(oldEnd), getMinutes(oldEnd), getSeconds(oldEnd))
-                setEnded(newEnd)
+                let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
+                let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
+                let newStart = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldStart), p.getMinutes(oldStart), p.getSeconds(oldStart))
+                p.debug && console.log(p.isValid(newStart))
+                p.setStarted(newStart)
+                let newEnd = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldEnd), p.getMinutes(oldEnd), p.getSeconds(oldEnd))
+                p.setEnded(newEnd)
                 return true
             }
             else return false
         } else {
 
-            setAlert([
+            p.setAlert([
                 'Error',
                 'Cannot Pick Date before Today.'
             ])
@@ -116,66 +113,66 @@ exports.timerState = p => {
         }
     }
     const timeRulesEnforcer = (start, end) => {
-        if (!timeRules(start, end)) {
-            setAlert([
+        if (!p.timeRules(start, end)) {
+            p.setAlert([
                 'Error',
                 'Cannot Start after End.',
             ])
             return false
         }
-        else if (!timeRules(start, new Date())) {
-            setAlert([
+        else if (!p.timeRules(start, new Date())) {
+            p.setAlert([
                 'Error',
                 'Cannot Start before now.',
             ])
             return false
 
         }
-        else if (!timeRules(end, new Date())) {
-            setAlert([
+        else if (!p.timeRules(end, new Date())) {
+            p.setAlert([
                 'Error',
                 'Cannot End before now.',
             ])
             return false
         }
         else {
-            setAlert(false)
+            p.setAlert(false)
             return true
         }
     }
 
     const nextDay = timer => {
-        let newDate = add(new Date(timer.started), { days: 1 })
+        let newDate = p.add(new Date(timer.started), { days: 1 })
         return chooseNewDate(newDate, timer) ? newDate : timer.started
     }
 
     const previousDay = timer => {
-        let newDate = sub(new Date(timer.started), { days: 1 })
+        let newDate = p.sub(new Date(timer.started), { days: 1 })
         return chooseNewDate(newDate, timer) ? newDate : timer.started
     }
 
     const decreaseStarted = timer => {
-        let newStarted = addMinutes(new Date(timer.started), -5)
-        let checkedEnd = isRunning(timer) ? new Date() : new Date(timer.ended)
-        return timeRulesEnforcer(newStarted, checkedEnd) ? setStarted(newStarted) : timer.started
+        let newStarted = p.addMinutes(new Date(timer.started), -5)
+        let checkedEnd = p.isRunning(timer) ? new Date() : new Date(timer.ended)
+        return timeRulesEnforcer(newStarted, checkedEnd) ? p.setStarted(newStarted) : timer.started
     }
 
     const increaseStarted = timer => {
-        let newStarted = addMinutes(new Date(timer.started), 5)
-        let checkedEnd = isRunning(timer) ? new Date() : new Date(timer.ended)
-        return timeRulesEnforcer(newStarted, checkedEnd) ? setStarted(newStarted) : timer.started
+        let newStarted = p.addMinutes(new Date(timer.started), 5)
+        let checkedEnd = p.isRunning(timer) ? new Date() : new Date(timer.ended)
+        return timeRulesEnforcer(newStarted, checkedEnd) ? p.setStarted(newStarted) : timer.started
     }
 
     const decreaseEnded = timer => {
-        let newEnded = isRunning(timer) ? new Date() : addMinutes(new Date(timer.ended), -5)
-        let checkedStart = isRunning(timer) ? new Date() : new Date(timer.started)
-        return timeRulesEnforcer(checkedStart, newEnded) ? setEnded(newEnded) : timer.ended
+        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(new Date(timer.ended), -5)
+        let checkedStart = p.isRunning(timer) ? new Date() : new Date(timer.started)
+        return timeRulesEnforcer(checkedStart, newEnded) ? p.setEnded(newEnded) : timer.ended
     }
 
     const increaseEnded = timer => {
-        let newEnded = isRunning(timer) ? new Date() : addMinutes(new Date(timer.ended), 5)
-        let checkedStart = isRunning(timer) ? new Date() : new Date(timer.started)
-        return timeRulesEnforcer(checkedStart, newEnded) ? setEnded(newEnded) : timer.ended
+        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(new Date(timer.ended), 5)
+        let checkedStart = p.isRunning(timer) ? new Date() : new Date(timer.started)
+        return timeRulesEnforcer(checkedStart, newEnded) ? p.setEnded(newEnded) : timer.ended
     }
 
     const editComplete = () => {
@@ -186,26 +183,26 @@ exports.timerState = p => {
         // updatedtimer.mood = p.current.mood
         // updatedtimer.energy = p.current.energy
         // updatedtimer.total = totalTime(p.current.started, p.current.ended)
-        let updatedproject = project
-        updatedproject.lastrun = sameDay(previous.started, project.lastrun) ? p.current.started : project.lastrun
-        p.debug && console.log('p.current total', p.current.total, ' before total', previous.total)
-        let prevcount = project.lastcount - previous.total // remove previous count
+        let updatedproject = p.project
+        updatedproject.lastrun = p.sameDay(p.previous.started, p.project.lastrun) ? p.current.started : p.project.lastrun
+        p.debug && console.log('p.current total', p.current.total, ' before total', p.previous.total)
+        let prevcount = p.project.lastcount - p.previous.total // remove previous count
         let lastcount = prevcount + p.current.total
         updatedproject.lastcount = lastcount
         p.debug && console.log('updatedproject', updatedproject)
         if (p.current && p.current.type === 'timer') {
-            Data.updateTimer(p.current)
-            setAlert(['Success', 'Timer Updated!',])
+            p.Data.updateTimer(p.current)
+            p.setAlert(['Success', 'Timer Updated!',])
         }
         else {
-            setAlert(['Error', 'Timer Invalid!',])
+            p.setAlert(['Error', 'Timer Invalid!',])
         }
         if (updatedproject) {
-            store.put(chain.projectDate(updatedproject.lastrun, project.id), updatedproject)
-            setAlert(['Success', 'Project Updated!',])
+            p.store.put(p.chain.projectDate(updatedproject.lastrun, p.project.id), updatedproject)
+            p.setAlert(['Success', 'Project Updated!',])
         }
         else {
-            setAlert(['Error', 'Project Invalid!',])
+            p.setAlert(['Error', 'Project Invalid!',])
         }
 
     }
@@ -214,25 +211,25 @@ exports.timerState = p => {
         let timerDelete = timer
         timerDelete.deleted = new Date().toString()
         timerDelete.status = 'deleted'
-        store.set(chain.timerHistory(timerDelete.id), timerDelete)
-        store.put(chain.timer(timerDelete.id), timerDelete)
-        store.put(chain.timerDate(timerDelete.started, timerDelete.id), false)
-        store.put(chain.projectTimer(timerDelete.project, timerDelete.id), timerDelete)
+        p.store.set(p.chain.timerHistory(timerDelete.id), timerDelete)
+        p.store.put(p.chain.timer(timerDelete.id), timerDelete)
+        p.store.put(p.chain.timerDate(timerDelete.started, timerDelete.id), false)
+        p.store.put(p.chain.projectTimer(timerDelete.project, timerDelete.id), timerDelete)
         // project.lastrun = sameDay(previous.started, project.lastrun) ? p.current.started : project.lastrun
-        project.lastcount = project.lastcount - previous.total
-        store.put(chain.projectDate(project.lastrun, project.id), project)
-        setAlert(['Success', 'Timer Deleted!'])
+        p.project.lastcount = p.project.lastcount - p.previous.total
+        p.store.put(p.chain.projectDate(p.project.lastrun, p.project.id), p.project)
+        p.setAlert(['Success', 'Timer Deleted!'])
     }
 
     const restoreTimer = timer => {
         timer.status = 'done'
-        store.put(chain.timer(timer.id), timer)
-        store.set(chain.timerHistory(timer.id), timer)
-        store.put(chain.projectTimer(timer.project, timer.id), timer)
-        store.put(chain.timerDate(timer.started, timer.id), true)
-        project.lastcount = project.lastcount + timer.total
-        store.put(chain.projectDate(project.lastrun, project.id), project)
-        setAlert(['Success', 'Timer Restored!'])
+        p.store.put(p.chain.timer(timer.id), timer)
+        p.store.set(p.chain.timerHistory(timer.id), timer)
+        p.store.put(p.chain.projectTimer(timer.project, timer.id), timer)
+        p.store.put(p.chain.timerDate(timer.started, timer.id), true)
+        p.project.lastcount = p.project.lastcount + timer.total
+        p.store.put(p.chain.projectDate(p.project.lastrun, p.project.id), p.project)
+        p.setAlert(['Success', 'Timer Restored!'])
     }
 
 
@@ -253,32 +250,32 @@ exports.timerState = p => {
     p.messenger.on('increaseStarted', msg => {
         if (msg && msg.id === p.current.id) {
             increaseStarted(p.current)
-            p.current.total = totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, previous.total)
+            p.current.total = p.totalTime(p.current.started, p.current.ended)
+            p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('decreaseStarted', msg => {
         if (msg && msg.id === p.current.id) {
             decreaseStarted(p.current)
-            p.current.total = totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, previous.total)
+            p.current.total = p.totalTime(p.current.started, p.current.ended)
+            p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('increaseEnded', msg => {
         if (msg && msg.id === p.current.id) {
             increaseEnded(p.current)
-            p.current.total = totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, previous.total)
+            p.current.total = p.totalTime(p.current.started, p.current.ended)
+            p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('decreaseEnded', msg => {
         if (msg && msg.id === p.current.id) {
             decreaseEnded(p.current)
-            p.current.total = totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, previous.total)
+            p.current.total = p.totalTime(p.current.started, p.current.ended)
+            p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
@@ -294,9 +291,9 @@ exports.timerState = p => {
             if (!timerId) reject('no timerId passed')
             try {
                 // OPTIMIZE: listen for changes with 'on' then update state in the background
-                store.chainer(chain.timer(timerId), store.app).once((data, key) => {
+                p.store.chainer(p.chain.timer(timerId), p.store.app).once((data, key) => {
                     p.debug && console.log(key)
-                    const foundData = trimSoul(data)
+                    const foundData = p.trimSoul(data)
                     p.debug && console.log('foundTimer', foundData) // left off here try to p.debug with 'ack'
                     if (foundData && foundData.type === 'timer') {
                         resolve(foundData)
@@ -316,11 +313,11 @@ exports.timerState = p => {
     */
     const getProjectDate = (day, projectId) => new Promise((resolve, reject) => {
         try {
-            store.chainer(chain.projectDate(day, projectId), store.app).on((data, key) => {
+            p.store.chainer(p.chain.projectDate(day, projectId), p.store.app).on((data, key) => {
                 if (!data) {
                     p.debug.data && console.log('[GUN node] getProjectDate No Data Found',)
                 }
-                let foundData = trimSoul(data)
+                let foundData = p.trimSoul(data)
                 if (foundData.type === 'project') {
                     p.debug.data && console.log('[GUN node] getProjectDate Data Found: ', key, foundData)
 
