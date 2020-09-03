@@ -128,19 +128,20 @@ const endTimer = (timer, project) => new Promise((resolve, reject) => {
     else if (!project || !project.id || project.id === 'none' || project.id.length < 9) {
         reject('no project')
     } else {
-        project.lastcount = settingCount(timer, project)
-        project.lastrun = dateSimple(new Date())
+        let endproject = project
+        endproject.lastcount = settingCount(timer, project)
+        endproject.lastrun = dateSimple(new Date())
         timer.total = totalTime(timer.started, timer.ended)
         // debug && console.log('[react Data] storing count', project.lastrun, project.lastcount)
         debug && console.log('[react Data] storing timer', timer)
         // debug && console.log('[react Data] storing project', project)
-        store.put(chain.project(project.id), project)
+        store.put(chain.project(endproject.id), endproject)
         store.put(chain.timer(timer.id), timer)
         store.set(chain.timerHistory(timer.id), timer)
         store.put(chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
-        store.put(chain.projectDate(project.lastrun, project.id), project)
-        store.put(chain.projectTimer(project.id, timer.id), timer)
-        debug && console.log('[react Data] Ended', timer, project)
+        store.put(chain.projectDate(endproject.lastrun, endproject.id), endproject)
+        store.put(chain.projectTimer(endproject.id, timer.id), timer)
+        debug && console.log('[react Data] Ended', timer, endproject)
         resolve(timer)
     }
 })
@@ -165,6 +166,7 @@ const finishRunning = (timer, project) => new Promise(async (resolve, reject) =>
         // Danger zone until endTimer is called
         debug && console.log('[react Data STOP] Checking for Multi-day...')
         if (multiDay(done.started, done.ended)) {
+            debug && console.log('[react Data STOP] Is Multi-day...')
             const dayEntries = newEntryPerDay(done.started, done.ended)
             dayEntries.map(async (dayEntry, i) => {
                 let splitTimer = done
@@ -176,7 +178,9 @@ const finishRunning = (timer, project) => new Promise(async (resolve, reject) =>
                 resolve(splitTimer)
             })
         } else {
+            debug && console.log('[react Data STOP] Not Multi-day, ending...')
             try {
+                // not being called...
                 let ended = await endTimer(done, project)
                 resolve(ended)
             } catch (error) {
@@ -221,11 +225,15 @@ const getRunning = () => new Promise((resolve, reject) => {
  * Local Running Listener
  */
 messenger.on('getRunning', async () => {
-    //TODO: might not need this? could be redundant
-    let data = await getRunning()
-    parseRunning(data)
-    if (running && running.id && running.project) {
-        messenger.emit('running', running)
+    try {
+        //TODO: might not need this? could be redundant
+        let data = await getRunning()
+        parseRunning(data)
+        if (running && running.id && running.project) {
+            messenger.emit('running', running)
+        }
+    } catch (error) {
+        console.log(error)
     }
 })
 

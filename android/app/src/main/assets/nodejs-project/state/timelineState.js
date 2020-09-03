@@ -1,18 +1,23 @@
 /* eslint-disable no-unused-vars */
+
 exports.timelineState = p => {
     // LISTENERS
-    p.messenger.on(p.chain.timerDates(), event => {
-        if (!event) return
-        let item = p.parse(event)
-        if (item && typeof item === 'object') {
-            let found = Object.keys(item)
-            p.days = found.sort((a, b) => new Date(b) - new Date(a))
-            p.debug && console.log('found dates: ', p.days)
-            // p.days.forEach(day => p.messenger.addListener(p.chain.timerDate(day), event => timersInDayHandler(event, { day })))
-        }
-    })
-    p.store.getAllOnce(p.chain.timerDates())
+    // p.messenger.on(p.chain.timerDates(), event => {
+    //     if (!event) return
+    //     let item = p.parse(event)
+    //     if (item && typeof item === 'object') {
+    //         let found = Object.keys(item)
+    //         p.days = found.sort((a, b) => new Date(b) - new Date(a))
+    //         p.debug && console.log('found dates: ', p.days)
+    //         // p.days.forEach(day => p.messenger.addListener(p.chain.timerDate(day), event => timersInDayHandler(event, { day })))
+    //     }
+    // })
+    // p.store.getAllOnce(p.chain.timerDates())
 
+    p.messenger.on('App', async msg => {
+        await listDays()
+
+    })
 
     p.messenger.on("pagelocation", msg => {
         if (msg) {
@@ -23,6 +28,17 @@ exports.timelineState = p => {
     })
     p.messenger.on("getPage", msg => getPage(msg))
 
+    const listDays = () => getTimerDates().then(item => {
+        if (item && typeof item === 'object') {
+            let found = Object.keys(item)
+            p.debug && console.log('[Timeline] found dates: ', found)
+            p.days = found.sort((a, b) => new Date(b) - new Date(a))
+            p.debug && console.log('[Timeline] sorted dates: ', p.days)
+            // p.days.forEach(day => p.messenger.addListener(p.chain.timerDate(day), event => timersInDayHandler(event, { day })))
+        }
+    }).catch(err => {
+        console.log('Unable to get timerDates', err)
+    })
     /**
      * p.parses msg and sets the page to get
      * @param {*} msg 
@@ -31,27 +47,31 @@ exports.timelineState = p => {
      * @param {*} msg.refresh rebuild pages
      * @param {*} msg.currentday 
      */
-    const getPage = (msg) => {
+    const getPage = async (msg) => {
+        if (p.days.length === 0) {
+            await listDays()
+        }
         if (msg) {
             p.pagesize = msg.pagesize
-            p.debug.listeners && console.log('[Listener] getPage received', msg)
+            p.debug.listeners && console.log('[Timeline Listener] getPage received', msg)
             if (msg.currentday === 0) {
                 if (msg.all) {
                     p.all = msg.all
                 }
                 if (msg.refresh) {
+                    p.debug.listeners && console.log('[Timeline Listener] refreshing pages.')
+                    await listDays()
                     p.currentday = 0
-                    p.debug.listeners && console.log('[Listener] refreshing pages.')
                     createPage()
                 }
                 else if (p.pages && p.pages.length === 0) {
                     p.currentday = 0
-                    p.debug.listeners && console.log('[Listener] getting pages.')
+                    p.debug.listeners && console.log('[Timeline Listener] getting pages.')
                     createPage()
                 } else {
-                    p.debug.listeners && console.log('[Listener] updating pages.')
+                    p.debug.listeners && console.log('[Timeline Listener] updating pages.')
                     p.messenger.emit("pages", p.pages)
-                    p.debug.listeners && console.log('[Listener] locating...', p.pagelocation.y)
+                    p.debug.listeners && console.log('[Timeline Listener] locating...', p.pagelocation.y)
                     p.messenger.emit('timelinelocation', p.pagelocation)
                 }
             }
@@ -61,7 +81,7 @@ exports.timelineState = p => {
                 } else {
                     p.currentday = p.currentday + 1
                 }
-                p.debug.listeners && console.log('[Listener] adding pages.')
+                p.debug.listeners && console.log('[Timeline Listener] adding pages.')
                 createPage()
             }
         }
@@ -81,19 +101,19 @@ exports.timelineState = p => {
         p.debug.state && console.log(`[State] day: ${p.currentday}/${p.days.length} [${day}], timer: ${p.page.length}/${p.pagesize} `)
 
         if (p.currentday >= p.days.length) {
-            p.debug.state && console.log('[State] No more p.days with full pages.')
+            p.debug.state && console.log('[Timeline State] No more p.days with full pages.')
             if (p.page.length > 0) {
-                p.debug.state && console.log('[State] Last Page ' + p.currentPage + ' Complete.')
+                p.debug.state && console.log('[Timeline State] Last Page ' + p.currentPage + ' Complete.')
                 setPage()
             }
             return
         }
         else if (day && p.page.length >= p.pagesize) {
-            p.debug.state && console.log('[State] Page ' + p.currentPage + ' Complete.')
+            p.debug.state && console.log('[Timeline State] Page ' + p.currentPage + ' Complete.')
             setPage()
         }
         else if (day) {
-            p.debug.state && console.log('[State] Create Page.')
+            p.debug.state && console.log('[Timeline State] Create Page.')
             getTimersInDay(day)
 
         } else {
@@ -123,7 +143,7 @@ exports.timelineState = p => {
         if (alreadyInTimers) reject('section already in timeline')
         //TODO: optimize, sometimes adding a random timer at beginning of new page... we filter that out here
         if (!alreadyInTimers && p.days[p.currentday] === section.title) {
-            p.debug.state && console.log('[State] Adding Section: ', section)
+            p.debug.state && console.log('[Timeline State] Adding Section: ', section)
             if (section.data.length > 0) {
                 p.page.push(section)
             }
@@ -143,7 +163,7 @@ exports.timelineState = p => {
         try {
             let event = await getProjectDates(day)
             let item = p.parse(event)
-            p.debug.parsing && console.log('[Parsing] projectDates.', item)
+            p.debug.parsing && console.log('[Timeline Parsing] projectDates.', item)
             if (item && typeof item === 'object') {
                 let section = { title: day, data: item }
                 await addSection(section)
@@ -164,17 +184,36 @@ exports.timelineState = p => {
             let result = []
             p.store.chainer(p.chain.projectDates(day), p.store.app).map().on((data, key) => {
                 if (!data) {
-                    p.debug.data && console.log('[GUN node] getProjectDates No Data Found',)
+                    p.debug.data && console.log('[Timeline GUN node] getProjectDates No Data Found',)
                 }
                 let foundData = p.trimSoul(data)
                 if (foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active') {
                     result.push(foundData)
                 }
-                p.debug.data && console.log('[GUN node] getProjectDates Data Found: ', day, key, foundData)
+                p.debug.data && console.log('[Timeline GUN node] getProjectDates Data Found: ', day, key, foundData)
             })
             resolve(result)
         } catch (err) {
             reject(err)
+        }
+
+    })
+
+    const getTimerDates = () => new Promise((resolve, reject) => {
+        try {
+            let result = {}
+            p.store.chainer(p.chain.timerDates(), p.store.app).map().on((data, key) => {
+                if (!data) {
+                    p.debug && console.log('[Timeline GUN node] getTimerDates No Data Found',)
+                }
+                let foundData = p.trimSoul(data)
+                result[key] = foundData
+                p.debug.data && console.log('[Timeline GUN node] getTimerDates Data Found: ', typeof foundData, foundData)
+            })
+            resolve(result)
+        } catch (err) {
+            reject(err)
+
         }
 
     })

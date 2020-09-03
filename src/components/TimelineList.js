@@ -76,47 +76,45 @@ export default function TimelineList({ useHistory }) {
     };
     if (pages.length === 0) return (<Text style={styles.list}>Loading ... </Text>)
     return (
-        <View style={styles.listContainter}>
-            <SectionList
-                ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
-                // TODO: simplify creating sticky header/footer with list
-                //app routes: 20 padding + 50 height
-                // header: 20 padding + 100 height
-                // 20 + 20 + 50 + 100 = 190
-                style={styles.list}
-                ref={timelineList}
-                onLayout={layout => {
-                    debug && console.log(timelineList.current)
-                }}
-                sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
-                renderSectionHeader={({ section: { title } }) => {
-                    return (<Text>{title}</Text>)
-                }}
-                renderItem={RenderTimer}
-                onEndReached={() => {
-                    debug && console.log('End Reached')
-                    debug && console.log(pages, typeof pages, Array.isArray(pages))
-                    messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
 
-                }}
-                onEndReachedThreshold={1}
-                keyExtractor={(item, index) => item.id + index}
-                onScroll={scroll => {
-                    // console.log(scroll.nativeEvent.contentOffset.y)
-                    messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)
-                }}
-            />
-        </View>
+        <SectionList
+            ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
+            // TODO: simplify creating sticky header/footer with list
+            //app routes: 20 padding + 50 height
+            // header: 20 padding + 100 height
+            // 20 + 20 + 50 + 100 = 190
+            style={styles.list}
+            ref={timelineList}
+            onLayout={layout => {
+                debug && console.log(timelineList.current)
+            }}
+            sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
+            renderSectionHeader={({ section: { title } }) => {
+                return (<Text>{title}</Text>)
+            }}
+            renderItem={RenderTimer}
+            onEndReached={() => {
+                debug && console.log('End Reached')
+                debug && console.log(pages, typeof pages, Array.isArray(pages))
+                messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
+
+            }}
+            onEndReachedThreshold={1}
+            keyExtractor={(item, index) => item.id + index}
+            onScroll={scroll => {
+                // console.log(scroll.nativeEvent.contentOffset.y)
+                messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)
+            }}
+        />
+
     )
 }
 
 const styles = StyleSheet.create({
-    listContainter: {
-        flexDirection: 'row',
-        width: '100%',
-        backgroundColor: '#ccc'
-    },
     list: {
-        marginTop: 200, height: Dimensions.get('window').height - 200
+        marginTop: 220,
+        height: Dimensions.get('window').height - 220,
+        width: '100%',
+        backgroundColor: '#ccc',
     }
 });

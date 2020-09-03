@@ -275,6 +275,8 @@ export const findRunning = timers => {
         return []
     }
 }
+
+
 /**
  * 
  * @param {*} started 
@@ -284,7 +286,7 @@ export const multiDay = (started, ended) => {
     if (typeof started === 'string') started = new Date(started)
     if (typeof ended === 'string') ended = new Date(ended)
     if (!ended) ended = new Date()
-    return isSameDay(started, ended) ? false : true
+    return sameDay(started, ended) ? false : true
 }
 
 /**

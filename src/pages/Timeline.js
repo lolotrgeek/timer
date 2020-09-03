@@ -7,7 +7,6 @@ import Running from '../components/Running'
 import TimelineList from '../components/TimelineList'
 import { projectCreatelink } from '../routes'
 import messenger from '../constants/Messenger'
-import {generateProjects} from '../constants/Tests'
 
 const debug = false
 const test = false
@@ -16,7 +15,7 @@ const pagesize = 4
 
 export default function Timeline({ useHistory }) {
     let history = useHistory()
-    const [online, setOnline] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     
     useEffect(() => {
         messenger.emit('getRunning')
@@ -27,7 +26,8 @@ export default function Timeline({ useHistory }) {
         <View style={styles.header}>
             <Running />
             {/* <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} /> */}
-            <Button title='Test Projects' onPress={() => generateProjects()} />
+            <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} />
+            <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
         </View>
     )
 

@@ -7,7 +7,7 @@ import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 
-const debug = true 
+const debug = true
 
 let running = {}
 let runningproject = {}
@@ -93,7 +93,7 @@ messenger.on('start', async msg => {
  */
 const createRunning = project => new Promise((resolve, reject) => {
     if (!project || typeof project !== 'object' || !project.id || project.id.length < 9) {
-        reject('invalid project')
+        reject(' cannot create invalid project')
         return
     }
     let timer = newTimer(project.id)
@@ -214,11 +214,15 @@ const getRunning = () => new Promise((resolve, reject) => {
  * Local Running Listener
  */
 messenger.on('getRunning', async () => {
-    //TODO: might not need this? could be redundant
-    let data = await getRunning()
-    parseRunning(data)
-    if (running && running.id && running.project) {
-        messenger.emit('running', running)
+    try {
+        //TODO: might not need this? could be redundant
+        let data = await getRunning()
+        parseRunning(data)
+        if (running && running.id && running.project) {
+            messenger.emit('running', running)
+        }
+    } catch (error) {
+        console.log(error)
     }
 })
 

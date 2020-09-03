@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform } from 'react-native';
 import Running from '../components/Running'
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink } from '../routes'
-import {generateTimers} from '../constants/Tests'
 
 const debug = true
 
@@ -14,8 +13,8 @@ export default function Projects({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener('projects', event => {
-            debug && console.log(typeof event , event)
-            if(event && typeof event === 'object' && event.length > 0) {
+            debug && console.log(typeof event, event)
+            if (event && typeof event === 'object' && event.length > 0) {
                 setProjects(event)
             }
         })
@@ -36,7 +35,7 @@ export default function Projects({ useHistory, useParams }) {
                 <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {
                         // if (running && running.status === 'running') Data.finishTimer(running)
-                        messenger.emit('start', {projectId: item.id})
+                        messenger.emit('start', { projectId: item.id })
                         setOnline(!online)
                     }} />
                 </View>
@@ -46,7 +45,7 @@ export default function Projects({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', margin: 10 }}>
-            <Button title='Add Timers' onPress={() => generateTimers(projects)} />
+            <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
             <Button title='Refresh' onPress={() => setOnline(!online)} />
             <Button title='Clear' onPress={() => {
                 setProjects([])
@@ -66,7 +65,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
-                    style={{ width: '100%', marginTop:30, height: Dimensions.get('window').height - 170 }}
+                    style={{ width: '100%', marginTop: 30, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
                     keyExtractor={project => project.id}

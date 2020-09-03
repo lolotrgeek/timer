@@ -221,7 +221,7 @@ const putAll = (key, value) => {
     // debug && console.log('[React node] Chain :', chain)
     chain.put(value, ack => {
         debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-        debug && console.log(key, value)
+        debug && console.log('[NODE_DEBUG_PUT] SUCCESS: ', key, value)
         messenger.emit(key, ack.err ? ack : value)
     })
 

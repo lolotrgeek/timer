@@ -1,13 +1,21 @@
+import messenger from '../constants/Messenger'
 import { subHours, subMinutes, subSeconds, addHours } from 'date-fns'
-import { settingCount, dateSimple, totalTime} from './Functions'
-import { newProject, newTimer } from '../data/Models'
-import * as chain from '../data/Chains'
-import * as store from '../data/Store'
+import { settingCount, dateSimple, totalTime} from '../constants/Functions'
+import { newProject, newTimer } from './Models'
+import * as chain from './Chains'
+import * as store from './Store'
 
 
 let debug = true
 
 let timers = []
+
+messenger.on('GenerateProjects', msg => {
+    generateProjects()
+})
+messenger.on('GenerateTimers', msg => {
+    generateTimers(msg.projects)
+})
 
 export const generateProjects = () => {
     let amount = 5

@@ -21,15 +21,6 @@ const parse = (input) => {
     return output
 }
 
-const parseOld = event => {
-    try {
-        return JSON.parse(event)
-    } catch (error) {
-        console.error('NODE failed to parse ', error)
-        return event
-    }
-}
-
 /**
  * removes soul from given data
  * @param {*} data 
@@ -39,6 +30,12 @@ const trimSoul = data => {
     delete data['_']
     return data
 }
+
+function addHours (date, number) {
+    return moment(date).add(number, 'hours')
+}
+
+
 exports.isValid = date => Object.prototype.toString.call(date) === "[object Date]"
 exports.addMinutes  = (date, number) => moment(date).add(number, 'minutes')
 exports.subMinutes  = (date, number) => moment(date).subtract(number, 'minutes')
@@ -194,7 +191,7 @@ function multiDay (started, ended) {
     if (typeof started === 'string') started = new Date(started)
     if (typeof ended === 'string') ended = new Date(ended)
     if (!ended) ended = new Date()
-    return sameDay(started, ended)
+    return sameDay(started, ended)  ? false : true
 }
 
 /**
@@ -203,7 +200,7 @@ function multiDay (started, ended) {
  * @param {*} ended
  * @return `[{start: DateTime, end: DateTime}, ...]`
  */
-exports.newEntryPerDay = (started, ended) => {
+function newEntryPerDay (started, ended) {
     if (typeof started === 'string') started = new Date(started)
     if (typeof ended === 'string') ended = new Date(ended)
     if (!ended) ended = new Date()
@@ -251,6 +248,7 @@ module.exports = {
     parse,
     sameDay,
     multiDay,
+    newEntryPerDay,
     differenceInSeconds,
     isToday,
     isRunning,
@@ -262,5 +260,6 @@ module.exports = {
     trimSoul,
     getTodaysCount,
     settingCount,
-    totalTime
+    totalTime,
+    addHours
 }
