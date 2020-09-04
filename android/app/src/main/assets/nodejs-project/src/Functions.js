@@ -170,8 +170,8 @@ const settingCount = (timer, project) => {
     }
 }
 const sameDay = (a, b) => moment(a).isSame(b, 'day')
-const timeRules = (start, end) => moment(start).isBefore(end) === 1 ? false : true
-const dateRules = date => moment(date).isBefore(new Date()) === 1 ? false : date
+const timeRules = (start, end) => moment(start).isBefore(end)
+const dateRules = date => moment(date).isBefore(new Date())
 const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
 
 function dayHeaders(timerlist) {

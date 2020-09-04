@@ -60,10 +60,10 @@ export const dateSimple = date => {
     return moment(parsedDate).format('MM-DD-YYYY')
 }
 export const isValid = date => Object.prototype.toString.call(date) === "[object Date]"
-export const addMinutes = (date, number) => moment(date).add(number, 'minutes')
-export const subMinutes = (date, number) => moment(date).subtract(number, 'minutes')
-export const sub = (date, amount) => moment(date).subtract(amount.days, 'days')
-export const add = (date, amount) => moment(date).add(amount.days, 'days')
+export const addMinutes = (date, number) => moment(date).add(number, 'minutes').toDate()
+export const subMinutes = (date, number) => moment(date).subtract(number, 'minutes').toDate()
+export const subDays = (date, amount) => moment(date).subtract(amount, 'days').toDate()
+export const addDays = (date, amount) => moment(date).add(amount, 'days').toDate()
 export const getYear = date => new Date(date).getYear()
 export const getHours = date => new Date(date).getHours()
 export const getMinutes = date => new Date(date).getMinutes()
@@ -161,13 +161,13 @@ export const listDay = timers => timers.map(timer => new Date(timer.started))
  * @param {*} start 
  * @param {*} end 
  */
-export const timeRules = (start, end) => moment(start).isBefore(end) === 1 ? false : true
+export const timeRules = (start, end) => moment(start).isBefore(end) 
 
 /**
  * 
  * @param {*} date 
  */
-export const dateRules = date => moment(date).isBefore(new Date()) === 1 ? false : date
+export const dateRules = date => moment(date).isBefore(new Date())
 
 
 /**

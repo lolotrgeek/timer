@@ -142,35 +142,36 @@ exports.timerState = p => {
     }
 
     const nextDay = timer => {
-        let newDate = p.add(new Date(timer.started), { days: 1 })
+        let newDate = p.addDays(timer.started, 1)
+        console.log('newDate' , newDate)
         return chooseNewDate(newDate, timer) ? newDate : timer.started
     }
 
     const previousDay = timer => {
-        let newDate = p.sub(new Date(timer.started), { days: 1 })
+        let newDate = p.subDays(timer.started, 1)
         return chooseNewDate(newDate, timer) ? newDate : timer.started
     }
 
     const decreaseStarted = timer => {
-        let newStarted = p.addMinutes(new Date(timer.started), -5)
+        let newStarted = p.addMinutes(timer.started, -5)
         let checkedEnd = p.isRunning(timer) ? new Date() : new Date(timer.ended)
         return timeRulesEnforcer(newStarted, checkedEnd) ? p.setStarted(newStarted) : timer.started
     }
 
     const increaseStarted = timer => {
-        let newStarted = p.addMinutes(new Date(timer.started), 5)
+        let newStarted = p.addMinutes(timer.started, 5)
         let checkedEnd = p.isRunning(timer) ? new Date() : new Date(timer.ended)
         return timeRulesEnforcer(newStarted, checkedEnd) ? p.setStarted(newStarted) : timer.started
     }
 
     const decreaseEnded = timer => {
-        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(new Date(timer.ended), -5)
+        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(timer.ended, -5)
         let checkedStart = p.isRunning(timer) ? new Date() : new Date(timer.started)
         return timeRulesEnforcer(checkedStart, newEnded) ? p.setEnded(newEnded) : timer.ended
     }
 
     const increaseEnded = timer => {
-        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(new Date(timer.ended), 5)
+        let newEnded = p.isRunning(timer) ? new Date() : p.addMinutes(timer.ended, 5)
         let checkedStart = p.isRunning(timer) ? new Date() : new Date(timer.started)
         return timeRulesEnforcer(checkedStart, newEnded) ? p.setEnded(newEnded) : timer.ended
     }
@@ -235,37 +236,37 @@ exports.timerState = p => {
 
     p.messenger.on('nextDay', msg => {
         if (msg && msg.id === p.current.id) {
-            nextDay(p.current)
+            p.current.started = nextDay(p.current)
             p.debug && console.log('nextDay:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('prevDay', msg => {
         if (msg && msg.id === p.current.id) {
-            previousDay(p.current)
+            p.current.started = previousDay(p.current)
             p.debug && console.log('prevDay:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('increaseStarted', msg => {
         if (msg && msg.id === p.current.id) {
-            increaseStarted(p.current)
+            p.current.started = increaseStarted(p.current)
             p.current.total = p.totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, p.previous.total)
+            p.debug && console.log('total: ', p.current.total, ' previous total: ', p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('decreaseStarted', msg => {
         if (msg && msg.id === p.current.id) {
-            decreaseStarted(p.current)
+            p.current.started = decreaseStarted(p.current)
             p.current.total = p.totalTime(p.current.started, p.current.ended)
-            p.debug && console.log(p.current.total, p.previous.total)
+            p.debug && console.log('total: ', p.current.total, ' previous total: ', p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('increaseEnded', msg => {
         if (msg && msg.id === p.current.id) {
-            increaseEnded(p.current)
+            p.current.ended = increaseEnded(p.current)
             p.current.total = p.totalTime(p.current.started, p.current.ended)
             p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
@@ -273,7 +274,7 @@ exports.timerState = p => {
     })
     p.messenger.on('decreaseEnded', msg => {
         if (msg && msg.id === p.current.id) {
-            decreaseEnded(p.current)
+            p.current.ended = decreaseEnded(p.current)
             p.current.total = p.totalTime(p.current.started, p.current.ended)
             p.debug && console.log(p.current.total, p.previous.total)
             p.messenger.emit(`${p.current.id}`, p.current)
