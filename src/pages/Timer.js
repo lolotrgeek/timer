@@ -4,9 +4,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
 import { timeSpan, totalTime, timeString, dateSimple } from '../constants/Functions'
-import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
 import { timerHistorylink, projectlink } from '../routes'
 
 const debug = false
@@ -56,7 +54,6 @@ export default function Timer({ useHistory, useParams }) {
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={styles.list}>
-
                 <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
                 <Text>{timer.status}</Text>
                 <View style={{ flexDirection: 'row' }}>

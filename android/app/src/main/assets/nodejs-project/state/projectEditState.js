@@ -51,7 +51,7 @@ exports.projectEditState = p => {
             try {
                 p.store.chainer(p.chain.project(projectId), p.store.app).once((data, key) => {
                     const foundData = p.trimSoul(data)
-                    p.debug && console.log('[GUN node] getProject Data Found: ' , key, foundData)
+                    p.debug && console.log('[GUN node] getProject Data Found: ', key, foundData)
                     if (foundData && foundData.type === 'project') {
                         resolve(foundData)
                     }
@@ -219,4 +219,29 @@ exports.projectEditState = p => {
             reject(err)
         }
     })
+
+    /**
+    * OPTIMIZE: USE THIS INSTEAD OF MAP IN RESTORE/EDIT/DELETE FUNCTIONS
+    * @param {string} day simpledate `dd-mm-yyyy` 
+    */
+    // eslint-disable-next-line no-unused-vars
+    const getProjectDate = (day, projectId) => new Promise((resolve, reject) => {
+        try {
+            p.store.chainer(p.chain.projectDate(day, projectId), p.store.app).on((data, key) => {
+                if (!data) {
+                    p.debug.data && console.log('[GUN node] getProjectDate No Data Found',)
+                }
+                let foundData = p.trimSoul(data)
+                if (foundData.type === 'project') {
+                    p.debug.data && console.log('[GUN node] getProjectDate Data Found: ', key, foundData)
+
+                    resolve(foundData)
+                }
+            })
+        } catch (err) {
+            reject(err)
+        }
+
+    })
+
 }

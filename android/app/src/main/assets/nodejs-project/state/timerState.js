@@ -185,20 +185,20 @@ exports.timerState = p => {
         // updatedtimer.energy = p.current.energy
         // updatedtimer.total = totalTime(p.current.started, p.current.ended)
         let updatedproject = p.project
-        updatedproject.lastrun = p.sameDay(p.previous.started, p.project.lastrun) ? p.current.started : p.project.lastrun
+        updatedproject.lastrun = p.dateSimple(p.sameDay(p.previous.started, p.project.lastrun) ? p.current.started : p.project.lastrun)
         p.debug && console.log('p.current total', p.current.total, ' before total', p.previous.total)
         let prevcount = p.project.lastcount - p.previous.total // remove previous count
         let lastcount = prevcount + p.current.total
         updatedproject.lastcount = lastcount
         p.debug && console.log('updatedproject', updatedproject)
         if (p.current && p.current.type === 'timer') {
-            p.Data.updateTimer(p.current)
+            updateTimer(p.current)
             p.setAlert(['Success', 'Timer Updated!',])
         }
         else {
             p.setAlert(['Error', 'Timer Invalid!',])
         }
-        if (updatedproject) {
+        if (updatedproject && updatedproject.id && updatedproject.lastrun && updatedproject.lastcount) {
             p.store.put(p.chain.projectDate(updatedproject.lastrun, p.project.id), updatedproject)
             p.setAlert(['Success', 'Project Updated!',])
         }
@@ -206,6 +206,24 @@ exports.timerState = p => {
             p.setAlert(['Error', 'Project Invalid!',])
         }
 
+    }
+
+    const updateTimer = (timer) => {
+        let editedTimer = timer
+        if (editedTimer.deleted) { editedTimer.deleted = null }
+        editedTimer.edited = new Date().toString()
+        p.debug && console.log('[react Data] Updating Timer', editedTimer)
+        p.store.set(p.chain.timerHistory(editedTimer.id), editedTimer)
+        p.store.put(p.chain.timer(editedTimer.id), editedTimer)
+        p.store.put(p.chain.timerDate(editedTimer.started, editedTimer.id), true)
+        p.store.put(p.chain.projectTimer(editedTimer.project, editedTimer.id), editedTimer)
+        if (timer.started !== editedTimer.started) {
+            let timerMoved = timer
+            timerMoved.deleted = new Date().toString()
+            timerMoved.status = 'moved'
+            p.store.set(p.chain.timerDate(timer.started, timer.id), timerMoved)
+        }
+        p.store.set(p.chain.timerDate(editedTimer.started, editedTimer.id), editedTimer)
     }
 
     const removeTimer = timer => {
