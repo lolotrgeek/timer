@@ -2,9 +2,6 @@
 const moment = require('moment')
 const debug = false
 
-
-
-
 /**
  * 
  * @param {*} input
@@ -31,22 +28,22 @@ const trimSoul = data => {
     return data
 }
 
-function addHours (date, number) {
+function addHours(date, number) {
     return moment(date).add(number, 'hours')
 }
 
 
-exports.isValid = date => Object.prototype.toString.call(date) === "[object Date]"
-exports.addMinutes  = (date, number) => moment(date).add(number, 'minutes')
-exports.subMinutes  = (date, number) => moment(date).subtract(number, 'minutes')
-exports.sub = (date, amount) => moment(date).subtract(amount.days, 'days')
-exports.add = (date, amount) => moment(date).add(amount.days, 'days')
-exports.getMonth = date => new Date(date).getMonth()
-exports.getYear= date => new Date(date).getYear()
-exports.getHours= date => new Date(date).getHours()
-exports.getMinutes = date => new Date(date).getMinutes()
-exports.getSeconds= date => new Date(date).getSeconds()
-exports.getDate = date => new Date(date).getDate()
+const isValid = date => Object.prototype.toString.call(date) === "[object Date]"
+const addMinutes = (date, number) => moment(date).add(number, 'minutes')
+const subMinutes = (date, number) => moment(date).subtract(number, 'minutes')
+const sub = (date, amount) => moment(date).subtract(amount.days, 'days')
+const add = (date, amount) => moment(date).add(amount.days, 'days')
+const getMonth = date => new Date(date).getMonth()
+const getYear = date => new Date(date).getYear()
+const getHours = date => new Date(date).getHours()
+const getMinutes = date => new Date(date).getMinutes()
+const getSeconds = date => new Date(date).getSeconds()
+const getDate = date => new Date(date).getDate()
 
 const formatDate = date => moment(date).format("YYYY-MM-DD")
 
@@ -64,7 +61,7 @@ const isToday = (date) => {
  * @param {Date} end 
  */
 const differenceInSeconds = (start, end) => {
-    debug && console.log('Difference: ', start , ' - ', end)
+    debug && console.log('Difference: ', start, ' - ', end)
     var a = moment(start)
     var b = moment(end)
     return a.diff(b, 'seconds')
@@ -173,11 +170,11 @@ const settingCount = (timer, project) => {
     }
 }
 const sameDay = (a, b) => moment(a).isSame(b, 'day')
-const timeRules = (start, end) =>  moment(start).isBefore(end) === 1 ? false : true
+const timeRules = (start, end) => moment(start).isBefore(end) === 1 ? false : true
 const dateRules = date => moment(date).isBefore(new Date()) === 1 ? false : date
 const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
 
-function dayHeaders (timerlist) {
+function dayHeaders(timerlist) {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
@@ -214,11 +211,11 @@ function dayHeaders (timerlist) {
  * @param {*} started 
  * @param {*} ended 
  */
-function multiDay (started, ended) {
+function multiDay(started, ended) {
     if (typeof started === 'string') started = new Date(started)
     if (typeof ended === 'string') ended = new Date(ended)
     if (!ended) ended = new Date()
-    return sameDay(started, ended)  ? false : true
+    return sameDay(started, ended) ? false : true
 }
 
 /**
@@ -227,7 +224,7 @@ function multiDay (started, ended) {
  * @param {*} ended
  * @return `[{start: DateTime, end: DateTime}, ...]`
  */
-function newEntryPerDay (started, ended) {
+function newEntryPerDay(started, ended) {
     if (typeof started === 'string') started = new Date(started)
     if (typeof ended === 'string') ended = new Date(ended)
     if (!ended) ended = new Date()
@@ -291,5 +288,16 @@ module.exports = {
     addHours,
     dayHeaders,
     dateRules,
-    timeRules
+    timeRules,
+    isValid,
+    addMinutes,
+    subMinutes,
+    sub,
+    add,
+    getMonth,
+    getYear,
+    getHours,
+    getMinutes,
+    getSeconds,
+    getDate,
 }
