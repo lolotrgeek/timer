@@ -1,4 +1,4 @@
-import { isValid } from 'date-fns'
+import { isValid } from './Functions'
 export const isValidEntry = entry => entry && typeof entry === 'object' ? true : false
 export const isTimer = entry => isValidEntry(entry) && entry.type === 'timer' ? true : false
 export const isRunning = timer => isTimer(timer) && timer.status === 'running' ? true : false

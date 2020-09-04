@@ -1,6 +1,18 @@
 
-import { addMinutes, isValid, sub, add, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } from 'date-fns'
-import { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } from '../constants/Functions'
+import { timeRules, 
+    dateRules, 
+    totalTime, 
+    trimSoul, 
+    isRunning, 
+    dateSimple, 
+    settingCount, 
+    sameDay, 
+    addMinutes, 
+    isValid, 
+    sub, 
+    add, 
+    getMonth, 
+    getYear, getHours, getMinutes, getSeconds, getDate  } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import * as Data from '../data/Data'
 import * as chain from '../data/Chains'
