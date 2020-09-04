@@ -1,19 +1,6 @@
-import {
-    isSameDay,
-    isDate,
-    // differenceInSeconds,
-    startOfToday,
-    compareAsc,
-    isYesterday,
-    addSeconds,
-    endOfDay,
-    format,
-    addDays
-} from 'date-fns'
 import moment from 'moment'
 
 const debug = false
-
 
 // TODO: REFACTOR SO FUNCTIONS DO NOT NEED ANY DATA STRUCTURE
 // DATA FUNCTIONS
@@ -55,6 +42,15 @@ export const datetimeCreator = () => {
 }
 
 /**
+ * reference https://stackoverflow.com/questions/49909213/how-to-get-the-beginning-and-end-of-the-day-with-moment
+ */
+export const startOfToday = () => {
+    const now = moment()
+    return now.startOf('day')
+}
+
+
+/**
  * Create a date String of date
  * `DD-MM-YYYY`
  */
@@ -64,13 +60,33 @@ export const dateSimple = date => {
     return moment(parsedDate).format('MM-DD-YYYY')
 }
 
-export const nextDay = date => {
-    if (typeof date === 'string') date = new Date(date)
-    return moment(addDays(date, 1)).format('MM-DD-YYYY')
+export const sameDay = (a, b) => moment(a).isSame(b, 'day')
+/**
+ * https://stackoverflow.com/a/30674186
+ * @param {*} date 
+ */
+export const isYesterday = (date) => {
+    let today = moment(new Date())
+    let yesterday = today.clone().subtract(1, 'days').startOf('day')
+    return moment(date).isSame(yesterday)
+}
+/**
+ * 
+ * @param {Date} date
+ * reference https://stackoverflow.com/questions/49909213/how-to-get-the-beginning-and-end-of-the-day-with-moment 
+ */
+const endOfDay = (date) => {
+    return moment(date).endOf('day')
 }
 
-export const sameDay = (a, b) => moment(a).isSame(b, 'day')
-
+/**
+ * reference https://stackoverflow.com/questions/17333425/add-a-duration-to-a-moment-moment-js
+ * @param {Date} date 
+ * @param {Number} amount 
+ */
+const addSeconds = (date, amount) => {
+    return moment(date).add(amount, 'seconds')
+}
 /**
  * Construct a Javascript Date object from `mm-dd-yyyy` string
  * @param {*} string 
@@ -122,11 +138,11 @@ export const getMonth = date => {
  * return date as a simplifed date string `dd month yyy`
  * @param {*} date optional, default: `today`
  */
-export const simpleDate = date => format(date ? date : new Date(), "MMM d yyyy")
+export const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
-export const fullDate = date => format(date, "EEE MMM d yyyy  hh:mm:ss aaa")
-export const fullDay = date => format(date, "EEE MMM d yyyy")
+export const fullDate = date => moment(date).format("EEE MMM d yyyy  hh:mm:ss aaa")
+export const fullDay = date => moment(date).format("EEE MMM d yyyy")
 /**
  * 
  */
@@ -136,18 +152,19 @@ export const listDay = timers => timers.map(timer => new Date(timer.started))
  * @param {*} start 
  * @param {*} end 
  */
-export const timeRules = (start, end) => compareAsc(start, end) === 1 ? false : true
-/**
- * 
- * @param {*} date 
- */
-export const dateRules = date => compareAsc(date, new Date()) === 1 ? false : date
+const timeRules = (start, end) => moment(start).isBefore(end) === 1 ? false : true
 
 /**
  * 
  * @param {*} date 
  */
-export const timeStringOld = date => isDate(date) ? date.toTimeString().split(' ')[0] : date
+const dateRules = date => moment(date).isBefore(new Date()) === 1 ? false : date
+
+
+/**
+ * 
+ * @param {*} date 
+ */
 export const timeString = date => {
     if (typeof date === 'string') date = new Date(date)
     return moment(date).format('hh:mm:ss a')
