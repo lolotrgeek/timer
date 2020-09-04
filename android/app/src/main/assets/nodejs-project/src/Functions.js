@@ -51,18 +51,10 @@ exports.getDate = date => new Date(date).getDate()
 const formatDate = date => moment(date).format("YYYY-MM-DD")
 
 /**
- * reference : https://stackoverflow.com/questions/24883760/moment-js-check-a-date-is-today/24884339
  * @param {*} date 
  */
-const isToday = date => {
-    const today = moment(new Date())
-    date = moment(date)
-    if (today.isSame(date, 'd')) {
-        debug && console.log('Checking day.')
-        return true
-    } else {
-        return false
-    }
+const isToday = (date) => {
+    return moment(date).isSame(new Date(), 'day')
 }
 
 /**

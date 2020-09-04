@@ -70,9 +70,24 @@ export const nextDay = date => {
 }
 
 export const sameDay = (a, b) => moment(a).isSame(b, 'day')
+
+/**
+ * Construct a Javascript Date object from `mm-dd-yyyy` string
+ * @param {*} string 
+ */
+export const simpleDateContructor = string => {
+    let date = string.split('-')
+    let month = parseInt(date[0])-1
+    let day = parseInt(date[1])
+    let year = parseInt(date[2])
+    return new Date(year, month, day) 
+}
+
 export const isToday = (date) => {
-    // console.log('Same Day: ', date, new Date(), moment(date).isSame(new Date(), 'day'))
-    return moment(date).isSame(new Date(), 'day')
+    let given = simpleDateContructor(date)
+    let same = moment(given).isSame(new Date(), 'day')
+    console.log('isToday?: ', given, new Date(), same)
+    return same
 }
 
 export const differenceInSeconds = (start, end) => {
