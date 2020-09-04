@@ -135,10 +135,9 @@ export default function TimelineList({ useHistory }) {
 
 const styles = StyleSheet.create({
     list: {
-        height: Dimensions.get('window').height,
+        height: Dimensions.get('window').height - 170,
         width: '100%',
         backgroundColor: '#ccc',
-        marginTop: 25,
         marginBottom: 50,
     },
     row: { flexDirection: 'row', margin: 10, width: '100%' },

@@ -22,14 +22,14 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     const Header = () => (
-        <View style={{width: '100%', padding: 10, backgroundColor: 'white', flexDirection: 'column', height: 50 }}>
+        <View style={{width: '100%', padding: 10, backgroundColor: 'white', flexDirection: 'column'}}>
             {/* <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} /> */}
             <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} />
         </View>
     )
 
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column', height: 50 }}>
+        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', backgroundColor: 'white', zIndex: 999999, flexDirection: 'column', height: 50 }}>
             <Button
                 onPress={() => history.push(projectCreatelink())}
                 title='Create Project'

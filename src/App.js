@@ -19,7 +19,7 @@ import TimerTrash from './pages/TimerTrash'
 export default function App() {
     return (
         <Router>
-            <View style={{ position: 'absolute', flexDirection: 'row', padding: 10, width:'100%', backgroundColor: 'white', zIndex:10000, height:50, }}>
+            <View style={{ flexDirection: 'row', padding: 10, width:'100%', backgroundColor: 'white', height:50}}>
                 <View style={{ width: '30%' }}>
                     <Link to={'/'}><Text>Timeline</Text></Link>
                 </View>
