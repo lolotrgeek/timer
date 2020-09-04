@@ -34,10 +34,10 @@ function addHours(date, number) {
 
 
 const isValid = date => Object.prototype.toString.call(date) === "[object Date]"
-const addMinutes = (date, number) => moment(date).add(number, 'minutes')
-const subMinutes = (date, number) => moment(date).subtract(number, 'minutes')
-const sub = (date, amount) => moment(date).subtract(amount.days, 'days')
-const add = (date, amount) => moment(date).add(amount.days, 'days')
+const addMinutes = (date, number) => moment(date).add(number, 'minutes').toDate()
+const subMinutes = (date, number) => moment(date).subtract(number, 'minutes').toDate()
+const subDays = (date, amount) => moment(date).subtract(amount, 'days').toDate()
+const addDays = (date, amount) => moment(date).add(amount, 'days').toDate()
 const getMonth = date => new Date(date).getMonth()
 const getYear = date => new Date(date).getYear()
 const getHours = date => new Date(date).getHours()
@@ -292,8 +292,8 @@ module.exports = {
     isValid,
     addMinutes,
     subMinutes,
-    sub,
-    add,
+    subDays,
+    addDays,
     getMonth,
     getYear,
     getHours,
