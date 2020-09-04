@@ -173,6 +173,41 @@ const settingCount = (timer, project) => {
     }
 }
 const sameDay = (a, b) => moment(a).isSame(b, 'day')
+const timeRules = (start, end) =>  moment(start).isBefore(end) === 1 ? false : true
+const dateRules = date => moment(date).isBefore(new Date()) === 1 ? false : date
+const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
+
+function dayHeaders (timerlist) {
+    const output = [] // [days...]
+    // organize timers by day
+    const timerdays = timerlist.map(timer => {
+        return { day: simpleDate(new Date(timer.started)), timer: timer }
+    })
+    // //// debug && console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
+    timerdays.forEach(timerday => {
+        // first value if output is empty is always unique
+        if (output.length === 0) {
+            // // debug && console.log('FIRST OUTPUT ENTRY :', timerday)
+            output.push({ title: timerday.day, data: [timerday.timer] })
+        }
+        else {
+            // find and compare timerdays to outputs
+            const match = output.find(inOutput => inOutput.title === timerday.day)
+            if (match) {
+                //// debug && console.log(pagename + '- MATCHING ENTRY :', match.title)
+                // add timer to list of timers for matching day
+                match.data = [...match.data, timerday.timer]
+            }
+            else {
+                //// debug && console.log(pagename + '- NEW OUTPUT ENTRY :', timerday)
+                output.push({ title: timerday.day, data: [timerday.timer] })
+            }
+        }
+    })
+    // // debug && console.log('- DAYHEADERS - OUTPUT', output)
+    if (output.length > 0) { return (output) }
+    else { return ([]) }
+}
 
 /**
  * 
@@ -253,5 +288,8 @@ module.exports = {
     getTodaysCount,
     settingCount,
     totalTime,
-    addHours
+    addHours,
+    dayHeaders,
+    dateRules,
+    timeRules
 }

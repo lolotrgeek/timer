@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { totalTime, parse, trimSoul, isRunning, dayHeaders, dateRules, dateSimple } = require('../src/Functions')
+const { totalTime, parse, trimSoul, isRunning, dayHeaders, dateSimple } = require('../src/Functions')
 const store = require('../src/Store')
 const messenger = require('../src/Messenger')
 const chain = require('../src/Chains')
@@ -22,7 +22,6 @@ projectState({
     trimSoul,
     isRunning,
     dayHeaders,
-    dateRules,
     dateSimple,
     store,
     messenger,
