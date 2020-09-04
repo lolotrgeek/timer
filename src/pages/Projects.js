@@ -19,7 +19,7 @@ export default function Projects({ useHistory, useParams }) {
                 setRefresh(false)
             }
         })
-        messenger.emit('getProjects', { all: true })
+        messenger.emit('getProjects', { all: true, refresh: true })
 
         return () => {
             messenger.removeAllListeners('projects')
@@ -67,7 +67,7 @@ export default function Projects({ useHistory, useParams }) {
                     onRefresh={() => {
                         setRefresh(true)
                         setProjects([])
-                        messenger.emit('getProjects', { all: true })
+                        messenger.emit('getProjects', { all: true, refresh: true })
                     }}
                     refreshing={refresh}
                 />

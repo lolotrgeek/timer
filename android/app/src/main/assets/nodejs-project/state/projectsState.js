@@ -2,6 +2,9 @@
 exports.projectsState = p => {
     p.messenger.on("getProjects", msg => {
         p.debug && console.log('get projects', msg)
+        if(msg.refresh === true) {
+            p.state.projects = []
+        }
         getProjects().then(projects => {
             p.messenger.emit("projects", projects)
         }).catch(error => {
