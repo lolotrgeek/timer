@@ -206,7 +206,7 @@ export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + ti
  * 
  * @param {*} datestring 
  */
-export const sayDay = datestring => isToday(new Date(datestring)) ? 'Today' : isYesterday(new Date(datestring)) ? 'Yesterday' : datestring
+export const sayDay = datestring => isToday(datestring) ? 'Today' : isYesterday(datestring) ? 'Yesterday' : datestring
 /**
  * 
  * @param {*} t timestring or date object

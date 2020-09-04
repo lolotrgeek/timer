@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
-import { isToday } from '../constants/Functions'
+import { isToday, secondsToString, sayDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
 
@@ -71,7 +71,7 @@ export default function TimelineList({ useHistory }) {
                         <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
-                        <Text style={{ color: 'red' }}>{item.lastcount}</Text>
+                        <Text style={{ color: 'red' }}>{secondsToString(item.lastcount)}</Text>
                     </View>
                     <View style={{ width: '20%' }}>
                         <Button title='start' onPress={() => {
@@ -98,7 +98,7 @@ export default function TimelineList({ useHistory }) {
             }}
             sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
             renderSectionHeader={({ section: { title } }) => {
-                return (<Text>{title}</Text>)
+                return (<Text>{sayDay(title)}</Text>)
             }}
             renderItem={RenderTimer}
             onEndReached={() => {
