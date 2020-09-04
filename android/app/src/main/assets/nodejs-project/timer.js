@@ -18,6 +18,7 @@ const stopRunning = async () => {
         stopCounter()
         debug && console.log('[STOP] ', running, runningproject)
         await finishRunning(running, runningproject)
+        messenger.emit('stopped')
     } catch (error) {
         debug && console.log('[Timer node] : Stop failed ' + error)
     }

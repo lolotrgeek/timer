@@ -30,7 +30,7 @@ export default function TimelineList({ useHistory }) {
                 setPages(event)
             }
         })
-        messenger.addListener('stop', msg => {
+        messenger.addListener('stopped', msg => {
             // NOTE: could listen on 'running' channel, but it breaks async flow on running timer
             // TODO: will need to test how this integrates with a native messenger
             setPages([])
@@ -54,6 +54,7 @@ export default function TimelineList({ useHistory }) {
             messenger.removeAllListeners("running")
             messenger.removeAllListeners("pages")
             messenger.removeAllListeners("timelinelocation")
+            messenger.removeAllListeners('stopped')
         }
     }, [])
 
