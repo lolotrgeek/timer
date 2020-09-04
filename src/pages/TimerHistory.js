@@ -15,6 +15,7 @@ export default function TimerHistory({ useHistory, useParams }) {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setEdits(event)
+                setRefresh(false)
             }
         })
 
@@ -61,6 +62,12 @@ export default function TimerHistory({ useHistory, useParams }) {
                 data={edits}
                 renderItem={renderTimer}
                 keyExtractor={(item, index) => item.id + index}
+                onRefresh={() => {
+                    setRefresh(true)
+                    setEdits([{ id: 'none' }])
+                    messenger.emit('getTimerHistory', { timerId })
+                }}
+                refreshing={refresh}
             />
         </SafeAreaView>
     )

@@ -7,7 +7,7 @@ import * as routes from '../routes'
 
 export default function ProjectTrash({ useHistory, useParams }) {
     let history = useHistory()
-    const [online, setOnline] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [trash, setTrash] = useState([{ id: 'none' }])
 
     useEffect(() => {
@@ -15,10 +15,11 @@ export default function ProjectTrash({ useHistory, useParams }) {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)
+                setRefresh(false)
             }
         })
 
-        messenger.emit('getProjectTrash', { })
+        messenger.emit('getProjectTrash', {})
     }, [])
 
 
@@ -43,13 +44,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
     };
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => {
-                setOnline(!online)
-            }} />
-            <Button title='Clear' onPress={() => {
-                setTrash([])
-                setOnline(!online)
-            }} />
+
         </View>
     )
     const Header = () => (
@@ -66,6 +61,12 @@ export default function ProjectTrash({ useHistory, useParams }) {
                 data={trash}
                 renderItem={renderProject}
                 keyExtractor={(item, index) => item.id + index}
+                onRefresh={() => {
+                    setRefresh(true)
+                    setTrash([{ id: 'none' }])
+                    messenger.emit('getProjectTrash', {})
+                }}
+                refreshing={refresh}
             />
         </SafeAreaView>
     )
@@ -73,7 +74,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
 
 const styles = StyleSheet.create({
     header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
-    
+
     container: {
         flex: 1,
         marginTop: 50,
@@ -82,8 +83,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
-        marginTop: 170, 
-        height: Dimensions.get('window').height - 170 ,
+        marginTop: 170,
+        height: Dimensions.get('window').height - 170,
         flexDirection: 'row',
         width: '100%',
         backgroundColor: '#fff'

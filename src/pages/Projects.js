@@ -8,7 +8,7 @@ const debug = true
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()
-    const [online, setOnline] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [projects, setProjects] = useState([])
 
     useEffect(() => {
@@ -16,6 +16,7 @@ export default function Projects({ useHistory, useParams }) {
             debug && console.log(typeof event, event)
             if (event && typeof event === 'object' && event.length > 0) {
                 setProjects(event)
+                setRefresh(false)
             }
         })
         messenger.emit('getProjects', { all: true })
@@ -36,7 +37,6 @@ export default function Projects({ useHistory, useParams }) {
                     <Button title='start' onPress={() => {
                         // if (running && running.status === 'running') Data.finishTimer(running)
                         messenger.emit('start', { projectId: item.id })
-                        setOnline(!online)
                     }} />
                 </View>
             </View>
@@ -46,11 +46,6 @@ export default function Projects({ useHistory, useParams }) {
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', margin: 10 }}>
             <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
-            <Button title='Refresh' onPress={() => setOnline(!online)} />
-            <Button title='Clear' onPress={() => {
-                setProjects([])
-                setOnline(!online)
-            }} />
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
     )
@@ -69,6 +64,12 @@ export default function Projects({ useHistory, useParams }) {
                     data={projects}
                     renderItem={renderRow}
                     keyExtractor={project => project.id}
+                    onRefresh={() => {
+                        setRefresh(true)
+                        setProjects([])
+                        messenger.emit('getProjects', { all: true })
+                    }}
+                    refreshing={refresh}
                 />
             </View>
 

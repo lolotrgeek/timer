@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
-import {isToday} from '../constants/Functions'
+import { isToday } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
 
@@ -25,11 +25,13 @@ export default function TimelineList({ useHistory }) {
         messenger.addListener("page", event => {
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
+            setRefresh(false)
         })
         messenger.addListener("pages", event => {
             if (event && Array.isArray(event)) {
                 debug && console.log('Pages', event)
                 setPages(event)
+                setRefresh(false)
             }
         })
         messenger.addListener('stopped', msg => {
@@ -38,7 +40,6 @@ export default function TimelineList({ useHistory }) {
             setPages([])
             setHidden('')
             messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-            // setRefresh(!refresh)
         })
         if (pages.length === 0) messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
 
@@ -65,20 +66,20 @@ export default function TimelineList({ useHistory }) {
     const RenderTimer = ({ item }) => {
         return (
             item.id === hidden && isToday(item.lastrun) ? <View></View> :
-            <View style={styles.row}>
-                <View style={{ width: '30%' }}>
-                    <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
+                <View style={styles.row}>
+                    <View style={{ width: '30%' }}>
+                        <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
+                    </View>
+                    <View style={{ width: '30%' }}>
+                        <Text style={{ color: 'red' }}>{item.lastcount}</Text>
+                    </View>
+                    <View style={{ width: '20%' }}>
+                        <Button title='start' onPress={() => {
+                            messenger.emit('start', { projectId: item.id })
+                            setHidden(item.id)
+                        }} />
+                    </View>
                 </View>
-                <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.lastcount}</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    <Button title='start' onPress={() => {
-                        messenger.emit('start', { projectId: item.id })
-                        setHidden(item.id)
-                    }} />
-                </View>
-            </View>
         );
     };
     if (pages.length === 0) return (<Text style={styles.list}>Loading ... </Text>)
@@ -112,6 +113,13 @@ export default function TimelineList({ useHistory }) {
                 // console.log(scroll.nativeEvent.contentOffset.y)
                 messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)
             }}
+            onRefresh={() => {
+                setRefresh(true)
+                setPages([])
+                setHidden('')
+                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+            }}
+            refreshing={refresh}
         />
 
     )
@@ -123,7 +131,8 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height - 220,
         width: '100%',
         backgroundColor: '#ccc',
+        marginBottom: 50
     },
-    row : { flexDirection: 'row', margin: 10, width: '100%' },
-    hide: {display: 'none'}
+    row: { flexDirection: 'row', margin: 10, width: '100%' },
+    hide: { display: 'none' }
 });

@@ -82,7 +82,7 @@ export default function Timers() {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
                 <View style={{ width: '30%' }}>
-                    <Text onPress={() =>{}} >{item.name ? item.name : ''}</Text>
+                    <Text onPress={() => { }} >{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{item.lastrun}</Text>

@@ -15,6 +15,7 @@ export default function ProjectHistory({ useHistory, useParams }) {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setEdits(event)
+                setRefresh(false)
             }
         })
 
@@ -50,6 +51,12 @@ export default function ProjectHistory({ useHistory, useParams }) {
                 data={edits}
                 renderItem={renderProject}
                 keyExtractor={(item, index) => item.id + index}
+                                onRefresh={() => {
+                    setRefresh(true)
+                    setEdits([{ id: 'none' }])
+                    messenger.emit('getProjectHistory', { projectId })
+                }}
+                refreshing={refresh}
             />
         </SafeAreaView>
     )

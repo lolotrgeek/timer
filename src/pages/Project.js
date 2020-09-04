@@ -4,7 +4,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
 import { timeSpan } from '../constants/Functions'
-import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectEditlink, timerlink, projectsListLink, timerTrashlink } from '../routes'
 
@@ -18,7 +17,7 @@ const loadAll = false
 export default function Project({ useHistory, useParams }) {
     let history = useHistory();
     let { projectId } = useParams();
-    const [online, setOnline] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [project, setProject] = useState({})
     const [pages, setPages] = useState([])
     const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
@@ -33,6 +32,7 @@ export default function Project({ useHistory, useParams }) {
             if (event && Array.isArray(event)) {
                 console.log('Pages', event)
                 setPages(event)
+                setRefresh(false)
             }
         })
         messenger.addListener(`${projectId}/pagelocation`, event => {
@@ -73,9 +73,6 @@ export default function Project({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => {
-                setOnline(!online)
-            }} />
             <Button title='Edit' onPress={() => {
                 history.push(projectEditlink(projectId))
             }} />
@@ -88,7 +85,7 @@ export default function Project({ useHistory, useParams }) {
                     // history.push(projectlink(timer.project))
                 }} />
                 : project.status === 'deleted' ?
-                    <Button title='Restore' onPress={() => { messenger.emit('ProjectRestore', project)}} />
+                    <Button title='Restore' onPress={() => { messenger.emit('ProjectRestore', project) }} />
                     : <Text></Text>
             }
             <Button title='Trash' onPress={() => history.push(timerTrashlink(projectId))} />
@@ -130,7 +127,12 @@ export default function Project({ useHistory, useParams }) {
                     onEndReachedThreshold={1}
                     keyExtractor={(item, index) => item.id}
                     onScroll={scroll => messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)}
-
+                    onRefresh={() => {
+                        setRefresh(true)
+                        setPages([])
+                        messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
+                    }}
+                    refreshing={refresh}
                 />
             </View>
         </SafeAreaView>

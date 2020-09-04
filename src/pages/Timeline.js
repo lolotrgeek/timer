@@ -27,12 +27,11 @@ export default function Timeline({ useHistory }) {
             <Running />
             {/* <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} /> */}
             <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} />
-            <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
         </View>
     )
 
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' }}>
+        <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column', height:50 }}>
             <Button
                 onPress={() => history.push(projectCreatelink())}
                 title='Create Project'

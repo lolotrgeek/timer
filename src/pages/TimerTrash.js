@@ -8,7 +8,7 @@ import * as routes from '../routes'
 export default function TimerTrash({ useHistory, useParams }) {
     let history = useHistory()
     let { projectId } = useParams();
-    const [online, setOnline] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [trash, setTrash] = useState([{ id: 'none' }])
 
     useEffect(() => {
@@ -16,6 +16,7 @@ export default function TimerTrash({ useHistory, useParams }) {
             console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)
+                setRefresh(false)
             }
         })
 
@@ -45,13 +46,6 @@ export default function TimerTrash({ useHistory, useParams }) {
     };
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
-            <Button title='Refresh' onPress={() => {
-                setOnline(!online)
-            }} />
-            <Button title='Clear' onPress={() => {
-                setTrash([])
-                setOnline(!online)
-            }} />
         </View>
     )
     const Header = () => (
@@ -68,6 +62,13 @@ export default function TimerTrash({ useHistory, useParams }) {
                 data={trash}
                 renderItem={renderTimer}
                 keyExtractor={(item, index) => item.id + index}
+                onRefresh={() => {
+                    setRefresh(true)
+                    setTrash([{ id: 'none' }])
+                    messenger.emit('getTimerTrash', { projectId: projectId })
+
+                }}
+                refreshing={refresh}
             />
         </SafeAreaView>
     )
