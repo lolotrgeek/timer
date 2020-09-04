@@ -4,7 +4,6 @@ import {
     // differenceInSeconds,
     startOfToday,
     compareAsc,
-    isToday,
     isYesterday,
     addSeconds,
     endOfDay,
@@ -71,6 +70,10 @@ export const nextDay = date => {
 }
 
 export const sameDay = (a, b) => moment(a).isSame(b, 'day')
+export const isToday = (date) => {
+    // console.log('Same Day: ', date, new Date(), moment(date).isSame(new Date(), 'day'))
+    return moment(date).isSame(new Date(), 'day')
+}
 
 export const differenceInSeconds = (start, end) => {
     let a = moment(start)
@@ -231,11 +234,7 @@ export const sayRunning = timer => timer.ended === timer.started ? 'running' : t
  */
 export const isRunning = timer => timer && typeof timer === 'object' && timer.status === 'running' ? true : false
 
-/**
- * 
- * @param {*} date 
- */
-export { isToday }
+
 /**
  * Get amount of time since entry was started
  * @param {string} started datestring when entry was started

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
+import {isToday} from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectlink } from '../routes'
 
@@ -12,6 +13,7 @@ export default function TimelineList({ useHistory }) {
     let history = useHistory()
     const [pages, setPages] = useState([]) // [[{title: 'mm-dd-yyyy', data: [{id, }]}, ...], ... ]
     const [refresh, setRefresh] = useState(false)
+    const [hidden, setHidden] = useState('')
     const [location, setLocation] = useState({ x: 0, y: 0 })
     const timelineList = useRef()
 
@@ -34,6 +36,7 @@ export default function TimelineList({ useHistory }) {
             // NOTE: could listen on 'running' channel, but it breaks async flow on running timer
             // TODO: will need to test how this integrates with a native messenger
             setPages([])
+            setHidden('')
             messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
             // setRefresh(!refresh)
         })
@@ -58,9 +61,11 @@ export default function TimelineList({ useHistory }) {
         }
     }, [])
 
+
     const RenderTimer = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
+            item.id === hidden && isToday(item.lastrun) ? <View></View> :
+            <View style={styles.row}>
                 <View style={{ width: '30%' }}>
                     <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
                 </View>
@@ -70,6 +75,7 @@ export default function TimelineList({ useHistory }) {
                 <View style={{ width: '20%' }}>
                     <Button title='start' onPress={() => {
                         messenger.emit('start', { projectId: item.id })
+                        setHidden(item.id)
                     }} />
                 </View>
             </View>
@@ -117,5 +123,7 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height - 220,
         width: '100%',
         backgroundColor: '#ccc',
-    }
+    },
+    row : { flexDirection: 'row', margin: 10, width: '100%' },
+    hide: {display: 'none'}
 });
