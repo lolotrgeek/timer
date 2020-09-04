@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, FlatList } from 'react-native';
-import {dateSimple} from '../constants/Functions'
+import { dateSimple } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import * as Data from '../data/Data'
 import * as store from '../data/Store'
@@ -20,16 +20,20 @@ export default function Timers() {
     const [timerdates, setTimerDates] = useState([]);
 
     useEffect(() => {
-        messenger.addListener(chain.timers(), event => {
-            console.log('timers', event)
+        // messenger.addListener('timersFound', event => {
+        //     console.log('timers', event)
+        //     setTimers(event)
+        // })
+        // messenger.emit('getTimers', {all: true})
+
+
+        messenger.addListener('projectTimers', event => {
+            if (!event) return
+            debug && console.log('finding projects: ', event)
             setTimers(event)
         })
-        Data.getTimers()
+        messenger.emit('getProjectTimers', { all: true })
 
-        messenger.addListener(chain.timerDates(), event => {
-            if (!event) return
-            debug && console.log('finding dates: ', event)
-        })
 
         // TIMERS
         // store.chainer(chain.timers(), store.app).map().on((data, key) => {
@@ -39,7 +43,7 @@ export default function Timers() {
         //     setTimers(timers => [...timers, data])
         //     console.log('[Timers] Data Found: ', key, data)
         // })
-        
+
         // TIMER DATES
         // store.chainer(chain.timerDates(), store.app).on((data, key) => {
         //     if (!data) {
@@ -50,8 +54,8 @@ export default function Timers() {
         // })
 
         return () => {
-            messenger.removeAllListeners(chain.timers())
-            messenger.removeAllListeners(chain.timerDates())
+            messenger.removeAllListeners('timersFound')
+            messenger.removeAllListeners('timerDates')
         }
     }, [])
 
@@ -77,23 +81,18 @@ export default function Timers() {
     const renderTimer = ({ item }) => {
         return (
             <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
-                <View style={{ width: '20%' }}>
-                    {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
-                    <Text>{item.name}</Text>
+                <View style={{ width: '30%' }}>
+                    <Text onPress={() =>{}} >{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text>{dateSimple(item.started)}</Text>
+                    <Text style={{ color: 'red' }}>{item.lastrun}</Text>
                 </View>
-                <View style={{ width: '20%' }}>
-                    <Text>{item.id}</Text>
-
-                </View>
-                <View style={{ width: '10%' }}>
-                    <Text>{item.total}</Text>
+                <View style={{ width: '30%' }}>
+                    <Text style={{ color: 'red' }}>{item.lastcount}</Text>
                 </View>
             </View>
         );
-    };
+    }
 
     return (
         <SafeAreaView style={styles.container}>

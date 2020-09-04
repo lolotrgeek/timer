@@ -16,7 +16,6 @@ exports.timelineState = p => {
 
     p.messenger.on('App', async msg => {
         await listDays()
-
     })
 
     p.messenger.on("pagelocation", msg => {
