@@ -111,7 +111,7 @@ export const simpleDateContructor = string => {
 export const isToday = (date) => {
     let given = simpleDateContructor(date)
     let same = moment(given).isSame(new Date(), 'day')
-    console.log('isToday?: ', given, new Date(), same)
+    debug && console.log('isToday?: ', given, new Date(), same)
     return same
 }
 

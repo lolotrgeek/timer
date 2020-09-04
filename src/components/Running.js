@@ -13,16 +13,21 @@ export default function Running() {
 
     useEffect(() => {
         messenger.addListener("count", event => setCount(event))
-        return () => messenger.removeAllListeners("count")
+        messenger.addListener(chain.running(), event => {
+            if (event && event.status === 'running') {
+                setRunning(event)
+            } else {
+                setRunning(null)
+            }
+        }) // this hooks to chained store emission that fires when changes to `running` are stored...
+        return () => {
+            messenger.removeAllListeners(chain.running())
+            messenger.removeAllListeners("count")
+        }
     }, [])
 
-    useEffect(() => {
-        messenger.addListener(chain.running(), event => setRunning(event)) // this hooks to chained store emission that fires when changes to `running` are stored...
-
-        return () => messenger.removeAllListeners(chain.running())
-    }, [])
-
-    if (running && running.id !== 'none') return (
+    if (!running || running.id === 'none') return (<View></View>)  // TODO: do a stylesheet update here? to minimize timer space, or runnning component in list and let it auto size
+    else return (
         <View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ width: '20%' }}>
@@ -63,8 +68,8 @@ export default function Running() {
                 </View>
             </View>
 
-        </View>)
-    else return (<View></View>) // TODO: do a stylesheet update here? to minimize timer space, or runnning component in list and let it auto size
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({

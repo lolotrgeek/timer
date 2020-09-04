@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
 import { isToday, secondsToString, sayDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
+import Running from '../components/Running'
 import { projectlink } from '../routes'
 
 const debug = false
@@ -55,13 +56,20 @@ export default function TimelineList({ useHistory }) {
         return () => {
             messenger.removeAllListeners("App")
             messenger.removeAllListeners("page")
-            messenger.removeAllListeners("running")
             messenger.removeAllListeners("pages")
             messenger.removeAllListeners("timelinelocation")
             messenger.removeAllListeners('stopped')
         }
     }, [])
 
+    const TimelineHeader = () => {
+        return (
+            <View>
+                <Running />
+                <Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>
+            </View>
+        )
+    }
 
     const RenderTimer = ({ item }) => {
         return (
@@ -82,11 +90,11 @@ export default function TimelineList({ useHistory }) {
                 </View>
         );
     };
+
     if (pages.length === 0) return (<Text style={styles.list}>Loading ... </Text>)
     return (
-
         <SectionList
-            ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>}
+            ListHeaderComponent={<TimelineHeader />}
             // TODO: simplify creating sticky header/footer with list
             //app routes: 20 padding + 50 height
             // header: 20 padding + 100 height
@@ -127,11 +135,11 @@ export default function TimelineList({ useHistory }) {
 
 const styles = StyleSheet.create({
     list: {
-        marginTop: 220,
-        height: Dimensions.get('window').height - 220,
+        height: Dimensions.get('window').height,
         width: '100%',
         backgroundColor: '#ccc',
-        marginBottom: 50
+        marginTop: 25,
+        marginBottom: 50,
     },
     row: { flexDirection: 'row', margin: 10, width: '100%' },
     hide: { display: 'none' }
