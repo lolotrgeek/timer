@@ -9,6 +9,9 @@
     "fs": false
   },
   "dependencies": {
+    "@date-io/date-fns": "^2.8.1",
+    "@material-ui/pickers": "^3.2.10",
+    "@react-native-community/datetimepicker": "^3.0.2",
     "babel-loader": "^8.1.0",
     "date-fns": "^2.14.0",
     "eventemitter3": "^4.0.4",
