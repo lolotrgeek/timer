@@ -74,10 +74,11 @@ export const sameDay = (a, b) => moment(a).isSame(b, 'day')
  * https://stackoverflow.com/a/30674186
  * @param {*} date 
  */
-export const isYesterday = (date) => {
+export const isYesterday = (date, format) => {
     let today = moment(new Date())
     let yesterday = today.clone().subtract(1, 'days').startOf('day')
-    return moment(date).isSame(yesterday)
+    if(!format) format = 'MM-DD-YYYY'
+    return moment(date, format).isSame(yesterday)
 }
 /**
  * 
@@ -108,10 +109,11 @@ export const simpleDateContructor = string => {
     return new Date(year, month, day) 
 }
 
-export const isToday = (date) => {
+export const isToday = (date, format) => {
     let given = simpleDateContructor(date)
-    let same = moment(given).isSame(new Date(), 'day')
-    debug && console.log('isToday?: ', given, new Date(), same)
+    if(!format) format = 'MM-DD-YYYY'
+    let same = moment(date, format).isSame(new Date(), 'day')
+    debug && console.log('isToday?: ', date, new Date(), same)
     return same
 }
 
