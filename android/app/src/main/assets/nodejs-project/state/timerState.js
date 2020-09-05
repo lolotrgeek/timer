@@ -33,39 +33,55 @@ exports.timerState = p => {
 
     // PARSING
     const chooseNewStart = (newTime, ended) => {
-        if (!p.timeRules(newTime, ended)) {
+        if(p.isValid(newTime) === false) {
+            p.setAlert([
+                'Error',
+                'Date Invalid.',
+            ])
+            return false
+        }
+        else if (!p.timeRules(newTime, ended)) {
             p.setAlert([
                 'Error',
                 'Cannot Start after End.',
             ])
+            return false
         }
         else if (!p.timeRules(newTime, new Date())) {
             p.setAlert([
                 'Error',
                 'Cannot Start before now.',
             ])
+            return false
         }
         else if (newTime && !p.dateRules(newTime)) {
-
             p.setAlert([
                 'Error',
                 'Cannot Pick Date before Today.',
             ])
+            return false
         }
         else {
-
             p.setAlert(false)
-            return p.isValid(newTime) ? p.setStarted(newTime) : false
+            return true
         }
     }
 
     const chooseNewEnd = (newTime, started) => {
-        if (!p.timeRules(started, newTime)) {
+        if(p.isValid(newTime) === false) {
+            p.setAlert([
+                'Error',
+                'Date Invalid.',
+            ])
+            return false
+        }
+        else if (!p.timeRules(started, newTime)) {
 
             p.setAlert([
                 'Error',
                 'Cannot Start after End.',
             ])
+            return false
         }
         else if (!p.timeRules(newTime, new Date())) {
 
@@ -73,6 +89,7 @@ exports.timerState = p => {
                 'Error',
                 'Cannot End before now.',
             ])
+            return false
         }
         else if (newTime && !p.dateRules(newTime)) {
 
@@ -80,11 +97,11 @@ exports.timerState = p => {
                 'Error',
                 'Cannot Pick Date before Today.',
             ])
+            return false
         }
         else {
-
             p.setAlert(false)
-            return p.isValid(newTime) ? p.setEnded(newTime) : false
+            return true
         }
     }
 
@@ -251,7 +268,34 @@ exports.timerState = p => {
         p.setAlert(['Success', 'Timer Restored!'])
     }
 
-
+    p.messenger.on('chooseNewDate', msg => {
+        if (msg) {
+            let date = msg.toDate()
+            let newDate = chooseNewDate(date, p.current)
+            p.current.started = newDate ? date.toString() : p.current.started
+            p.debug && console.log('chooseNewDate:', p.current)
+            p.messenger.emit(`${p.current.id}`, p.current)
+        }
+    })
+    p.messenger.on('chooseNewStart', msg => {
+        if (msg) {
+            let date = msg.toDate()
+            p.debug && console.log('NewStart:', date)
+            let newStart = chooseNewStart(date, p.current.ended)
+            p.current.started = newStart ? date.toString() : p.current.started
+            p.debug && console.log('chooseNewStart:', p.current)
+            p.messenger.emit(`${p.current.id}`, p.current)
+        }
+    })
+    p.messenger.on('chooseNewEnd', msg => {
+        if (msg) {
+            let date = msg.toDate()
+            let newEnd = chooseNewEnd(date, p.current.started)
+            p.current.ended = newEnd ? date.toString() : p.current.started
+            p.debug && console.log('chooseNewEnd:', p.current)
+            p.messenger.emit(`${p.current.id}`, p.current)
+        }
+    })
     p.messenger.on('nextDay', msg => {
         if (msg && msg.id === p.current.id) {
             p.current.started = nextDay(p.current)

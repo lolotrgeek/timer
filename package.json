@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@date-io/date-fns": "^2.8.1",
+    "@date-io/moment": "1.x",
+    "@material-ui/core": "^4.11.0",
     "@material-ui/pickers": "^3.2.10",
     "@react-native-community/datetimepicker": "^3.0.2",
     "babel-loader": "^8.1.0",
@@ -17,7 +19,7 @@
     "eventemitter3": "^4.0.4",
     "gun": "^0.2020.520",
     "hashids": "^2.2.1",
-    "moment": "^2.26.0",
+    "moment": "^2.27.0",
     "react": "~16.9.0",
     "react-art": "^16.13.1",
     "react-dom": "^16.13.1",

@@ -1,11 +1,11 @@
 // display a list of daytimers: timeline (date/daytimers), project records (project/daytimers)
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
-import { timeSpan, totalTime, timeString, dateSimple } from '../constants/Functions'
+import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
+import { PickerDate, PickerTime } from '../components/Pickers'
 
 const debug = false
 const test = false
@@ -56,26 +56,31 @@ export default function Timer({ useHistory, useParams }) {
             <View style={styles.list}>
                 <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
                 <Text>{timer.status}</Text>
-                <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }} />
-                    <Text>{dateSimple(timer.started)}</Text>
-                    <Button title='>' onPress={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }} />
-                </View>
-
-                <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }} />
-                    <Text>{timeString(timer.started)}</Text>
-                    <Button title='>' onPress={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }} />
-                </View>
-
-                <View style={{ flexDirection: 'row' }}>
-                    <Button title='<' onPress={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }} />
-                    <Text>{timeString(timer.ended)}</Text>
-                    <Button title='>' onPress={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }} />
-                </View>
-
-                <Text>{timer.mood}</Text>
-                <Text>{timer.energy}</Text>
+                <PickerDate
+                        label='Date'
+                        startdate={timer.started}
+                        onDateChange={date => { messenger.emit('chooseNewDate', date); setRefresh(!refresh) }}
+                        maxDate={endOfDay(new Date())}
+                        previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
+                        nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
+                    />
+                    {/* {started.toString()} */}
+                    <PickerTime
+                        label='Start'
+                        time={timer.started}
+                        onTimeChange={date => { messenger.emit('chooseNewStart', date); setRefresh(!refresh) }}
+                        addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
+                        subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
+                    />
+                    {/* {ended.toString()} */}
+                    <PickerTime
+                        label='End'
+                        time={timer.ended}
+                        onTimeChange={date => { messenger.emit('chooseNewEnd', date); setRefresh(!refresh) }}
+                        addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
+                        running={isRunning(timer)}
+                        subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
+                    />
 
                 <Button title='Save' onPress={() => {
                     messenger.emit(`${timerId}/saveEdits`, { timerId })

@@ -85,7 +85,7 @@ export const isYesterday = (date, format) => {
  * @param {Date} date
  * reference https://stackoverflow.com/questions/49909213/how-to-get-the-beginning-and-end-of-the-day-with-moment 
  */
-const endOfDay = (date) => {
+export const endOfDay = (date) => {
     return moment(date).endOf('day')
 }
 
