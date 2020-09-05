@@ -33,7 +33,7 @@ exports.timerState = p => {
 
     // PARSING
     const chooseNewStart = (newTime, ended) => {
-        if(p.isValid(newTime) === false) {
+        if (p.isValid(newTime) === false) {
             p.setAlert([
                 'Error',
                 'Date Invalid.',
@@ -68,7 +68,7 @@ exports.timerState = p => {
     }
 
     const chooseNewEnd = (newTime, started) => {
-        if(p.isValid(newTime) === false) {
+        if (p.isValid(newTime) === false) {
             p.setAlert([
                 'Error',
                 'Date Invalid.',
@@ -106,29 +106,34 @@ exports.timerState = p => {
     }
 
     const chooseNewDate = (newDate, timer) => {
-        if (p.dateRules(newDate)) {
-            if (p.isValid(newDate)) {
-                // objective, change day, keep time
-                // TODO: move to a separate function
-                let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
-                let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
-                let newStart = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldStart), p.getMinutes(oldStart), p.getSeconds(oldStart))
-                p.debug && console.log(p.isValid(newStart))
-                p.setStarted(newStart)
-                let newEnd = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldEnd), p.getMinutes(oldEnd), p.getSeconds(oldEnd))
-                p.setEnded(newEnd)
-                return true
-            }
-            else return false
-        } else {
-
+        if (p.isValid(newDate) === false) {
+            p.setAlert([
+                'Error',
+                'Date Invalid.',
+            ])
+            return false
+        }
+        else if (!p.dateRules(newDate)) {
             p.setAlert([
                 'Error',
                 'Cannot Pick Date before Today.'
             ])
             return false
+        } else {
+            // objective, change day, keep time
+            // TODO: move to a separate function
+            let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
+            let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
+            let newStart = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldStart), p.getMinutes(oldStart), p.getSeconds(oldStart))
+            p.debug && console.log(p.isValid(newStart))
+            p.setStarted(newStart)
+            let newEnd = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldEnd), p.getMinutes(oldEnd), p.getSeconds(oldEnd))
+            p.setEnded(newEnd)
+            p.setAlert(false)
+            return true
         }
     }
+
     const timeRulesEnforcer = (start, end) => {
         if (!p.timeRules(start, end)) {
             p.setAlert([
@@ -160,7 +165,7 @@ exports.timerState = p => {
 
     const nextDay = timer => {
         let newDate = p.addDays(timer.started, 1)
-        console.log('newDate' , newDate)
+        console.log('newDate', newDate)
         return chooseNewDate(newDate, timer) ? newDate : timer.started
     }
 
@@ -270,28 +275,30 @@ exports.timerState = p => {
 
     p.messenger.on('chooseNewDate', msg => {
         if (msg) {
-            let date = msg.toDate()
+            let date = new Date(msg)
             let newDate = chooseNewDate(date, p.current)
-            p.current.started = newDate ? date.toString() : p.current.started
+            p.debug && console.log('[Alert] NewDate:', newDate, date.toString())
+            p.current.started = newDate === true ? date.toString() : p.current.started
             p.debug && console.log('chooseNewDate:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('chooseNewStart', msg => {
         if (msg) {
-            let date = msg.toDate()
-            p.debug && console.log('NewStart:', date)
+            let date = new Date(msg)
             let newStart = chooseNewStart(date, p.current.ended)
-            p.current.started = newStart ? date.toString() : p.current.started
+            p.debug && console.log('[Alert] NewStart:', newStart, date.toString())
+            p.current.started = newStart === true ? date.toString() : p.current.started
             p.debug && console.log('chooseNewStart:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('chooseNewEnd', msg => {
         if (msg) {
-            let date = msg.toDate()
+            let date = new Date(msg)
             let newEnd = chooseNewEnd(date, p.current.started)
-            p.current.ended = newEnd ? date.toString() : p.current.started
+            p.debug && console.log('[Alert] NewEnd:', newEnd, date.toString())
+            p.current.ended = newEnd === true ? date.toString() : p.current.started
             p.debug && console.log('chooseNewEnd:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }

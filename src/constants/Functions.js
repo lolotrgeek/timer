@@ -70,6 +70,7 @@ export const getMinutes = date => new Date(date).getMinutes()
 export const getSeconds = date => new Date(date).getSeconds()
 export const getDate = date => new Date(date).getDate()
 export const sameDay = (a, b) => moment(a).isSame(b, 'day')
+export const toDate = moment => moment.toDate()
 /**
  * https://stackoverflow.com/a/30674186
  * @param {*} date 

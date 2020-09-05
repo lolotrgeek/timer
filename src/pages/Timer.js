@@ -49,6 +49,11 @@ export default function Timer({ useHistory, useParams }) {
             <HeaderButtons />
         </View>
     )
+
+    const onDateChoose = date => { messenger.emit('chooseNewDate', date); setRefresh(!refresh) }
+    const onTimeStart = date => { messenger.emit('chooseNewStart', date); setRefresh(!refresh) }
+    const onTimeEnd = date => { messenger.emit('chooseNewEnd', date); setRefresh(!refresh) }
+
     if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
         <SafeAreaView style={styles.container}>
@@ -58,8 +63,8 @@ export default function Timer({ useHistory, useParams }) {
                 <Text>{timer.status}</Text>
                 <PickerDate
                         label='Date'
-                        startdate={timer.started}
-                        onDateChange={date => { messenger.emit('chooseNewDate', date); setRefresh(!refresh) }}
+                        startdate={new Date(timer.started)}
+                        onDateChange={onDateChoose}
                         maxDate={endOfDay(new Date())}
                         previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
                         nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
@@ -67,16 +72,16 @@ export default function Timer({ useHistory, useParams }) {
                     {/* {started.toString()} */}
                     <PickerTime
                         label='Start'
-                        time={timer.started}
-                        onTimeChange={date => { messenger.emit('chooseNewStart', date); setRefresh(!refresh) }}
+                        time={new Date(timer.started)}
+                        onTimeChange={onTimeStart}
                         addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
                         subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
                     />
                     {/* {ended.toString()} */}
                     <PickerTime
                         label='End'
-                        time={timer.ended}
-                        onTimeChange={date => { messenger.emit('chooseNewEnd', date); setRefresh(!refresh) }}
+                        time={new Date(timer.ended)}
+                        onTimeChange={onTimeEnd}
                         addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
                         running={isRunning(timer)}
                         subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
