@@ -23,7 +23,6 @@ export function PickerDate(props) {
           mode='date'
           value={props.startdate}
           onChange={(event, newDate) => { setShow(false); props.onDateChange(newDate); }}
-          maximumDate={props.maxDate}
         />)}
 
       <Button title='>' onPress={props.nextDay} />
