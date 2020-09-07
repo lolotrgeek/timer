@@ -11,8 +11,7 @@ import { timeRules,
     isValid, 
     subDays, 
     addDays, 
-    getMonth, 
-    getYear, getHours, getMinutes, getSeconds, getDate, toDate  } from '../constants/Functions'
+     toDate  } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import * as Data from '../data/Data'
 import * as chain from '../data/Chains'
@@ -35,7 +34,7 @@ const setMood = number => current.mood = number
 const setTotal = number => current.total = number
 
 timerState({
-    addMinutes, isValid, subDays, addDays, getMonth, getYear, getHours, getMinutes, getSeconds, getDate,
+    addMinutes, isValid, subDays, addDays,
     timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay, toDate,
     messenger, Data, chain, store, debug, state, previous, current, project,
     setAlert, setTimer, setEnded, setStarted, setEnergy, setMood, setTotal

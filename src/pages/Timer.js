@@ -69,7 +69,7 @@ export default function Timer({ useHistory, useParams }) {
                         previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
                         nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
                     />
-                    {/* {started.toString()} */}
+                    <Text>{timer.started.toString()}</Text>
                     <PickerTime
                         label='Start'
                         time={new Date(timer.started)}
@@ -77,7 +77,7 @@ export default function Timer({ useHistory, useParams }) {
                         addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
                         subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
                     />
-                    {/* {ended.toString()} */}
+                    <Text>{timer.ended.toString()}</Text>
                     <PickerTime
                         label='End'
                         time={new Date(timer.ended)}

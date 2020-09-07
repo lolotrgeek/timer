@@ -39,11 +39,12 @@ const subMinutes = (date, number) => moment(date).subtract(number, 'minutes').to
 const subDays = (date, amount) => moment(date).subtract(amount, 'days').toDate()
 const addDays = (date, amount) => moment(date).add(amount, 'days').toDate()
 const getMonth = date => new Date(date).getMonth()
-const getYear = date => new Date(date).getYear()
+const getYear = date => moment(date).year()
 const getHours = date => new Date(date).getHours()
 const getMinutes = date => new Date(date).getMinutes()
 const getSeconds = date => new Date(date).getSeconds()
 const getDate = date => new Date(date).getDate()
+
 
 const formatDate = date => moment(date).format("YYYY-MM-DD")
 

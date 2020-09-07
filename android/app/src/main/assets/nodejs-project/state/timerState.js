@@ -105,7 +105,7 @@ exports.timerState = p => {
         }
     }
 
-    const chooseNewDate = (newDate, timer) => {
+    const dateRules = (newDate) => {
         if (p.isValid(newDate) === false) {
             p.setAlert([
                 'Error',
@@ -120,15 +120,6 @@ exports.timerState = p => {
             ])
             return false
         } else {
-            // objective, change day, keep time
-            // TODO: move to a separate function
-            let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
-            let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
-            let newStart = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldStart), p.getMinutes(oldStart), p.getSeconds(oldStart))
-            p.debug && console.log(p.isValid(newStart))
-            p.setStarted(newStart)
-            let newEnd = new Date(p.getYear(newDate), p.getMonth(newDate), p.getDate(newDate), p.getHours(oldEnd), p.getMinutes(oldEnd), p.getSeconds(oldEnd))
-            p.setEnded(newEnd)
             p.setAlert(false)
             return true
         }
@@ -163,15 +154,47 @@ exports.timerState = p => {
         }
     }
 
+    const changeDate = (newDate, timer) => {
+        console.log('Change Date', newDate)
+        let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
+        let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
+        console.log(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
+        let newStart = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
+        let newEnd = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldEnd.getHours(), oldEnd.getMinutes(), oldEnd.getSeconds())
+        p.debug && console.log(newStart, newEnd)
+        if (timeRulesEnforcer(newStart, newEnd) === true) {
+            timer.started = p.isValid(newStart) ? newStart: timer.started
+            timer.ended = p.isValid(newEnd) ? newEnd : timer.ended
+        }
+        return timer
+    }
+
+    const chooseNewDate = (date, timer) => {
+        let newDate = changeDate(date, timer)
+        console.log('newDate', newDate)
+        if (dateRules(newDate) === true) {
+            let newTimer = changeDate(newDate, p.current)
+
+            p.current = newTimer
+        }
+    }
+
+
     const nextDay = timer => {
         let newDate = p.addDays(timer.started, 1)
+        p.debug && console.log('current', p.current)
         console.log('newDate', newDate)
-        return chooseNewDate(newDate, timer) ? newDate : timer.started
+        if (dateRules(newDate) === true) {
+            p.current = changeDate(newDate, p.current)
+        }
     }
 
     const previousDay = timer => {
         let newDate = p.subDays(timer.started, 1)
-        return chooseNewDate(newDate, timer) ? newDate : timer.started
+        console.log('newDate', newDate)
+        if (dateRules(newDate) === true) {
+            p.current = changeDate(newDate, p.current)
+        }
     }
 
     const decreaseStarted = timer => {
@@ -276,9 +299,7 @@ exports.timerState = p => {
     p.messenger.on('chooseNewDate', msg => {
         if (msg) {
             let date = new Date(msg)
-            let newDate = chooseNewDate(date, p.current)
-            p.debug && console.log('[Alert] NewDate:', newDate, date.toString())
-            p.current.started = newDate === true ? date.toString() : p.current.started
+            chooseNewDate(date, p.current)
             p.debug && console.log('chooseNewDate:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
@@ -305,14 +326,14 @@ exports.timerState = p => {
     })
     p.messenger.on('nextDay', msg => {
         if (msg && msg.id === p.current.id) {
-            p.current.started = nextDay(p.current)
+            nextDay(p.current)
             p.debug && console.log('nextDay:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }
     })
     p.messenger.on('prevDay', msg => {
         if (msg && msg.id === p.current.id) {
-            p.current.started = previousDay(p.current)
+            previousDay(p.current)
             p.debug && console.log('prevDay:', p.current)
             p.messenger.emit(`${p.current.id}`, p.current)
         }

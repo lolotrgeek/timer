@@ -13,7 +13,7 @@ export function PickerDate(props) {
         <DatePicker
           margin="normal"
           id="date-picker-dialog"
-          format="MM/dd/yyyy"
+          format="MM-DD-YYYY"
           value={props.startdate}
           disableFuture={true}
           onChange={date => props.onDateChange(date.toDate())}

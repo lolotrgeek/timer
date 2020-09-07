@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { simpleDate, timeString } from '../constants/Functions'
+import { dateSimple, simpleDate, timeString } from '../constants/Functions'
 
 import { Text, TouchableOpacity, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -15,7 +15,7 @@ export function PickerDate(props) {
       <Text>{props.label}</Text>
       <Button title='<' onPress={props.previousDay} />
       <TouchableOpacity onPress={() => setShow(true)} >
-        <Text>{simpleDate(props.startdate)}</Text>
+        <Text>{dateSimple(props.startdate)}</Text>
       </TouchableOpacity>
       
       {show && (

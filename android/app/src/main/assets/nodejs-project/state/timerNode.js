@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { addMinutes, isValid, subDays, addDays, getMonth, getYear, getHours, getMinutes, getSeconds, getDate } = require('../src/Functions')
+const { addMinutes, isValid, subDays, addDays } = require('../src/Functions')
 const { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } = require('../src/Functions')
 const messenger = require('../src/Messenger')
 const Data = require('../src/Data')
@@ -24,7 +24,7 @@ const setMood = number => current.mood = number
 const setTotal = number => current.total = number
 
 timerState({
-    addMinutes, isValid, subDays, addDays, getMonth, getYear, getHours, getMinutes, getSeconds, getDate,
+    addMinutes, isValid, subDays, addDays,
     timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay,
     messenger, Data, chain, store, debug, state, previous, current, project,
     setAlert, setTimer, setEnded, setStarted, setEnergy, setMood, setTotal
