@@ -8,15 +8,13 @@ exports.timerState = p => {
             p.current = found
             p.previous.total = found.total
             p.previous.started = found.started
-            p.debug && console.log(p.current)
             p.messenger.emit(`${msg.timerId}`, p.current)
 
             getProjectDate(p.dateSimple(p.current.started), p.current.project).then(projectfound => {
                 p.project = projectfound
-                p.debug && console.log(p.project)
-                p.debug && console.log(`${p.current.id}/saveEdits`)
+                p.debug && console.log('project found', p.project)
                 p.messenger.on(`${p.current.id}/saveEdits`, msg => {
-                    p.debug && console.log('edit', msg)
+                    p.debug && console.log(`${p.current.id}/saveEdits`, msg)
                     editComplete()
                 })
                 p.messenger.on(`${p.current.id}/delete`, msg => {
@@ -30,6 +28,43 @@ exports.timerState = p => {
         })
 
     })
+
+
+    p.messenger.on('newEntry', msg => {
+        if (msg && msg.projectId) {
+            createEntry(msg.projectId).then(newTimer => {
+                p.current = newTimer
+                p.previous.started = newTimer.started
+                p.previous.total = 0
+                p.messenger.emit(`${msg.timerId}`, p.current)
+                p.debug && console.log('newEntry', p.current)
+                getProject(msg.projectId).then(project => {
+                    p.project = project
+                    p.debug && console.log('project found', p.project)
+                    p.messenger.on(`${p.current.id}/saveEdits`, msg => {
+                        p.debug && console.log(`${p.current.id}/saveEdits`, msg)
+                        let endproject = project
+                        endproject.lastcount = p.settingCount(p.current, project)
+                        endproject.lastrun = p.dateSimple(new Date())
+                        p.current.total = p.totalTime(p.current.started, p.current.ended)
+                        // debug && console.log('[react Data] storing count', project.lastrun, project.lastcount)
+                        p.debug && console.log('[react Data] storing timer', p.current)
+                        // debug && console.log('[react Data] storing project', project)
+                        p.store.put(p.chain.project(endproject.id), endproject)
+                        p.store.put(p.chain.timer(p.current.id), p.current)
+                        p.store.set(p.chain.timerHistory(p.current.id), p.current)
+                        p.store.put(p.chain.timerDate(p.current.started, p.current.id), true) // maybe have a count here?
+                        p.store.put(p.chain.projectDate(endproject.lastrun, endproject.id), endproject)
+                        p.store.put(p.chain.projectTimer(endproject.id, p.current.id), p.current)
+                        p.debug && console.log('New Entry Stored', p.current, endproject)
+                    })
+                })
+
+            })
+
+        }
+    })
+
 
     // PARSING
     const chooseNewStart = (newTime, ended) => {
@@ -154,24 +189,50 @@ exports.timerState = p => {
         }
     }
 
+    const dateRulesEnforcer = (start, end) => {
+        if (!p.timeRules(start, new Date())) {
+            p.setAlert([
+                'Error',
+                'Cannot Start before now.',
+            ])
+            return false
+
+        }
+        else if (!p.timeRules(end, new Date())) {
+            p.setAlert([
+                'Error',
+                'Cannot End before now.',
+            ])
+            return false
+        }
+        else {
+            p.setAlert(false)
+            return true
+        }
+    }
+
+    /**
+     * changes start and end dates, outputs new timer
+     * @param {*} newDate 
+     * @param {*} timer 
+     * @todo needs some checking...
+     */
     const changeDate = (newDate, timer) => {
-        console.log('Change Date', newDate)
         let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
         let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
         console.log(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
         let newStart = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
         let newEnd = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldEnd.getHours(), oldEnd.getMinutes(), oldEnd.getSeconds())
         p.debug && console.log(newStart, newEnd)
-        if (timeRulesEnforcer(newStart, newEnd) === true) {
-            timer.started = p.isValid(newStart) ? newStart: timer.started
-            timer.ended = p.isValid(newEnd) ? newEnd : timer.ended
+        if (dateRulesEnforcer(newStart, newEnd) === true) {
+            timer.started = p.isValid(newStart) ? newStart.toString() : timer.started
+            timer.ended = p.isValid(newEnd) ? newEnd.toString() : timer.ended
         }
         return timer
     }
 
     const chooseNewDate = (date, timer) => {
         let newDate = changeDate(date, timer)
-        console.log('newDate', newDate)
         if (dateRules(newDate) === true) {
             let newTimer = changeDate(newDate, p.current)
 
@@ -183,7 +244,6 @@ exports.timerState = p => {
     const nextDay = timer => {
         let newDate = p.addDays(timer.started, 1)
         p.debug && console.log('current', p.current)
-        console.log('newDate', newDate)
         if (dateRules(newDate) === true) {
             p.current = changeDate(newDate, p.current)
         }
@@ -191,7 +251,6 @@ exports.timerState = p => {
 
     const previousDay = timer => {
         let newDate = p.subDays(timer.started, 1)
-        console.log('newDate', newDate)
         if (dateRules(newDate) === true) {
             p.current = changeDate(newDate, p.current)
         }
@@ -377,6 +436,15 @@ exports.timerState = p => {
     })
 
     // DATA
+    const createEntry = (projectId) => new Promise((resolve, reject) => {
+        try {
+            const newTimer = p.newEntry(projectId)
+            resolve(newTimer)
+        } catch (error) {
+            reject(error)
+        }
+
+    })
     const getTimer = timerId => {
         return new Promise((resolve, reject) => {
             if (!timerId) reject('no timerId passed')
@@ -392,6 +460,25 @@ exports.timerState = p => {
                 })
             } catch (error) {
                 p.debug && console.log(error)
+                reject(error)
+            }
+        })
+    }
+
+    const getProject = (projectId) => {
+        return new Promise((resolve, reject) => {
+            if (!projectId) reject('no projectId passed')
+            try {
+                p.store.chainer(p.chain.project(projectId), p.store.app).once((data, key) => {
+                    const foundData = p.trimSoul(data)
+                    //   debug && console.log('[GUN node] getProject Data Found: ', foundData)
+                    if (foundData && foundData.type === 'project') {
+                        resolve(foundData)
+                    }
+
+                })
+            } catch (error) {
+                p.debug && console.debug && console.log(error)
                 reject(error)
             }
         })

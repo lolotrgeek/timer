@@ -13,17 +13,18 @@ const loadAll = false
 
 export default function Timer({ useHistory, useParams }) {
     let history = useHistory();
-    let { timerId } = useParams();
+    let { timerId, projectId } = useParams();
     const [refresh, setRefresh] = useState(false)
     const [timer, setTimer] = useState({});
 
     useEffect(() => {
         // TODO: destroys edits on refresh, keep state through refresh
-        messenger.addListener(`${timerId}`, event => {
-            setTimer(event)
-        })
-        messenger.emit('getTimer', { timerId })
-        return () => messenger.removeAllListeners(`${timerId}`)
+        messenger.addListener(`${timerId}`, event => {setTimer(event)})
+        if (timerId) messenger.emit('getTimer', { timerId })
+        else if (projectId) messenger.emit('newEntry', { projectId })
+        return () => {
+            messenger.removeAllListeners(`${timerId}`)
+        }
     }, [])
 
     const HeaderButtons = () => (
@@ -62,34 +63,34 @@ export default function Timer({ useHistory, useParams }) {
                 <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
                 <Text>{timer.status}</Text>
                 <PickerDate
-                        label='Date'
-                        startdate={new Date(timer.started)}
-                        onDateChange={onDateChoose}
-                        maxDate={endOfDay(new Date())}
-                        previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
-                        nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
-                    />
-                    <Text>{timer.started.toString()}</Text>
-                    <PickerTime
-                        label='Start'
-                        time={new Date(timer.started)}
-                        onTimeChange={onTimeStart}
-                        addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
-                        subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
-                    />
-                    <Text>{timer.ended.toString()}</Text>
-                    <PickerTime
-                        label='End'
-                        time={new Date(timer.ended)}
-                        onTimeChange={onTimeEnd}
-                        addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
-                        running={isRunning(timer)}
-                        subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
-                    />
+                    label='Date'
+                    startdate={new Date(timer.started)}
+                    onDateChange={onDateChoose}
+                    maxDate={endOfDay(new Date())}
+                    previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
+                    nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
+                />
+                <Text>{timer.started.toString()}</Text>
+                <PickerTime
+                    label='Start'
+                    time={new Date(timer.started)}
+                    onTimeChange={onTimeStart}
+                    addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
+                    subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
+                />
+                <Text>{timer.ended.toString()}</Text>
+                <PickerTime
+                    label='End'
+                    time={new Date(timer.ended)}
+                    onTimeChange={onTimeEnd}
+                    addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
+                    running={isRunning(timer)}
+                    subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
+                />
 
                 <Button title='Save' onPress={() => {
-                    messenger.emit(`${timerId}/saveEdits`, { timerId })
-                    console.log(`${timerId}/saveEdits`)
+                    messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
+                    console.log(timer.id)
                 }} />
 
             </View>

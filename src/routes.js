@@ -1,4 +1,4 @@
-export const timerRunninglink = () => `/timer/`
+export const timernew = projectId => `/new/${projectId}`
 export const timerlink = timerId => `/timer/${timerId}`
 export const timerListlink = () => `/timers`
 export const timerHistorylink = timerId => `/history/timer/${timerId}`

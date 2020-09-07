@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
 import { timeSpan } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import { projectHistorylink, projectEditlink, timerlink, projectsListLink, timerTrashlink } from '../routes'
+import { projectHistorylink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
 
 
@@ -73,6 +73,7 @@ export default function Project({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row' }}>
+            <Button title='New Entry' onPress={() => history.push(timernew(projectId))} />
             <Button title='Edit' onPress={() => {
                 history.push(projectEditlink(projectId))
             }} />

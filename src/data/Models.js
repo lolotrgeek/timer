@@ -28,6 +28,13 @@ export const newTimer = projectId => {
     return timer
 }
 
+export const newEntry = projectId => {
+    let timer = newTimer(projectId)
+    timer.status = 'done'
+    timer.ended = timer.created
+    return timer 
+}
+
 export const doneTimer = (timer) => {
     const done = timer
     done.ended = new Date().toString()
