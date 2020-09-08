@@ -19,6 +19,7 @@
     "eventemitter3": "^4.0.4",
     "gun": "^0.2020.520",
     "hashids": "^2.2.1",
+    "material-colors": "^1.2.6",
     "moment": "^2.27.0",
     "react": "~16.9.0",
     "react-art": "^16.13.1",

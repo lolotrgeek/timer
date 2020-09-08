@@ -45,7 +45,7 @@ exports.timerState = p => {
                         p.debug && console.log(`${p.current.id}/saveEdits`, msg)
                         let endproject = project
                         endproject.lastcount = p.settingCount(p.current, project)
-                        endproject.lastrun = p.dateSimple(new Date())
+                        endproject.lastrun = p.dateSimple(p.current.started)
                         p.current.total = p.totalTime(p.current.started, p.current.ended)
                         // debug && console.log('[react Data] storing count', project.lastrun, project.lastcount)
                         p.debug && console.log('[react Data] storing timer', p.current)

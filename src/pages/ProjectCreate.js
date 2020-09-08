@@ -3,13 +3,16 @@ import { View, TextInput, Text, Button, StyleSheet, } from 'react-native'
 import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink } from '../routes'
 import Messenger from '../constants/Messenger'
+import {ColorPicker} from '../components/ColorPicker'
 
+const debug = false
 
 export default function ProjectCreate({ useHistory, useParams }) {
   let history = useHistory()
   let { projectId } = useParams()
   const [name, setName] = useState('')
   const [color, setColor] = useState('#000')
+  const [alert, setAlert] = useState([])
 
   useEffect(() => {
     Messenger.addListener(`${projectId}_details`, msg => {
@@ -21,19 +24,57 @@ export default function ProjectCreate({ useHistory, useParams }) {
     }
     Messenger.addListener('ProjectCreateSuccess', msg => {
       // TODO: being pushed multiple times...
-      console.log('ProjectCreateSuccess', msg )
+      debug && console.log('ProjectCreateSuccess', msg )
+      setAlert([
+        'Success',
+        `Project ${name} Created!`,
+      ])
       if (projectValid(msg)) history.push(projectlink(msg.id))
     })
 
     Messenger.addListener('ProjectCreateError', msg => {
-      console.log(msg)
+      setAlert([
+        'Error',
+        msg,
+      ])
+      debug && console.log(msg)
     })
   }, [])
 
 
+  const handleSelectedColor = (color) => {
+    debug && console.log(color)
+    setColor(color)
+  }
+
+  const handleSubmitProject = () => {
+    if (!nameValid(name)) {
+      // alert('Need valid name');
+      setAlert([
+        'Error',
+        'Need valid name',
+      ])
+      return false
+    }
+    if (!colorValid(color)) {
+      // alert('Need valid color');
+      setAlert([
+        'Error',
+        'Need valid color',
+      ])
+      return false
+    }
+    else {
+      setAlert([
+        'Success',
+        `Project ${name} Created!`,
+      ])
+      return true
+    }
+  }
+
   const submit = () => {
-    if (nameValid(name) && colorValid(color)) {
-      
+    if (handleSubmitProject() === true) {
       if (projectId && typeof projectId === 'string') {
         Messenger.emit('ProjectEdit', { name, color })
       } else {
@@ -42,19 +83,14 @@ export default function ProjectCreate({ useHistory, useParams }) {
     }
   }
 
-
   return (
     <View style={styles.container}>
       <Text style={{ color: color, }}>{name.length > 0 ? name : 'New Project'}</Text>
+      <ColorPicker selectColor={handleSelectedColor} />
       <TextInput
         style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
         value={name}
         onChangeText={text => setName(text)}
-      />
-      <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-        value={color}
-        onChangeText={text => setColor(text)}
       />
       <View>
         <Button title='Submit' onPress={() => submit()} />
