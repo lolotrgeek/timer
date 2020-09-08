@@ -22,8 +22,17 @@ exports.projectState = p => {
     p.messenger.on('getProjectPages', msg => {
         if (msg && msg.projectId) {
             p.debug && console.log('getProjectPages received')
-            setCurrentProject(msg)
+            setState('pagesize', msg.pagesize)
+            // setCurrentProject(msg)
+            getTimersInProject()
             listenForPageLocation(p.state[msg.projectId])
+        }
+    })
+
+    p.messenger.on('getProject', msg => {
+        if (msg && msg.projectId) {
+            p.debug && console.log('getProject received')
+            setCurrentProject(msg.projectId)
         }
     })
 
@@ -38,19 +47,15 @@ exports.projectState = p => {
         })
     }
 
-    const setCurrentProject = (msg) => {
-        setCurrent(msg.projectId)
-        setState('pagesize', msg.pagesize)
-        if (!p.current.project.name || p.current.project.id === 'none') {
-            getProject(p.current.project.id).then(foundproject => {
-                p.current.project = foundproject
-                p.debug && console.log('Project: ', p.current.project)
-                p.messenger.emit(`${p.current.project.id}/project`, p.current.project)
-                getTimersInProject()
-            })
-        } else {
-            getTimersInProject()
-        }
+    const setCurrentProject = (projectId) => {
+        setCurrent(projectId)
+        getProject(p.current.project.id).then(foundproject => {
+            p.current.project = foundproject
+            p.debug && console.log('Project: ', p.current.project)
+            p.messenger.emit(`${p.current.project.id}/project`, p.current.project)
+        }).catch(err => {
+            p.debug && console.log(err)
+        }) 
     }
 
     // PARSING

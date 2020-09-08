@@ -7,8 +7,6 @@ import { timeSpan } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
-
-
 const debug = true
 const test = false
 const loadAll = false
@@ -27,6 +25,8 @@ export default function Project({ useHistory, useParams }) {
         messenger.addListener(`${projectId}/project`, event => {
             console.log(event)
             if (event) setProject(event)
+            setRefresh(false)
+
         })
         messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
@@ -44,6 +44,7 @@ export default function Project({ useHistory, useParams }) {
                 timerList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
+        messenger.emit("getProject", { projectId })
         if (pages.length === 0) messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
         return () => {
             messenger.removeAllListeners(`${projectId}/project`)
@@ -103,54 +104,55 @@ export default function Project({ useHistory, useParams }) {
     return (
         <SafeAreaView style={styles.container} onLayout={(layout => { console.log(layout) })}>
             <Header />
-            <View style={styles.list}>
-                <SectionList
-                    ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 25 }}>{project && project.name ? project.name : projectId}</Text>}
-                    // TODO: simplify creating sticky header/footer with list
-                    //app routes: 20 padding + 50 height
-                    // header: 20 padding + 100 height
-                    // 20 + 20 + 50 + 100 = 190
-                    style={{ marginTop: 170, height: Dimensions.get('window').height - 170 }}
-                    ref={timerList}
-                    onLayout={layout => {
-                        // console.log(timerList.current)
-                        // console.log(layout)
-                    }}
-                    sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
-                    renderSectionHeader={({ section: { title } }) => {
-                        return (<Text>{title}</Text>)
-                    }}
-                    renderItem={RenderTimer}
-                    onEndReached={() => {
-                        // TODO: decouple, put in separate function
-                        console.log('End Reached')
-                    }}
-                    onEndReachedThreshold={1}
-                    keyExtractor={(item, index) => item.id}
-                    onScroll={scroll => messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)}
-                    onRefresh={() => {
-                        setRefresh(true)
-                        setPages([])
-                        messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
-                    }}
-                    refreshing={refresh}
-                />
-            </View>
+
+            <SectionList
+                ListHeaderComponent={<Text style={{ color: project.color ? project.color : 'black', textAlign: 'center', fontSize: 25 }}>{project && project.name ? project.name : projectId}</Text>}
+                // TODO: simplify creating sticky header/footer with list
+                //app routes: 20 padding + 50 height
+                // header: 20 padding + 100 height
+                // 20 + 20 + 50 + 100 = 190
+                style={styles.list}
+                ref={timerList}
+                onLayout={layout => {
+                    // console.log(timerList.current)
+                    // console.log(layout)
+                }}
+                sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
+                renderSectionHeader={({ section: { title } }) => {
+                    return (<Text>{title}</Text>)
+                }}
+                renderItem={RenderTimer}
+                onEndReached={() => {
+                    // TODO: decouple, put in separate function
+                    console.log('End Reached')
+                }}
+                onEndReachedThreshold={1}
+                keyExtractor={(item, index) => item.id}
+                onScroll={scroll => messenger.emit(`${projectId}/pagelocation`, scroll.nativeEvent.contentOffset)}
+                onRefresh={() => {
+                    setRefresh(true)
+                    setPages([])
+                    messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
+                }}
+                refreshing={refresh}
+            />
+
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
+    header: { width: '100%', padding: 10, backgroundColor: 'white', flexDirection: 'column' },
     container: {
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
     list: {
-        flexDirection: 'row',
+        height: Dimensions.get('window').height - 170,
         width: '100%',
-        backgroundColor: '#ccc'
+        backgroundColor: '#ccc',
+        marginBottom: 50,
     },
     button: {
         margin: 20,

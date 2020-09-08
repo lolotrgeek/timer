@@ -13,6 +13,7 @@ exports.projectEditState = p => {
             p.state.edit = p.state.original
             p.state.edit.color = event.color
             p.state.edit.name = event.name
+            p.state.edit.selected = event.selected
             if (!p.nameValid(p.state.edit.name)) {
                 p.messenger.emit('ProjectCreateError', `${p.state.edit.name} is not valid name`)
                 return false
@@ -73,7 +74,6 @@ exports.projectEditState = p => {
             p.store.put(p.chain.project(projectEdit.id), projectEdit)
             try {
                 let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
-                console.log(days)
                 if (days && days.length > 0) {
                     days.forEach(async day => {
                         let projectDates = await getProjectDates(day)
@@ -90,16 +90,10 @@ exports.projectEditState = p => {
                         })
                     })
                 }
+                resolve(projectEdit)
             } catch (error) {
                 reject('could not update ', error)
             }
-
-            // Callback message = UI
-            // TODO: make this part of chaining?
-            p.messenger.on(`project/${projectEdit.id}`, event => {
-                if (event === projectEdit) resolve(projectEdit)
-                else reject(event)
-            })
         })
     }
 
@@ -123,20 +117,15 @@ exports.projectEditState = p => {
                                 projectDate.deleted = projectDelete.deleted
                                 console.log('Deleted projectDate: ', projectDate)
                                 p.store.put(p.chain.projectDate(day, projectDelete.id), projectDate)
+
                             }
                         })
                     })
                 }
+                resolve(projectDelete)
             } catch (error) {
                 reject('could not delete ', error)
             }
-
-            // Callback message = UI
-            // TODO: make this part of chaining?
-            p.messenger.on(`project/${projectDelete.id}`, event => {
-                if (event === projectDelete) resolve(projectDelete)
-                else reject(event)
-            })
         })
     }
 
@@ -163,6 +152,7 @@ exports.projectEditState = p => {
                         })
                     })
                 }
+                resolve(project)
             } catch (error) {
                 reject('could not restore ', error)
             }

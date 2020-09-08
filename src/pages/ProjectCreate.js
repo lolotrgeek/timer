@@ -16,12 +16,12 @@ export default function ProjectCreate({ useHistory, useParams }) {
   const [alert, setAlert] = useState([])
 
   useEffect(() => {
-    Messenger.addListener(`${projectId}_details`, msg => {
-      setName(msg.name)
-      setColor(msg.color)
-      setSelected(msg.selected)
-    })
     if (projectId && typeof projectId === 'string') {
+      Messenger.addListener(`${projectId}_details`, msg => {
+        setName(msg.name)
+        setColor(msg.color)
+        setSelected(msg.selected)
+      })
       Messenger.emit('ProjectDetails', projectId)
     }
     Messenger.addListener('ProjectCreateSuccess', msg => {
@@ -41,6 +41,14 @@ export default function ProjectCreate({ useHistory, useParams }) {
       ])
       debug && console.log(msg)
     })
+
+    return () => {
+      Messenger.removeAllListeners('ProjectCreateError')
+      Messenger.removeAllListeners('ProjectCreateSuccess')
+      if (projectId && typeof projectId === 'string') {
+        Messenger.removeAllListeners(`${projectId}_details`)
+      }
+    }
   }, [])
 
 
@@ -89,7 +97,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
   return (
     <View style={styles.container}>
       <TextInput
-        style={{ color: color, fontSize: 30, alignContent:'center', textAlign:'center', margin: 10}}
+        style={{ color: color, fontSize: 30, alignContent: 'center', textAlign: 'center', margin: 10 }}
         value={name}
         onChangeText={text => setName(text)}
         maxLength={30}
@@ -97,7 +105,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
       />
       <ColorPicker selectColor={handleSelectedColor} selected={selected} />
       <View>
-        <Button style={{margin: 10 }} title='Submit' onPress={() => submit()} />
+        <Button style={{ margin: 10 }} title='Submit' onPress={() => submit()} />
       </View>
     </View>
   )

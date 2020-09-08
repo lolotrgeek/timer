@@ -4,7 +4,7 @@ import { trimSoul } from '../constants/Functions'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 import { projectEditState } from 'node/state/projectEditState'
-let debug = false
+let debug = true
 let state = {
     edit: {},
     original: {}
