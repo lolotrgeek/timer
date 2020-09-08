@@ -19,6 +19,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
     Messenger.addListener(`${projectId}_details`, msg => {
       setName(msg.name)
       setColor(msg.color)
+      setSelected(msg.selected)
     })
     if (projectId && typeof projectId === 'string') {
       Messenger.emit('ProjectDetails', projectId)
@@ -78,9 +79,9 @@ export default function ProjectCreate({ useHistory, useParams }) {
   const submit = () => {
     if (handleSubmitProject() === true) {
       if (projectId && typeof projectId === 'string') {
-        Messenger.emit('ProjectEdit', { name, color })
+        Messenger.emit('ProjectEdit', { name, color, selected })
       } else {
-        Messenger.emit('ProjectCreate', { name, color })
+        Messenger.emit('ProjectCreate', { name, color, selected })
       }
     }
   }

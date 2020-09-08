@@ -58,7 +58,7 @@ const deletedTimer = timer => {
     return timerDelete
 }
 
-const newProject = (name, color) => {
+const newProject = (name, color, selected) => {
     const hashids = new Hashids()
     const key = hashids.encode(Date.now().toString())
     const project = {
@@ -68,6 +68,7 @@ const newProject = (name, color) => {
         status: 'active', // deleted
         name: name,
         color: color,
+        selected: selected, // id of selected color
         edited: '',
         lastcount: 0,
         lastrun: '',

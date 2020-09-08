@@ -4,7 +4,7 @@ exports.projectEditState = p => {
         if (event && typeof event === 'string') getProject(event).then(project => {
             p.state.original = project
             p.debug && console.log(project)
-            p.messenger.emit(`${project.id}_details`, { name: project.name, color: project.color })
+            p.messenger.emit(`${project.id}_details`, { name: project.name, color: project.color, selected: project.selected })
         })
     })
 
@@ -82,6 +82,7 @@ exports.projectEditState = p => {
                             if (projectDate.id === projectEdit.id) {
                                 projectDate.name = projectEdit.name
                                 projectDate.color = projectEdit.color
+                                projectDate.selected = projectEdit.selected
                                 projectDate.edited = projectEdit.edited
                                 console.log('Edited projectDate: ', projectDate)
                                 p.store.put(p.chain.projectDate(day, projectEdit.id), projectDate)
