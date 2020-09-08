@@ -20,15 +20,12 @@ export default function App() {
     return (
         <Router>
             <View style={{ flexDirection: 'row', padding: 10, width:'100%', backgroundColor: 'white', height:50}}>
-                <View style={{ width: '30%' }}>
-                    <Link to={'/'}><Text>Timeline</Text></Link>
-                </View>
-                <View style={{ width: '30%' }}>
-                    <Link to={'/projects'}><Text>Projects</Text></Link>
-                </View>
-                <View style={{ width: '30%' }}>
-                    <Link to={'/timers'}><Text>Timers</Text></Link>
-                </View>
+            <View style={{ width: '50%' }}>
+                        <Link to={'/'}><Text>Timeline</Text></Link>
+                    </View>
+                    <View style={{ width: '50%' }}>
+                        <Link to={'/projects'}><Text>Projects</Text></Link>
+                    </View>
             </View>
             <Switch >
                 <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />

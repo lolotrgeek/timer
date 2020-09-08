@@ -20,14 +20,11 @@ export default function App() {
         <NativeRouter>
             <BackButton >
                 <View style={{ flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', }}>
-                    <View style={{ width: '30%' }}>
+                    <View style={{ width: '50%' }}>
                         <Link to={'/'}><Text>Timeline</Text></Link>
                     </View>
-                    <View style={{ width: '30%' }}>
+                    <View style={{ width: '50%' }}>
                         <Link to={'/projects'}><Text>Projects</Text></Link>
-                    </View>
-                    <View style={{ width: '30%' }}>
-                        <Link to={'/timers'}><Text>Timers</Text></Link>
                     </View>
                 </View>
 
