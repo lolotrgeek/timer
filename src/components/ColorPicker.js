@@ -13,10 +13,23 @@ export const ColorSwatch = (props) => {
             borderRadius: props.circleSpacing,
             backgroundColor: props.color,
         },
+        selected: {
+            width: props.circleSize,
+            height: props.circleSize,
+            marginRight: props.circleSpacing,
+            marginBottom: props.circleSpacing,
+            borderRadius: props.circleSpacing,
+            backgroundColor: props.color,
+            borderWidth: 5,
+            borderColor: '#fff',
+        },
     })
     return (
         <TouchableOpacity onPress={props.onPress}>
-            <View style={styles.swatch} key={props.color} />
+            {props.selected ?
+                <View style={styles.selected} key={props.color} /> :
+                <View style={styles.swatch} key={props.color} />
+            }
         </TouchableOpacity>
     )
 }
@@ -37,15 +50,16 @@ export function ColorPicker(props) {
         circleSpacing: 14,
     }
     return (
-        <View style={{flexWrap: 'wrap', flexDirection:'row', alignContent:'center', justifyContent:'center'}}>
-            {colors.map(color =>
+        <View style={{ flexWrap: 'wrap', flexDirection: 'row', alignContent: 'center', justifyContent: 'center' }}>
+            {colors.map((color, index) =>
                 <ColorSwatch
                     key={color}
                     width={swatch.width}
                     circleSpacing={swatch.circleSpacing}
                     circleSize={swatch.circleSize}
                     color={color}
-                    onPress={() => props.selectColor(color)}
+                    selected={index === props.selected}
+                    onPress={() => props.selectColor(color, index)}
                 />
             )}
         </View>

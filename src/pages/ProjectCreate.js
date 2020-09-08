@@ -3,7 +3,7 @@ import { View, TextInput, Text, Button, StyleSheet, } from 'react-native'
 import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink } from '../routes'
 import Messenger from '../constants/Messenger'
-import {ColorPicker} from '../components/ColorPicker'
+import { ColorPicker } from '../components/ColorPicker'
 
 const debug = false
 
@@ -12,6 +12,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
   let { projectId } = useParams()
   const [name, setName] = useState('')
   const [color, setColor] = useState('#000')
+  const [selected, setSelected] = useState(0)
   const [alert, setAlert] = useState([])
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
     }
     Messenger.addListener('ProjectCreateSuccess', msg => {
       // TODO: being pushed multiple times...
-      debug && console.log('ProjectCreateSuccess', msg )
+      debug && console.log('ProjectCreateSuccess', msg)
       setAlert([
         'Success',
         `Project ${name} Created!`,
@@ -42,9 +43,10 @@ export default function ProjectCreate({ useHistory, useParams }) {
   }, [])
 
 
-  const handleSelectedColor = (color) => {
+  const handleSelectedColor = (color, swatch) => {
     debug && console.log(color)
     setColor(color)
+    setSelected(swatch)
   }
 
   const handleSubmitProject = () => {
@@ -85,15 +87,16 @@ export default function ProjectCreate({ useHistory, useParams }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: color, }}>{name.length > 0 ? name : 'New Project'}</Text>
-      <ColorPicker selectColor={handleSelectedColor} />
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+        style={{ color: color, fontSize: 30, alignContent:'center', textAlign:'center', margin: 10}}
         value={name}
         onChangeText={text => setName(text)}
+        maxLength={30}
+        placeholder='Project Title'
       />
+      <ColorPicker selectColor={handleSelectedColor} selected={selected} />
       <View>
-        <Button title='Submit' onPress={() => submit()} />
+        <Button style={{margin: 10 }} title='Submit' onPress={() => submit()} />
       </View>
     </View>
   )
@@ -105,7 +108,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 170,
   },
   list: {
     flexDirection: 'row',
