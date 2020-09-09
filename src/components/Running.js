@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
+import { secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 
@@ -36,28 +37,15 @@ export default function Running() {
         <View>
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ width: '20%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Project</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Running </Text>
-                </View>
-                <View style={{ width: '10%' }}>
-                    <Text style={{ fontWeight: 'bold' }}>Count</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-
+                    <Text style={{ fontSize: 20 }}>Tracking</Text>
                 </View>
             </View>
-            <View style={{ flexDirection: 'row', margin: 10 }}>
-                <View style={{ width: '20%' }}>
-                    <Text>{running.name ? running.name : 'None'}</Text>
-                    <Text>{running.project ? running.project : ''}</Text>
+            <View style={styles.row}>
+                <View style={{ width: '30%' }}>
+                    <Text style={{color: running.color ? running.color : 'black'}}>{running.name ? running.name : 'None'}</Text>
                 </View>
-                <View style={{ width: '20%' }}>
-                    <Text>{running.id}</Text>
-                </View>
-                <View style={{ width: '10%' }}>
-                    <Text>{count}</Text>
+                <View style={{ width: '30%' }}>
+                    <Text>{secondsToString(count)}</Text>
                 </View>
                 <View style={{ width: '20%' }}>
                     {!running || !running.id ?
@@ -78,5 +66,5 @@ export default function Running() {
 }
 
 const styles = StyleSheet.create({
-
+    row: { flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, },
 });
