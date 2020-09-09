@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
 import { timeSpan, secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import { projectHistorylink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
+import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
 const debug = true
 const test = false
@@ -81,7 +81,7 @@ export default function Project({ useHistory, useParams }) {
             {project && project.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
                     messenger.emit('ProjectDelete', project)
-                    // history.push(projectlink(timer.project))
+                    history.push(projectsListLink())
                 }} />
                 : project.status === 'deleted' ?
                     <Button title='Restore' onPress={() => { messenger.emit('ProjectRestore', project) }} />

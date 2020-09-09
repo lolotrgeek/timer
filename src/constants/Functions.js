@@ -153,9 +153,9 @@ export const getMonth = date => {
 export const simpleDate = date => moment(date ? date : new Date()).format("MMM D yyyy")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
-export const fullDate = date => moment(date).format("MMMM Do YYYY, h:mm:ss a")
+export const fullDate = date => moment(date).format("ddd MMM Do YYYY, h:mm:ss a")
 export const fullTime = date => moment(date).format("h:mm:ss a")
-export const fullDay = date => moment(date).format("MMMM Do YYYY")
+export const fullDay = date => moment(date).format("ddd MMM Do YYYY")
 /**
  * 
  */

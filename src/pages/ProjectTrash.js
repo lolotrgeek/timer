@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } from 'react-native';
-import * as Data from '../data/Data'
+import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
-import * as routes from '../routes'
 
 export default function ProjectTrash({ useHistory, useParams }) {
     let history = useHistory()
@@ -20,39 +18,34 @@ export default function ProjectTrash({ useHistory, useParams }) {
         })
 
         messenger.emit('getProjectTrash', {})
+        return () => {
+
+        }
     }, [])
 
 
     const renderProject = ({ item }) => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
+        if (!item.id || item.id === 'none' || item.status !== 'deleted') return (<View></View>)
+        else return (
+            <View style={{ flexDirection: 'row', margin: 10, alignItems: 'center', justifyContent: 'space-evenly', maxWidth: 400 }}>
 
-                <View style={{ width: '30%' }}>
+                <View style={{ margin: 5 }}>
                     <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
                 </View>
-                <View style={{ width: '30%' }}>
-                    <Text>{item.deleted}</Text>
+                <View style={{ margin: 5 }}>
+                    <Text>{fullDate(item.deleted)}</Text>
                 </View>
-                <View style={{ width: '30%' }}>
+                <View style={{ margin: 5 }}>
                     <Button title='Restore' onPress={() => {
                         messenger.emit('ProjectRestore', item)
-                        // history.push(routes.projectlink(item.id))
+                        setRefresh(!refresh)
                     }} />
                 </View>
             </View>
         );
     };
-    const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row' }}>
 
-        </View>
-    )
-    const Header = () => (
-        <View style={styles.header}>
-            <Text style={{ textAlign: 'center', fontSize: 25 }}>Deleted Projects</Text>
-            <HeaderButtons />
-        </View>
-    )
+
     return (
         <SafeAreaView style={styles.container}>
             <Header />
@@ -73,19 +66,15 @@ export default function ProjectTrash({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
-    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
+    header: { padding: 10, width: '100%', backgroundColor: 'white',  },
 
     container: {
         flex: 1,
-        marginTop: 50,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
     },
     list: {
-        marginTop: 170,
         height: Dimensions.get('window').height - 170,
-        flexDirection: 'row',
         width: '100%',
         backgroundColor: '#fff'
     },

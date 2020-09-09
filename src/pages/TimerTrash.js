@@ -22,7 +22,11 @@ export default function TimerTrash({ useHistory, useParams }) {
 
         return () => messenger.removeAllListeners('timerTrash')
     }, [])
-
+    const Header = () => (
+        <View style={styles.header}>
+            <Text style={{ fontSize: 30 }}>Deleted Timers</Text>
+        </View>
+    )
 
     const renderTimer = ({ item, index }) => {
         if (!item.id || item.id === 'none' || item.status !== 'deleted') return (<View></View>)
@@ -32,8 +36,11 @@ export default function TimerTrash({ useHistory, useParams }) {
                     <View style={{ margin: 5 }}>
                         <Text style={{ fontSize: 20 }}>Deleted: {simpleDate(item.deleted)}</Text>
                     </View>
+
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                     <View style={{ margin: 5 }}>
-                        <Text>id: {item.id}</Text>
+                        <Text>{item.id}</Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
@@ -51,13 +58,13 @@ export default function TimerTrash({ useHistory, useParams }) {
 
                     </View>
                 </View>
-            </View>
+            </View >
         );
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={{ textAlign: 'center', fontSize: 30 }}>Deleted Timers</Text>
+            <Header />
             <FlatList
                 style={styles.list}
                 data={trash}
@@ -76,15 +83,14 @@ export default function TimerTrash({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
+    header: { padding: 10, width: '100%', backgroundColor: 'white', },
     container: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
     },
     list: {
-        marginTop: 50,
         height: Dimensions.get('window').height - 170,
-        flexDirection: 'row',
         width: '100%',
         backgroundColor: '#fff'
     },
