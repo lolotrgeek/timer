@@ -66,7 +66,6 @@ export default function TimelineList({ useHistory }) {
         return (
             <View style={{marginTop: 20 }}>
                 <Running />
-                <Text style={{ textAlign: 'center', fontSize: 30 }}>Timeline</Text>
             </View>
         )
     }

@@ -22,18 +22,21 @@ export default function Timeline({ useHistory }) {
     }, [])
 
     const Header = () => (
-        <View style={{width: '100%', padding: 10, backgroundColor: 'white', flexDirection: 'column'}}>
+        <View style={styles.header}>
+            <Text style={{ fontSize: 30 }}>Timeline</Text>
             {/* <Button title='Test Msg' onPress={() => messenger.emit('React', {Test: 'test'})} /> */}
-            <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} />
         </View>
     )
 
     const Footer = () => (
         <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', backgroundColor: 'white', zIndex: 999999, flexDirection: 'column', height: 50 }}>
+            <View style={{width: '100%', backgroundColor: 'white', flexDirection: 'row', justifyContent: 'space-evenly'}}>
             <Button
                 onPress={() => history.push(projectCreatelink())}
                 title='Create Project'
             />
+            <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} />
+            </View>
         </View>
     )
     // if (!ready) return (<View style={styles.container}><Text> Loading...</Text></View>)
@@ -47,6 +50,13 @@ export default function Timeline({ useHistory }) {
 }
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        padding: 10,
+        width: '100%',
+        backgroundColor: 'white',
+        flexDirection: 'column'
+    },
     container: {
         flex: 1,
         width: '100%',
