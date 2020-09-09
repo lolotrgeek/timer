@@ -38,14 +38,18 @@ export default function ProjectTrash({ useHistory, useParams }) {
                 <View style={{ margin: 5 }}>
                     <Button title='Restore' onPress={() => {
                         messenger.emit('ProjectRestore', item)
-                        setRefresh(!refresh)
+                        setRefresh(false)
                     }} />
                 </View>
             </View>
         );
     };
 
-
+    const Header = () => (
+        <View style={styles.header}>
+            <Text style={{fontSize: 30 }}>Deleted Projects</Text>
+        </View>
+    )
     return (
         <SafeAreaView style={styles.container}>
             <Header />
