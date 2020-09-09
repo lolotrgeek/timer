@@ -24,6 +24,7 @@ export default function Timer({ useHistory, useParams }) {
         else if (projectId) messenger.emit('newEntry', { projectId })
         return () => {
             messenger.removeAllListeners(`${timerId}`)
+            messenger.removeAllListeners(`${timerId}/editComplete`)
         }
     }, [])
 
@@ -90,7 +91,7 @@ export default function Timer({ useHistory, useParams }) {
 
                 <Button title='Save' onPress={() => {
                     messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
-                    console.log(timer.id)
+                    history.push(projectlink(timer.project))
                 }} />
 
             </View>
