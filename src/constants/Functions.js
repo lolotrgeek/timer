@@ -150,11 +150,12 @@ export const getMonth = date => {
  * return date as a simplifed date string `dd month yyy`
  * @param {*} date optional, default: `today`
  */
-export const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
+export const simpleDate = date => moment(date ? date : new Date()).format("MMM D yyyy")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
-export const fullDate = date => moment(date).format("EEE MMM d yyyy  hh:mm:ss aaa")
-export const fullDay = date => moment(date).format("EEE MMM d yyyy")
+export const fullDate = date => moment(date).format("MMMM Do YYYY, h:mm:ss a")
+export const fullTime = date => moment(date).format("h:mm:ss a")
+export const fullDay = date => moment(date).format("MMMM Do YYYY")
 /**
  * 
  */
