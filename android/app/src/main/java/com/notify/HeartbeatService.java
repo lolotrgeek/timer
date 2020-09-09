@@ -15,6 +15,7 @@ import android.app.NotificationManager;
 import android.app.NotificationChannel;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -231,6 +232,14 @@ public class HeartbeatService extends NodeJS {
                         if (DEBUG_COUNT) Log.d(TAG, TITLE + " " + SUBTITLE);
                         notificationUpdate();
                         sendMessageToReact("count", SUBTITLE);
+                        break;
+                    case "alert":
+                        JSONObject alerted = heartbeatPayloadParse(obj);
+                        String alert = alerted.get("alert").toString();
+                        Intent alertIntent = new Intent(this, MainActivity.class);
+                        alertIntent.putExtra("ALERT", alert);
+                        String action = alertIntent.getStringExtra("ALERT");
+                        Toast.makeText(this,action,Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         routeMessage(event, obj);

@@ -15,7 +15,8 @@ let previous = {}
 let current = {}
 let project = {}
 
-const setAlert = alert => console.log('[Alert]', alert)
+// const setAlert = alert => console.log('[Alert]', alert)
+const setAlert = alert => messenger.emit('alert', {alert : 'error'})
 const setTimer = object => current.timer = object
 const setEnded = date => current.ended = isValid(date) ? typeof date === 'string' ? date : date.toString() : current.ended
 const setStarted = date => current.started = isValid(date) ? typeof date === 'string' ? date : date.toString() : current.started
