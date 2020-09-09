@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
-import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning } from '../constants/Functions'
+import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
@@ -19,7 +19,7 @@ export default function Timer({ useHistory, useParams }) {
 
     useEffect(() => {
         // TODO: destroys edits on refresh, keep state through refresh
-        messenger.addListener(`${timerId}`, event => {setTimer(event)})
+        messenger.addListener(`${timerId}`, event => { setTimer(event) })
         if (timerId) messenger.emit('getTimer', { timerId })
         else if (projectId) messenger.emit('newEntry', { projectId })
         return () => {
@@ -61,8 +61,11 @@ export default function Timer({ useHistory, useParams }) {
         <SafeAreaView style={styles.container}>
             <Header />
             <View style={styles.list}>
-                <Text>Total: {totalTime(timer.started, timer.ended)}</Text>
-                <Text>{timer.status}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: 70, margin: 30, }}><Text style={{ fontSize: 30 }}>Total</Text></View>
+                    <View style={{ width: 120, margin: 20 }}><Text style={{ fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text></View>
+                </View>
+                {/* <Text>{timer.status}</Text> */}
                 <PickerDate
                     label='Date'
                     startdate={new Date(timer.started)}
@@ -71,7 +74,7 @@ export default function Timer({ useHistory, useParams }) {
                     previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
                     nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
                 />
-                <Text>{timer.started.toString()}</Text>
+                {/* <Text>{timer.started.toString()}</Text> */}
                 <PickerTime
                     label='Start'
                     time={new Date(timer.started)}
@@ -79,7 +82,7 @@ export default function Timer({ useHistory, useParams }) {
                     addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
                     subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
                 />
-                <Text>{timer.ended.toString()}</Text>
+                {/* <Text>{timer.ended.toString()}</Text> */}
                 <PickerTime
                     label='End'
                     time={new Date(timer.ended)}
@@ -88,28 +91,22 @@ export default function Timer({ useHistory, useParams }) {
                     running={isRunning(timer)}
                     subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
                 />
-
-                <Button title='Save' onPress={() => {
-                    messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
-                    history.push(projectlink(timer.project))
-                }} />
-
+                <View style={styles.button}>
+                    <Button title='Save' onPress={() => {
+                        messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
+                        history.push(projectlink(timer.project))
+                    }} />
+                </View>
             </View>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 
 const styles = StyleSheet.create({
     header: {
-        position: 'absolute',
-        marginTop: 50,
-        top: 0,
         flexDirection: 'row',
         padding: 10,
         width: '100%',
-        backgroundColor: 'white',
-        zIndex: 10000,
-        flexDirection: 'column',
 
     },
     container: {
@@ -118,7 +115,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
-        marginTop: 170,
         height: Dimensions.get('window').height - 170,
         flexDirection: 'column',
         alignItems: 'center',

@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
-import { timeSpan } from '../constants/Functions'
+import { timeSpan, secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
@@ -63,7 +63,7 @@ export default function Project({ useHistory, useParams }) {
                     <Text onPress={() => { history.push(timerlink(item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
-                    <Text style={{ color: 'red' }}>{item.total}</Text>
+                    <Text style={{ color: 'red' }}>{secondsToString(item.total)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
 

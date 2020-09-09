@@ -10,14 +10,14 @@ export function PickerDate(props) {
   const [show, setShow] = useState(false);
 
   return (
-    <View style={{ flexDirection: 'row' }} >
-
-      <Text>{props.label}</Text>
-      <Button title='<' onPress={props.previousDay} />
-      <TouchableOpacity onPress={() => setShow(true)} >
-        <Text>{dateSimple(props.startdate)}</Text>
-      </TouchableOpacity>
-      
+    <View style={{ flexDirection: 'row', alignItems: 'center'  }} >
+      <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View>
+      <View style={{ width: 30, margin: 20 }}><Button title='<' onPress={props.previousDay} /></View>
+      <View style={{ width: 100, margin: 20, alignItems:'center' }}>
+        <TouchableOpacity onPress={() => setShow(true)} >
+          <Text>{dateSimple(props.startdate)}</Text>
+        </TouchableOpacity>
+      </View>
       {show && (
         <DateTimePicker
           mode='date'
@@ -25,7 +25,7 @@ export function PickerDate(props) {
           onChange={(event, newDate) => { setShow(false); props.onDateChange(newDate); }}
         />)}
 
-      <Button title='>' onPress={props.nextDay} />
+      <View style={{ width: 30, margin: 20 }}><Button title='>' onPress={props.nextDay} /></View>
 
     </View>
   );
@@ -34,26 +34,25 @@ export function PickerTime(props) {
   const [show, setShow] = useState(false);
   debug && console.log(props.show)
   return (
-    <View style={{ flexDirection: 'row' }} >
-
-      <Text>{props.label}</Text>
-
-      <Button title='<' onPress={props.subtractMinutes} />
-
-      {props.running && props.running.status === 'running' ?
-        <Text>Tracking...</Text> :
-        <TouchableOpacity onPress={() => setShow(true)} >
-          <Text>{timeString(props.time)}</Text>
-        </TouchableOpacity>
-      }
+    <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+      <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View>
+      <View style={{ width: 30, margin: 20 }}><Button title='<' onPress={props.subtractMinutes} /></View>
+      <View style={{ width: 100, margin: 20, alignItems: 'center' }}>
+        {props.running && props.running.status === 'running' ?
+          <Text>Tracking...</Text> :
+          <TouchableOpacity onPress={() => setShow(true)} >
+            <Text>{timeString(props.time)}</Text>
+          </TouchableOpacity>
+        }
+      </View>
       {show && (
         <DateTimePicker
           mode='time'
           value={props.time}
           onChange={(event, newTime) => { setShow(false); props.onTimeChange(newTime); }}
         />)}
+      <View style={{ width: 30, margin: 20 }}><Button title='>' onPress={props.addMinutes} /></View>
 
-      <Button title='>' onPress={props.addMinutes} />
     </View>
 
 
