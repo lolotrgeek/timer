@@ -64,9 +64,9 @@ export default function TimelineList({ useHistory }) {
 
     const TimelineHeader = () => {
         return (
-            <View>
+            <View style={{marginTop: 20 }}>
                 <Running />
-                <Text style={{ textAlign: 'center', fontSize: 25 }}>Timeline</Text>
+                <Text style={{ textAlign: 'center', fontSize: 30 }}>Timeline</Text>
             </View>
         )
     }
@@ -76,10 +76,10 @@ export default function TimelineList({ useHistory }) {
             item.id === hidden && isToday(item.lastrun) ? <View></View> :
                 <View style={styles.row}>
                     <View style={{ width: '30%' }}>
-                        <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? 'red' : 'yellow' }}>{item.name ? item.name : ''}</Text>
+                        <Text onPress={() => history.push(projectlink(item.id))} style={{ color: !item.color || item.color.length === 0 || item.color === '#ccc' ? 'red' : item.color }}>{item.name ? item.name : ''}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
-                        <Text style={{ color: 'red' }}>{secondsToString(item.lastcount)}</Text>
+                        <Text style={{ color: 'black' }}>{secondsToString(item.lastcount)}</Text>
                     </View>
                     <View style={{ width: '20%' }}>
                         <Button title='start' onPress={() => {
@@ -106,7 +106,7 @@ export default function TimelineList({ useHistory }) {
             }}
             sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
             renderSectionHeader={({ section: { title } }) => {
-                return (<Text>{sayDay(title)}</Text>)
+                return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{sayDay(title)}</Text></View>)
             }}
             renderItem={RenderTimer}
             onEndReached={() => {
@@ -140,6 +140,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
         marginBottom: 50,
     },
-    row: { flexDirection: 'row', margin: 10, width: '100%' },
+    row: { flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, },
     hide: { display: 'none' }
 });

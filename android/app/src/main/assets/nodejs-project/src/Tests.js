@@ -71,7 +71,7 @@ const generateTimer = (projects) => {
 }
 
 const generateProject = () => {
-    const project = newProject(nameGen(), '#ccc')
+    const project = newProject(nameGen(), '#000')
     if (!project) return false
     console.log('Generating Project', project)
     store.set(chain.projectHistory(project.id), project)
