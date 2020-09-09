@@ -29,7 +29,7 @@ export default function Timer({ useHistory, useParams }) {
     }, [])
 
     const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly', }}>
             <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
             {timer && timer.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
@@ -48,10 +48,13 @@ export default function Timer({ useHistory, useParams }) {
 
     const Header = () => (
         <View style={styles.header}>
+        </View>
+    )
+    const Footer = () => (
+        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
             <HeaderButtons />
         </View>
     )
-
     const onDateChoose = date => { messenger.emit('chooseNewDate', date); setRefresh(!refresh) }
     const onTimeStart = date => { messenger.emit('chooseNewStart', date); setRefresh(!refresh) }
     const onTimeEnd = date => { messenger.emit('chooseNewEnd', date); setRefresh(!refresh) }
@@ -59,46 +62,49 @@ export default function Timer({ useHistory, useParams }) {
     if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
         <SafeAreaView style={styles.container}>
-            <Header />
             <View style={styles.list}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 70, margin: 30, }}><Text style={{ fontSize: 30 }}>Total</Text></View>
-                    <View style={{ width: 120, margin: 20 }}><Text style={{ fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text></View>
+                <View style={{marginTop: 10, maxWidth: 400, }}>
+                    <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text>
                 </View>
-                <Text style={{ fontSize: 20 }}>{timer.status}</Text>
-                {/* <Text>{timer.status}</Text> */}
-                <PickerDate
-                    label='Date'
-                    startdate={new Date(timer.started)}
-                    onDateChange={onDateChoose}
-                    maxDate={endOfDay(new Date())}
-                    previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
-                    nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
-                />
-                {/* <Text>{timer.started.toString()}</Text> */}
-                <PickerTime
-                    label='Start'
-                    time={new Date(timer.started)}
-                    onTimeChange={onTimeStart}
-                    addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
-                    subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
-                />
-                {/* <Text>{timer.ended.toString()}</Text> */}
-                <PickerTime
-                    label='End'
-                    time={new Date(timer.ended)}
-                    onTimeChange={onTimeEnd}
-                    addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
-                    running={isRunning(timer)}
-                    subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
-                />
-                <View style={styles.button}>
-                    <Button title='Save' onPress={() => {
-                        messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
-                        history.push(projectlink(timer.project))
-                    }} />
+                <View style={{ maxWidth: 400, alignItems: 'center' }}>
+
+                    {/* <Text>{timer.status}</Text> */}
+                    <PickerDate
+                        label='Date'
+                        startdate={new Date(timer.started)}
+                        onDateChange={onDateChoose}
+                        maxDate={endOfDay(new Date())}
+                        previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
+                        nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
+                    />
+                    {/* <Text>{timer.started.toString()}</Text> */}
+                    <PickerTime
+                        label='Start'
+                        time={new Date(timer.started)}
+                        onTimeChange={onTimeStart}
+                        addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
+                        subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
+                    />
+                    {/* <Text>{timer.ended.toString()}</Text> */}
+                    <PickerTime
+                        label='End'
+                        time={new Date(timer.ended)}
+                        onTimeChange={onTimeEnd}
+                        addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
+                        running={isRunning(timer)}
+                        subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
+                    />
+                    <View style={styles.button}>
+                        <Button title='Save' onPress={() => {
+                            messenger.emit(`${timer.id}/saveEdits`, { timerId: timer.id })
+                            history.push(projectlink(timer.project))
+                        }} />
+                    </View>
                 </View>
+
             </View>
+            <Footer />
         </SafeAreaView >
     );
 }
@@ -116,11 +122,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     list: {
-        height: Dimensions.get('window').height - 170,
-        flexDirection: 'column',
-        alignItems: 'center',
+        height: Dimensions.get('window').height - 120,
         width: '100%',
-        backgroundColor: '#ccc'
+        backgroundColor: '#ccc',
+        marginBottom: 50,
     },
     button: {
         margin: 20,
