@@ -90,7 +90,11 @@ export default function TimelineList({ useHistory }) {
         );
     };
 
-    if (pages.length === 0) return (<Text style={styles.list}>Loading ... </Text>)
+    if (pages.length === 0) return (
+        <View style={styles.list}>
+            <TimelineHeader />
+        </View>
+    )
     return (
         <SectionList
             ListHeaderComponent={<TimelineHeader />}
