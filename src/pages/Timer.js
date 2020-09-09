@@ -34,7 +34,7 @@ export default function Timer({ useHistory, useParams }) {
             {timer && timer.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
                     messenger.emit(`${timerId}/delete`, timer)
-                    // history.push(projectlink(timer.project))
+                    history.push(projectlink(timer.project))
                 }} />
                 : timer.status === 'deleted' ?
                     <Button title='Restore' onPress={() => { }} />
@@ -65,6 +65,7 @@ export default function Timer({ useHistory, useParams }) {
                     <View style={{ width: 70, margin: 30, }}><Text style={{ fontSize: 30 }}>Total</Text></View>
                     <View style={{ width: 120, margin: 20 }}><Text style={{ fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text></View>
                 </View>
+                <Text style={{ fontSize: 20 }}>{timer.status}</Text>
                 {/* <Text>{timer.status}</Text> */}
                 <PickerDate
                     label='Date'

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } from 'react-native';
-import * as Data from '../data/Data'
 import messenger from '../constants/Messenger'
-import * as chain from '../data/Chains'
 import * as routes from '../routes'
+import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
 
 export default function TimerTrash({ useHistory, useParams }) {
     let history = useHistory()
@@ -19,44 +18,46 @@ export default function TimerTrash({ useHistory, useParams }) {
                 setRefresh(false)
             }
         })
+        messenger.emit('getTimerTrash', { projectId })
 
-        messenger.emit('getTimerTrash', { projectId: projectId })
+        return () => messenger.removeAllListeners('timerTrash')
     }, [])
 
 
-    const renderTimer = ({ item }) => {
-        return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
+    const renderTimer = ({ item, index }) => {
+        if (!item.id || item.id === 'none' || item.status !== 'deleted') return (<View></View>)
+        else return (
+            <View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ margin: 5 }}>
+                        <Text style={{ fontSize: 20 }}>Deleted: {simpleDate(item.deleted)}</Text>
+                    </View>
+                    <View style={{ margin: 5 }}>
+                        <Text>id: {item.id}</Text>
+                    </View>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <View style={{ margin: 5 }}>
+                        <Text>{simpleDate(item.started)}</Text>
+                    </View>
+                    <View style={{ margin: 10 }}>
+                        <Text>{timeSpan(item.started, item.ended)}</Text>
+                    </View>
+                    <View style={{ margin: 5 }}>
+                        <Button title='Restore' onPress={() => {
+                            messenger.emit('TimerRestore', item)
+                            history.push(routes.projectlink(item.project))
+                        }} />
 
-                <View style={{ width: '20%' }}>
-                    {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
-                    <Text>{item.id}</Text>
-                </View>
-                <View style={{ width: '40%' }}>
-                    <Text>{item.deleted}</Text>
-                </View>
-                <View style={{ width: '20%' }}>
-                    <Button title='Restore' onPress={() => {
-                        Data.restoreTimer(item)
-                        history.push(routes.timerlink(item.id))
-                    }} />
+                    </View>
                 </View>
             </View>
         );
     };
-    const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row' }}>
-        </View>
-    )
-    const Header = () => (
-        <View style={styles.header}>
-            <Text style={{ textAlign: 'center', fontSize: 25 }}>Deleted Timers</Text>
-            <HeaderButtons />
-        </View>
-    )
+
     return (
         <SafeAreaView style={styles.container}>
-            <Header />
+            <Text style={{ textAlign: 'center', fontSize: 30 }}>Deleted Timers</Text>
             <FlatList
                 style={styles.list}
                 data={trash}
@@ -75,17 +76,13 @@ export default function TimerTrash({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
-    header: { position: 'absolute', marginTop: 50, top: 0, flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', zIndex: 10000, flexDirection: 'column' },
-
     container: {
         flex: 1,
-        marginTop: 50,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
     },
     list: {
-        marginTop: 170,
+        marginTop: 50,
         height: Dimensions.get('window').height - 170,
         flexDirection: 'row',
         width: '100%',
