@@ -406,7 +406,7 @@ export const dayHeaders = timerlist => {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
-        return { day: simpleDateOld(new Date(timer.started)), timer: timer }
+        return { day: fullDay(new Date(timer.started)), timer: timer }
     })
     // //// debug && console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
     timerdays.forEach(timerday => {

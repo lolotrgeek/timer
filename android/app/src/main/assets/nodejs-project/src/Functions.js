@@ -143,6 +143,8 @@ const dateSimple = date => {
     return moment(parsedDate).format('MM-DD-YYYY')
 }
 
+const fullDay = date => moment(date).format("MMMM Do YYYY")
+
 /**
  * 
  * @param {string} date - pass a simpleDate 
@@ -179,7 +181,7 @@ function dayHeaders(timerlist) {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
-        return { day: simpleDate(new Date(timer.started)), timer: timer }
+        return { day: fullDay(new Date(timer.started)), timer: timer }
     })
     // //// debug && console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
     timerdays.forEach(timerday => {

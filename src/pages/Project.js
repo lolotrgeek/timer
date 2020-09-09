@@ -57,23 +57,20 @@ export default function Project({ useHistory, useParams }) {
 
     const RenderTimer = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%' }}>
+            <View style={{ flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, }}>
 
-                <View style={{ width: '30%' }}>
+                <View style={{ width: '70%' }}>
                     <Text onPress={() => { history.push(timerlink(item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{secondsToString(item.total)}</Text>
-                </View>
-                <View style={{ width: '30%' }}>
-
                 </View>
             </View>
         );
     };
 
     const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly', }}>
             <Button title='New Entry' onPress={() => history.push(timernew(projectId))} />
             <Button title='Edit' onPress={() => {
                 history.push(projectEditlink(projectId))
@@ -97,6 +94,11 @@ export default function Project({ useHistory, useParams }) {
 
     const Header = () => (
         <View style={styles.header}>
+            <Text style={{ color: project.color ? project.color : 'black', textAlign: 'center', fontSize: 30 }}>{project && project.name ? project.name : projectId}</Text>
+        </View>
+    )
+    const Footer = () => (
+        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent:'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
             <HeaderButtons />
         </View>
     )
@@ -104,9 +106,7 @@ export default function Project({ useHistory, useParams }) {
     return (
         <SafeAreaView style={styles.container} onLayout={(layout => { console.log(layout) })}>
             <Header />
-
             <SectionList
-                ListHeaderComponent={<Text style={{ color: project.color ? project.color : 'black', textAlign: 'center', fontSize: 25 }}>{project && project.name ? project.name : projectId}</Text>}
                 // TODO: simplify creating sticky header/footer with list
                 //app routes: 20 padding + 50 height
                 // header: 20 padding + 100 height
@@ -119,7 +119,7 @@ export default function Project({ useHistory, useParams }) {
                 }}
                 sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
                 renderSectionHeader={({ section: { title } }) => {
-                    return (<Text>{title}</Text>)
+                    return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>)
                 }}
                 renderItem={RenderTimer}
                 onEndReached={() => {
@@ -136,7 +136,7 @@ export default function Project({ useHistory, useParams }) {
                 }}
                 refreshing={refresh}
             />
-
+            <Footer />
         </SafeAreaView>
     );
 }
@@ -150,9 +150,10 @@ const styles = StyleSheet.create({
     },
     list: {
         height: Dimensions.get('window').height - 170,
-        width: '100%',
+        width:'100%',
         backgroundColor: '#ccc',
         marginBottom: 50,
+        padding: 10
     },
     button: {
         margin: 20,
