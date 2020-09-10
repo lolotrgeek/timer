@@ -46,7 +46,7 @@ export default function Projects({ useHistory, useParams }) {
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', maxWidth: 400,  }}>
             <Button onPress={() => history.push(projectCreatelink())} title='Create Project' />
-            <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
+            {/* <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} /> */}
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
     )
