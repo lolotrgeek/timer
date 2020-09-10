@@ -4,7 +4,7 @@ import {trimSoul} from '../constants/Functions'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 import {projectHistoryState} from 'node/state/projectHistoryState'
-let debug = true
+let debug = false
 let state = {
     edits: []
 }

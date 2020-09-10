@@ -21,7 +21,7 @@ exports.projectTrashState = p => {
                 })
                 resolve(result)
             } catch (error) {
-                p.debug && console.debug && console.log(error)
+                p.debug && console.log(error)
                 reject(error)
             }
         })

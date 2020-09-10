@@ -11,7 +11,6 @@ export default function TimerHistory({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`${timerId}_TimerHistory`, event => {
-            console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setEdits(event)
                 setRefresh(false)

@@ -5,7 +5,7 @@ import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 const { timerTrashState } = require('node/state/timerTrashState')
 
-let debug = true
+let debug = false
 let state = {
     trash: []
 }

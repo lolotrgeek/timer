@@ -8,7 +8,7 @@ const { cloneTimer, doneTimer, newTimer } = require('./src/Models')
 const { getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul } = require('./src/Functions')
 const { runCounter, stopCounter, setCount } = require('./counter')
 
-const debug = true
+const debug = false
 
 let running = {}
 let runningproject = {}
@@ -106,7 +106,7 @@ const createRunning = project => new Promise((resolve, reject) => {
         return
     }
     let timer = newTimer(project.id)
-    console.log('last run: ', project.lastrun, project.lastcount)
+    debug && console.log('last run: ', project.lastrun, project.lastcount)
     timer.name = project.name
     timer.color = project.color
     timer.count = project.lastrun && project.lastcount ? getTodaysCount(project.lastrun, project.lastcount) : 0
@@ -204,7 +204,7 @@ const getProject = (projectId) => {
 
             })
         } catch (error) {
-            debug && console.debug && console.log(error)
+            debug && console.log(error)
             reject(error)
         }
     })

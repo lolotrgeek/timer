@@ -6,11 +6,11 @@ const chain = require('../src/Chains')
 const { timelineState } = require('./timelineState')
 
 let debug = {
-    state: true,
-    data: true,
-    listeners: true,
-    parsing: true,
-    sorting: true
+    state: false,
+    data: false,
+    listeners: false,
+    parsing: false,
+    sorting: false
 }
 
 let

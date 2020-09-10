@@ -35,7 +35,6 @@ let pagesize = 4
 function fetchDaytimers() {
     return new Promise(resolve => {
         messenger.addListener("pages", event => {
-            console.log('initial pages', event)
             resolve(event.flat(1))
         })
         messenger.emit('getPages', { currentday: 0, all: true, pagesize: pagesize })

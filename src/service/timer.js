@@ -7,7 +7,7 @@ import { cloneTimer, doneTimer, newTimer } from '../data/Models'
 import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 
-const debug = true
+const debug = false
 
 let running = {}
 let runningproject = {}
@@ -98,7 +98,7 @@ const createRunning = project => new Promise((resolve, reject) => {
         return
     }
     let timer = newTimer(project.id)
-    console.log('last run: ', project.lastrun, project.lastcount)
+    debug && console.log('last run: ', project.lastrun, project.lastcount)
     timer.name = project.name
     timer.color = project.color
     timer.count = project.lastrun && project.lastcount ? getTodaysCount(project.lastrun, project.lastcount) : 0
@@ -193,7 +193,7 @@ const getProject = (projectId) => {
 
             })
         } catch (error) {
-            debug && console.debug && console.log(error)
+            debug && console.log(error)
             reject(error)
         }
     })

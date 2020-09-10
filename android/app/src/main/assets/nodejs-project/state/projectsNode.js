@@ -4,7 +4,7 @@ const { trimSoul } = require('../src/Functions')
 const chain = require('../src/Chains')
 const store = require('../src/Store')
 const { projectsState} = require('./projectsState')
-let debug = true
+let debug = false
 let state = {
     projects: []
 }

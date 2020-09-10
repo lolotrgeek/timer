@@ -158,7 +158,7 @@ export const timersForDateHandler = (event, state) => {
                 // duplicate/edit check
                 let alreadyInSection = section.data.some(timer => timer.id === found.id)
                 if (!alreadyInSection && found.status === 'done') {
-                    console.log('Listing Timer', found)
+                    debug && console.log('Listing Timer', found)
                     section.data.push(found)
                 }
                 // running check

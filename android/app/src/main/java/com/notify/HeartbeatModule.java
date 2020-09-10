@@ -36,7 +36,7 @@ public class HeartbeatModule extends ReactContextBaseJavaModule {
     private static String STATUS = "STOPPED";
     private static String COUNT = "PAUSED";
     private static String TICK;
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     private static HeartbeatModule instance;
 
     public HeartbeatModule(@Nonnull ReactApplicationContext reactContext) {

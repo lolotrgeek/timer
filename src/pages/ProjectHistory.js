@@ -11,7 +11,6 @@ export default function ProjectHistory({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`${projectId}_ProjectHistory`, event => {
-            console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setEdits(event)
                 setRefresh(false)

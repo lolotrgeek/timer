@@ -92,7 +92,7 @@ exports.projectState = p => {
                     }
                 })
             } catch (error) {
-                p.debug && console.p.debug && console.log(error)
+                p.debug && console.log(error)
                 reject(error)
             }
         })

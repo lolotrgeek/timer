@@ -9,7 +9,7 @@ import * as Data from '../data/Data'
 import * as store from '../data/Store'
 import * as chain from '../data/Chains'
 
-const debug = true
+const debug = false
 const test = false
 const loadAll = false
 

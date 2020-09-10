@@ -2,7 +2,7 @@ const messenger = require('./Messenger')
 const {parse} = require('./src/Functions')
 const {getOne, getAll, putAll, setAll, offAll } = require('./src/Store')
 
-const debug = true 
+const debug = false 
 
 messenger.on('get', msg => {
     debug && console.log('[React node] incoming get: ' + typeof msg, msg)

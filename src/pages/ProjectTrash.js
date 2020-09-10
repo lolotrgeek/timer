@@ -10,7 +10,6 @@ export default function ProjectTrash({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`projectTrash`, event => {
-            console.log(event)
             if (event && Array.isArray(event) && event.length > 0) {
                 setTrash(event)
                 setRefresh(false)

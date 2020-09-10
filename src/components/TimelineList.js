@@ -21,7 +21,7 @@ export default function TimelineList({ useHistory }) {
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
         messenger.addListener('App', event => {
-            console.log('App', event)
+            debug && console.log('App', event)
         })
         messenger.addListener("page", event => {
             debug && console.log('page:', event)

@@ -17,7 +17,7 @@ exports.projectCreate = (p) => {
             else { 
                 try {
                     createProject(p.state.name, p.state.color, p.state.selected).then(project => {
-                        console.log(`success! ${project.id}`)
+                        p.debug && console.log(`success! ${project.id}`) // TODO: add as an alert
                         p.messenger.emit('ProjectCreateSuccess', project)
                     })
                 } catch (error) {

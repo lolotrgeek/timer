@@ -8,7 +8,7 @@ const { parse } = require('../src/Functions')
 
 const { projectCreate } = require('./projectCreateState')
 
-let debug = true
+let debug = false
 let state = {}
 const setState = (key, value) => state[key] = value
 

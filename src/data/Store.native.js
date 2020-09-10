@@ -11,7 +11,6 @@ export const store = Heartbeat
  */
 export function put(key, value) {
     // do validation here...
-    console.log('Putting', key, value)
     store.put(key, JSON.stringify(value))
 }
 

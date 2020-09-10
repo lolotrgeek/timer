@@ -59,7 +59,7 @@ exports.projectEditState = p => {
 
                 })
             } catch (error) {
-                p.debug && console.p.debug && console.log(error)
+                p.debug && console.log(error)
                 reject(error)
             }
         })
@@ -73,18 +73,18 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(projectEdit.id), projectEdit)
             p.store.put(p.chain.project(projectEdit.id), projectEdit)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
                 if (days && days.length > 0) {
                     days.forEach(async day => {
                         let projectDates = await getProjectDates(day)
-                        console.log('projectDates: ', projectDates)
+                        p.debug && console.log('projectDates: ', projectDates)
                         projectDates.forEach(projectDate => {
                             if (projectDate.id === projectEdit.id) {
                                 projectDate.name = projectEdit.name
                                 projectDate.color = projectEdit.color
                                 projectDate.selected = projectEdit.selected
                                 projectDate.edited = projectEdit.edited
-                                console.log('Edited projectDate: ', projectDate)
+                                p.debug && console.log('Edited projectDate: ', projectDate)
                                 p.store.put(p.chain.projectDate(day, projectEdit.id), projectDate)
                             }
                         })
@@ -105,17 +105,17 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(projectDelete.id), projectDelete)
             p.store.put(p.chain.project(projectDelete.id), projectDelete)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
-                console.log(days)
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
+                p.debug && console.log(days)
                 if (days && days.length > 0) {
                     days.forEach(async day => {
                         let projectDates = await getProjectDates(day)
-                        console.log('projectDates: ', projectDates)
+                        p.debug && console.log('projectDates: ', projectDates)
                         projectDates.forEach(projectDate => {
                             if (projectDate.id === projectDelete.id) {
                                 projectDate.status = projectDelete.status
                                 projectDate.deleted = projectDelete.deleted
-                                console.log('Deleted projectDate: ', projectDate)
+                                p.debug && console.log('Deleted projectDate: ', projectDate)
                                 p.store.put(p.chain.projectDate(day, projectDelete.id), projectDate)
 
                             }
@@ -137,16 +137,16 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(project.id), project)
             p.store.put(p.chain.project(project.id), project)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
-                console.log(days)
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
+                p.debug && console.log(days)
                 if (days && days.length > 0) {
                     days.forEach(async day => {
                         let projectDates = await getProjectDates(day)
-                        console.log('projectDates: ', projectDates)
+                        p.debug && console.log('projectDates: ', projectDates)
                         projectDates.forEach(projectDate => {
                             if (projectDate.id === project.id) {
                                 projectDate.status = 'active'
-                                console.log('Restoring projectDate: ', projectDate)
+                                p.debug && console.log('Restoring projectDate: ', projectDate)
                                 p.store.put(p.chain.projectDate(day, project.id), projectDate)
                             }
                         })

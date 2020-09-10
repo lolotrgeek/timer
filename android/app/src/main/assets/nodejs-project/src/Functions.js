@@ -164,10 +164,10 @@ const settingCount = (timer, project) => {
     if (timer) {
         let total = totalTime(timer.started, timer.ended)
         if (project && project.lastrun === dateSimple(new Date())) {
-            console.log('Project Ran Today, adding count: ', project.lastcount, total)
+            debug && console.log('Project Ran Today, adding count: ', project.lastcount, total)
             return project.lastcount + total
         } else {
-            console.log('setting count: ', total)
+            debug && console.log('setting count: ', total)
             return total
         }
     }

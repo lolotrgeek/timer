@@ -35,9 +35,9 @@ public class HeartbeatService extends NodeJS {
     public static int COUNT = 0;
     private static HeartbeatService instance;
     private static String TAG = "HEARTBEAT-SERVICE";
-    private static boolean DEBUG = true;
-    private static boolean DEBUG_PUT = true;
-    private static boolean DEBUG_COUNT = true;
+    private static boolean DEBUG = false;
+    private static boolean DEBUG_PUT = false;
+    private static boolean DEBUG_COUNT = false;
     public static boolean ISRUNNING;
 
     // Used to load the 'native-lib' library on application startup.

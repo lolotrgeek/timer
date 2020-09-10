@@ -3,7 +3,7 @@ import { isRunning, multiDay, newEntryPerDay, settingCount, dateSimple, totalTim
 import * as store from './Store'
 import * as chain from './Chains'
 
-const debug = true
+const debug = false
 
 export const createProject = (name, color) => {
     const project = newProject(name, color)
@@ -108,7 +108,7 @@ export const deleteTimer = (timer) => {
     store.put(chain.timer(timerDelete.id), timerDelete)
     store.put(chain.timerDate(timerDelete.started, timerDelete.id), false)
     store.put(chain.projectTimer(timerDelete.project, timerDelete.id), timerDelete)
-    console.log(timerDelete)
+    debug && console.log(timerDelete)
 }
 
 /**

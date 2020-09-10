@@ -220,7 +220,6 @@ exports.timerState = p => {
     const changeDate = (newDate, timer) => {
         let oldStart = p.isValid(timer.started) ? timer.started : new Date(timer.started)
         let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
-        console.log(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
         let newStart = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
         let newEnd = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldEnd.getHours(), oldEnd.getMinutes(), oldEnd.getSeconds())
         p.debug && console.log(newStart, newEnd)
@@ -478,7 +477,7 @@ exports.timerState = p => {
 
                 })
             } catch (error) {
-                p.debug && console.debug && console.log(error)
+                p.debug && console.log(error)
                 reject(error)
             }
         })

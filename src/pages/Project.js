@@ -7,7 +7,7 @@ import { timeSpan, secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
-const debug = true
+const debug = false
 const test = false
 const loadAll = false
 
@@ -23,20 +23,19 @@ export default function Project({ useHistory, useParams }) {
 
     useEffect(() => {
         messenger.addListener(`${projectId}/project`, event => {
-            console.log(event)
             if (event) setProject(event)
             setRefresh(false)
 
         })
         messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
-                console.log('Pages', event)
+                debug && console.log('Pages', event)
                 setPages(event)
                 setRefresh(false)
             }
         })
         messenger.addListener(`${projectId}/pagelocation`, event => {
-            console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
+            debug && console.log('scrollTo: ', { x: event.x, y: event.y, animated: false })
             setLocation({ x: event.x, y: event.y, animated: false })
             // https://github.com/facebook/react-native/issues/13151#issuecomment-337442644
             // DANGER: raw _functions, but it works
@@ -113,10 +112,6 @@ export default function Project({ useHistory, useParams }) {
                 // 20 + 20 + 50 + 100 = 190
                 style={styles.list}
                 ref={timerList}
-                onLayout={layout => {
-                    // console.log(timerList.current)
-                    // console.log(layout)
-                }}
                 sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
                 renderSectionHeader={({ section: { title } }) => {
                     return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>)
@@ -124,7 +119,7 @@ export default function Project({ useHistory, useParams }) {
                 renderItem={RenderTimer}
                 onEndReached={() => {
                     // TODO: decouple, put in separate function
-                    console.log('End Reached')
+                    debug && console.log('End Reached')
                 }}
                 onEndReachedThreshold={1}
                 keyExtractor={(item, index) => item.id}

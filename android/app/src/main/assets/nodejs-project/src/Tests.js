@@ -4,12 +4,12 @@ const chain = require ('./Chains')
 const store = require ('./Store')
 const messenger = require('./Messenger')
 
-let debug = true
+let debug = false
 
 let timers = []
 
 messenger.on('GenerateProjects', msg => {
-    console.log(msg)
+    debug && console.log(msg)
     generateProjects()
 })
 messenger.on('GenerateTimers', msg => {
@@ -73,7 +73,7 @@ const generateTimer = (projects) => {
 const generateProject = () => {
     const project = newProject(nameGen(), '#000')
     if (!project) return false
-    console.log('Generating Project', project)
+    debug && console.log('Generating Project', project)
     store.set(chain.projectHistory(project.id), project)
     store.put(chain.project(project.id), project)
 }

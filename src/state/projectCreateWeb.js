@@ -5,7 +5,7 @@ import * as store from '../data/Store'
 import { newProject } from '../data/Models'
 import { projectCreate } from 'node/state/projectCreateState'
 
-let debug = true
+let debug = false
 let state = {}
 const setState = (key, value) => state[key] = value
 const parse = input => input

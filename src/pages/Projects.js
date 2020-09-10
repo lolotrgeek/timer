@@ -4,7 +4,7 @@ import Running from '../components/Running'
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 
-const debug = true
+const debug = false
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()

@@ -6,7 +6,7 @@ import * as chain from './Chains'
 import * as store from './Store'
 
 
-let debug = true
+let debug = false
 
 let timers = []
 
@@ -77,7 +77,7 @@ export const generateTimer = (projects) => {
 export const generateProject = () => {
     const project = newProject(nameGen(), '#000')
     if (!project) return false
-    console.log('Generating Project', project)
+    debug && console.log('Generating Project', project)
     store.set(chain.projectHistory(project.id), project)
     store.put(chain.project(project.id), project)
 }

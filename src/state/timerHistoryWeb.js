@@ -4,7 +4,7 @@ import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 const { timerHistoryState } = require('node/state/timerHistoryState')
 
-let debug = true
+let debug = false
 let state = {
     edits: []
 }

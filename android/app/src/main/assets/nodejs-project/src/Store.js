@@ -4,7 +4,7 @@ const Gun = require('gun')
 const path = require('path')
 const messenger = require('./Messenger')
 
-const debug = true
+const debug = false
 const config = {
   port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
   host: 'localhost'
