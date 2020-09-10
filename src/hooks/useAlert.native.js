@@ -1,11 +1,5 @@
 import {Alert} from '../components/Alert.native'
-
-export function useAlert() {
-    /**
-     * 
-     * @param {*} message 
-     * @param {*} options 
-     */
-    const show = (message, options) => Alert(message)
+export function useAlert() { 
+    const show = () => {}
     return {show}
 }

@@ -23,6 +23,7 @@
     "moment": "^2.27.0",
     "react": "~16.9.0",
     "react-alert": "^7.0.2",
+    "react-alert-template-basic": "^1.0.0",
     "react-art": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-native": "~0.61.5",

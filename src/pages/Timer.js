@@ -1,4 +1,3 @@
-// display a list of daytimers: timeline (date/daytimers), project records (project/daytimers)
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
@@ -6,6 +5,7 @@ import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secon
 import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
+import {useAlert} from '../hooks/useAlert'
 
 const debug = false
 const test = false
@@ -16,8 +16,16 @@ export default function Timer({ useHistory, useParams }) {
     let { timerId, projectId } = useParams();
     const [refresh, setRefresh] = useState(false)
     const [timer, setTimer] = useState({});
-
+    const alert = useAlert()
+    
     useEffect(() => {
+        messenger.addListener('alert', msg => {
+            if (msg && msg.length > 0) {
+                alert.show(msg[1], {
+                  type: msg[0]
+                })
+              }
+        })
         // TODO: destroys edits on refresh, keep state through refresh
         messenger.addListener(`${timerId}`, event => { setTimer(event) })
         if (timerId) messenger.emit('getTimer', { timerId })
@@ -25,6 +33,7 @@ export default function Timer({ useHistory, useParams }) {
         return () => {
             messenger.removeAllListeners(`${timerId}`)
             messenger.removeAllListeners(`${timerId}/editComplete`)
+            messenger.removeAllListeners('alert')
         }
     }, [])
 
@@ -63,7 +72,7 @@ export default function Timer({ useHistory, useParams }) {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.list}>
-                <View style={{marginTop: 10, maxWidth: 400, }}>
+                <View style={{ marginTop: 10, maxWidth: 400, }}>
                     <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
                     <Text style={{ textAlign: 'center', fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text>
                 </View>
