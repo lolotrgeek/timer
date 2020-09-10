@@ -21,7 +21,7 @@ exports.projectState = p => {
     // LISTENERS
     p.messenger.on('getProjectPages', msg => {
         if (msg && msg.projectId) {
-            p.debug && console.log('getProjectPages received')
+            p.debug.listeners && console.log('getProjectPages received')
             setState('pagesize', msg.pagesize)
             // setCurrentProject(msg)
             getTimersInProject()
@@ -31,7 +31,7 @@ exports.projectState = p => {
 
     p.messenger.on('getProject', msg => {
         if (msg && msg.projectId) {
-            p.debug && console.log('getProject received')
+            p.debug.listeners && console.log('getProject received')
             setCurrentProject(msg.projectId)
         }
     })
@@ -51,10 +51,10 @@ exports.projectState = p => {
         setCurrent(projectId)
         getProject(p.current.project.id).then(foundproject => {
             p.current.project = foundproject
-            p.debug && console.log('Project: ', p.current.project)
+            p.debug.state && console.log('Project: ', p.current.project)
             p.messenger.emit(`${p.current.project.id}/project`, p.current.project)
         }).catch(err => {
-            p.debug && console.log(err)
+            p.debug.state && console.log(err)
         }) 
     }
 
@@ -68,7 +68,7 @@ exports.projectState = p => {
             let event = await getProjectTimers(p.current.project.id)
             let sorted = p.dayHeaders(event).sort((a, b) => new Date(b.title) - new Date(a.title))
             p.current.pages = sorted
-            p.debug && console.log('[Parsing] daytimers', sorted)
+            p.debug.parsing && console.log('[Parsing] daytimers', sorted)
             if (sorted && typeof sorted === 'object') {
                 // await addSection(sorted) // would have to find day first...
                 p.messenger.emit(`${p.current.project.id}/pages`, p.current.pages)

@@ -103,7 +103,7 @@ export default function Project({ useHistory, useParams }) {
     )
 
     return (
-        <SafeAreaView style={styles.container} onLayout={(layout => { console.log(layout) })}>
+        <SafeAreaView style={styles.container} >
             <Header />
             <SectionList
                 // TODO: simplify creating sticky header/footer with list

@@ -2,18 +2,6 @@
 
 exports.timelineState = p => {
     // LISTENERS
-    // p.messenger.on(p.chain.timerDates(), event => {
-    //     if (!event) return
-    //     let item = p.parse(event)
-    //     if (item && typeof item === 'object') {
-    //         let found = Object.keys(item)
-    //         p.days = found.sort((a, b) => new Date(b) - new Date(a))
-    //         p.debug && console.log('found dates: ', p.days)
-    //         // p.days.forEach(day => p.messenger.addListener(p.chain.timerDate(day), event => timersInDayHandler(event, { day })))
-    //     }
-    // })
-    // p.store.getAllOnce(p.chain.timerDates())
-
     p.messenger.on('App', async msg => {
         await listDays()
     })
@@ -30,9 +18,9 @@ exports.timelineState = p => {
     const listDays = () => getTimerDates().then(item => {
         if (item && typeof item === 'object') {
             let found = Object.keys(item)
-            p.debug && console.log('[Timeline] found dates: ', found)
+            p.debug.state && console.log('[Timeline] found dates: ', found)
             p.days = found.sort((a, b) => new Date(b) - new Date(a))
-            p.debug && console.log('[Timeline] sorted dates: ', p.days)
+            p.debug.state && console.log('[Timeline] sorted dates: ', p.days)
             // p.days.forEach(day => p.messenger.addListener(p.chain.timerDate(day), event => timersInDayHandler(event, { day })))
         }
     }).catch(err => {
@@ -203,7 +191,7 @@ exports.timelineState = p => {
             let result = {}
             p.store.chainer(p.chain.timerDates(), p.store.app).map().on((data, key) => {
                 if (!data) {
-                    p.debug && console.log('[Timeline GUN node] getTimerDates No Data Found',)
+                    p.debug.data && console.log('[Timeline GUN node] getTimerDates No Data Found',)
                 }
                 let foundData = p.trimSoul(data)
                 result[key] = foundData
