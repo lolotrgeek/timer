@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform } from 'react-native';
 import Running from '../components/Running'
 import messenger from '../constants/Messenger'
-import { projectlink, projectTrashlink } from '../routes'
+import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 
 const debug = true
 
@@ -35,8 +35,8 @@ export default function Projects({ useHistory, useParams }) {
                 </View>
                 <View style={{ width: '25%' }}>
                     <Button title='start' onPress={() => {
-                        // if (running && running.status === 'running') Data.finishTimer(running)
                         messenger.emit('start', { projectId: item.id })
+                        history.push('/')
                     }} />
                 </View>
             </View>
@@ -45,6 +45,7 @@ export default function Projects({ useHistory, useParams }) {
 
     const HeaderButtons = () => (
         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', maxWidth: 400,  }}>
+            <Button onPress={() => history.push(projectCreatelink())} title='Create Project' />
             <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
