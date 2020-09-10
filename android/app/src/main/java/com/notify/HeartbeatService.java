@@ -194,9 +194,11 @@ public class HeartbeatService extends NodeJS {
         if(msg.equals("ready-for-app-events")) {
             sendMessageToReact("App", msg);
         } else {
+            Throwable err;
             try {
                 JSONObject obj = msgParse(msg);
                 String event = eventParse(obj);
+                if (DEBUG_COUNT) Log.d(TAG, obj.getClass().getSimpleName() + obj.toString());
                 switch (event) {
                     case "notify":
                         try {
@@ -234,19 +236,20 @@ public class HeartbeatService extends NodeJS {
                         sendMessageToReact("count", SUBTITLE);
                         break;
                     case "alert":
-                        JSONObject alerted = heartbeatPayloadParse(obj);
-                        String alert = alerted.get("alert").toString();
-                        Intent alertIntent = new Intent(this, MainActivity.class);
-                        alertIntent.putExtra("ALERT", alert);
-                        String action = alertIntent.getStringExtra("ALERT");
-                        Toast.makeText(this,action,Toast.LENGTH_SHORT).show();
+                        JSONArray alerted = new JSONArray(obj.get("payload").toString());
+                        JSONArray alert = new JSONArray(alerted.get(0).toString());
+                        String message = alert.get(1).toString();
+                        if (DEBUG_COUNT) Log.d(TAG, message);
+                        Intent alertIntent = new Intent(this, HeartbeatActionReceiver.class);
+                        alertIntent.putExtra("ACTION", message);
+                        sendBroadcast(alertIntent);
                         break;
                     default:
                         routeMessage(event, obj);
                         break;
                 }
             } catch (Throwable t) {
-                Log.e(TAG, "Could not parse malformed JSON: \"" + msg + "\"");
+                Log.e(TAG, t.toString());
             }
         }
     }
