@@ -8,16 +8,12 @@ const debug = false
 const test = false
 
 export default function Running() {
-    const [online, setOnline] = useState(false)
     const [count, setCount] = useState(0)
     const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })
 
     useEffect(() => {
         messenger.addListener("count", event => {
             setCount(event)
-            if (!running || running.id === 'none') {
-                messenger.emit('getRunning')
-            }
         })
         messenger.addListener(chain.running(), event => {
             if (event && event.status === 'running') {

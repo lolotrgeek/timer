@@ -214,6 +214,7 @@ const runChain = (key, app) => {
  * @param {string} msg.key `key` or `key1/key2/...`
  * @param {*} msg.value any
  * @param {string} [channel] optional channel name, default name `done`
+ * @todo seems to crash the app when there is an err, my guess is that it emits a malformed msg over native bridge
  */
 const putAll = (key, value) => {
     const chain = chainer(key, app)
