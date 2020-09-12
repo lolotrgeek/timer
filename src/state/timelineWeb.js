@@ -1,8 +1,7 @@
 import * as store from '../data/Store'
 import messenger from '../constants/Messenger'
-
-const { parse, trimSoul } = require('../cjs/Functions')
-const chain = require('../cjs/Chains')
+import * as chain from '../data/Chains'
+import {parse, trimSoul} from '../constants/Functions'
 const { timelineState } = require('node/state/timelineState')
 
 let debug = {

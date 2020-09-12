@@ -9,6 +9,9 @@ const config = {
   port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
   host: 'localhost'
 };
+const port = '8765'
+const address = '10.0.2.2'
+const peers = [`http://${address}:${port}/gun`]
 
 config.server = require('http').createServer(Gun.serve(__dirname))
 // debug && console.log('GUN config ', config)
@@ -16,6 +19,7 @@ const gun = new Gun({
   // Defaults
   web: config.server.listen(config.port, config.host),
   file: path.join(__dirname, 'radata'),
+  peers: peers
 
 })
 debug && console.log('Relay peer started on port ' + config.port + ' with /gun')

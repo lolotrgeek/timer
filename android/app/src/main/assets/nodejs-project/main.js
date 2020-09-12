@@ -1,6 +1,5 @@
-
-require('./timer')
 require('./src/Tests')
+require('./state/runningNode')
 require('./state/timelineNode')
 require('./state/projectCreateNode')
 require('./state/projectHistoryNode')

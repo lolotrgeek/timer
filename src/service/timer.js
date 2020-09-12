@@ -12,18 +12,6 @@ const debug = false
 let running = {}
 let runningproject = {}
 
-const stopRunning = async () => {
-    try {
-        stopCounter()
-        debug && console.log('[STOP] ', running, runningproject)
-        await finishRunning(running, runningproject)
-        messenger.emit('stopped')
-    } catch (error) {
-        debug && console.log('[Timer node] : Stop failed ' + error)
-    }
-
-}
-
 const parseRunning = async (data) => {
     if (data.status === 'running' && data.id) {
         running = data
@@ -34,6 +22,7 @@ const parseRunning = async (data) => {
                 debug && console.log('[START] running found, setting count, ', count)
                 setCount(count)
                 runCounter()
+                messenger.emit('notify', { title: runningproject.name, id: running.project, subtitle: count, state: "start" })
             }
             // TODO: handle if a project gets deleted offline/remotely -> stop and store it?
         } catch (error) {
@@ -45,46 +34,21 @@ const parseRunning = async (data) => {
         debug && console.log('[STOP] running cleared')
         running = data
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
     }
     else if (data.status === 'done' && data.id === running.id) {
         debug && console.log('[STOP] running stopped')
         running = data
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
     }
     else {
-        debug && console.log('[STOP] running timer')
+        debug && console.log('[STOP] no running timer')
         running = {}
         stopCounter()
+        messenger.emit('notify', { state: "stop" })
     }
 }
-
-
-// Native Command Handlers
-messenger.on('stop', async msg => {
-    debug && console.log('[React node] incoming Stop: ' + typeof msg, msg)
-    try {
-        await stopRunning()
-    } catch (error) {
-        debug && console.log('[Timer node] : Stop failed ' + error)
-    }
-})
-
-messenger.on('start', async msg => {
-    debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
-    try {
-        if (running && running.status === 'running') await stopRunning()
-        if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
-            if (runningproject && runningproject.id && runningproject.type === 'project') {
-                await createRunning(runningproject)
-            }
-        } else {
-            runningproject = await getProject(msg.projectId)
-            await createRunning(runningproject)
-        }
-    } catch (error) {
-        debug && console.log('[Timer node] : Start failed ', error)
-    }
-})
 
 
 // DATA
@@ -209,6 +173,48 @@ const getRunning = () => new Promise((resolve, reject) => {
         }
     })
 
+})
+
+const stopRunning = async () => {
+    try {
+        stopCounter()
+        debug && console.log('[STOP] ', running, runningproject)
+        await finishRunning(running, runningproject)
+    } catch (error) {
+        debug && console.log('[Timer node] : Stop failed ' + error)
+    }
+
+}
+
+/**
+ * Local Stop Listener
+ */
+messenger.on('stop', async msg => {
+    debug && console.log('[React node] incoming Stop: ' + typeof msg, msg)
+    try {
+        await stopRunning()
+    } catch (error) {
+        debug && console.log('[Timer node] : Stop failed ' + error)
+    }
+})
+/**
+ * Local Start Listener
+ */
+messenger.on('start', async msg => {
+    debug && console.log('[React node] incoming Start: ' + typeof msg, msg)
+    try {
+        if (running && running.status === 'running') await stopRunning()
+        if (!msg || typeof msg !== 'object' || !msg.projectId || msg.projectId === 'none') {
+            if (runningproject && runningproject.id && runningproject.type === 'project') {
+                await createRunning(runningproject)
+            }
+        } else {
+            runningproject = await getProject(msg.projectId)
+            await createRunning(runningproject)
+        }
+    } catch (error) {
+        debug && console.log('[Timer node] : Start failed ', error)
+    }
 })
 
 /**

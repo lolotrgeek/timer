@@ -16,11 +16,6 @@ export default function Timeline({ useHistory }) {
     let history = useHistory()
     const [refresh, setRefresh] = useState(false)
 
-    useEffect(() => {
-        messenger.emit('getRunning')
-        return () => { }
-    }, [])
-
     const Header = () => (
         <View style={styles.header}>
             <Text style={{ fontSize: 30 }}>Timeline</Text>

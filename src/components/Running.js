@@ -19,12 +19,16 @@ export default function Running() {
             if (event && event.status === 'running') {
                 setRunning(event)
             } else {
-                setRunning(null)
+                setRunning({id:'none'})
             }
         }) // this hooks to chained store emission that fires when changes to `running` are stored...
+
+        if(!running || running.id === 'none') messenger.emit('getRunning')
+
         return () => {
             messenger.removeAllListeners(chain.running())
             messenger.removeAllListeners("count")
+            messenger.removeAllListeners("notify")
         }
     }, [])
 
