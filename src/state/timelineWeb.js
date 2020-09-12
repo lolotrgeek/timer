@@ -23,4 +23,3 @@ let
     pagelocation = { x: 0, y: 0 }
 ;
 timelineState({ messenger, parse, trimSoul, store, chain, debug, all, pages, pagesize, days, currentday, page, currentPage, pagelocation })
-

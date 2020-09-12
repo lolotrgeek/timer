@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
-import { isToday, secondsToString, sayDay } from '../constants/Functions'
+import { isToday, secondsToString, sayDay, dateSimple } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 // import Running from '../components/Running'
 import { projectlink } from '../routes'
@@ -9,6 +9,20 @@ const debug = false
 const test = false
 const loadAll = false
 const pagesize = 4
+var executed = false;
+
+/**
+ * get Running once on first load
+ */
+var getRunning = (function () {
+    return function () {
+        if (!executed) {
+            executed = true;
+            console.log('get Running')
+            messenger.emit('getRunning')
+        }
+    };
+})();
 
 export default function TimelineList({ useHistory }) {
     let history = useHistory()
@@ -19,6 +33,21 @@ export default function TimelineList({ useHistory }) {
     const [count, setCount] = useState(0)
     const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })
     const timelineList = useRef()
+
+    const endReached = () => {
+        if (pages.length > 0) {
+            debug && console.log('[get Page] End Reached')
+            debug && console.log(pages, typeof pages, Array.isArray(pages))
+            messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
+            getRunning()
+        }
+    }
+    const onRefresh = () => {
+        debug && console.log('[get Page] Refreshing')
+        setRefresh(true)
+        setPages([])
+        setHidden('')
+    }
 
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
@@ -40,25 +69,35 @@ export default function TimelineList({ useHistory }) {
         messenger.addListener("count", event => {
             setCount(event)
         })
+
+        /**
+         * Listens for running events
+         */
         messenger.addListener('running', event => {
             if (event && event.status === 'running') {
+                setHidden(event.project)
                 setRunning(event)
-                setPages([])
+                // messenger.emit('getPage', { currentday:0, refresh: true, pagesize: pagesize })
+            } if (event.status === 'done') {
                 setHidden('')
-                setRefresh(false)
-                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-            } else {
-                setRunning({ id: 'none' })
                 setPages([])
-                setHidden(event.id)
-                setRefresh(false)
-                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+                setRunning({ id: 'none' })
+                // remove today's section from UI state
+                // request state recalculate today's section
             }
-        }) // this hooks to chained store emission that fires when changes to `running` are stored...
+        })
 
-        if (!running || running.id === 'none') messenger.emit('getRunning')
-        if (pages.length === 0) messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+        /**
+         * listens for page number of last page
+         */
+        messenger.addListener('lastpage', msg => {
 
+        })
+
+        /**
+         * BROKEN
+         * listens for page location to re-located on navigation
+         */
         messenger.addListener("timelinelocation", event => {
             debug && console.log('location', event)
             setLocation({ x: event.x, y: event.y, animated: false })
@@ -68,15 +107,17 @@ export default function TimelineList({ useHistory }) {
                 timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
+
         return () => {
             messenger.removeAllListeners("App")
             messenger.removeAllListeners("page")
             messenger.removeAllListeners("pages")
             messenger.removeAllListeners("timelinelocation")
-            messenger.removeAllListeners('notify')
             messenger.removeAllListeners('running')
             messenger.removeAllListeners("count")
-            messenger.removeAllListeners("notify")
+            messenger.removeAllListeners("lastpage")
+            executed = false
+            setPages([])
         }
     }, [])
 
@@ -120,6 +161,7 @@ export default function TimelineList({ useHistory }) {
                             <Text>No Running Timer</Text> : running.status === 'done' ?
                                 //TODO: assuming that project exists on start... needs validation
                                 <Button title='start' onPress={() => {
+
                                     messenger.emit('start', { projectId: running.project })
                                 }} /> :
                                 <Button title='stop' onPress={() => {
@@ -139,17 +181,6 @@ export default function TimelineList({ useHistory }) {
             </View>
         )
     }
-    const endReached = () => {
-        debug && console.log('End Reached')
-        debug && console.log(pages, typeof pages, Array.isArray(pages))
-        messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
-    }
-    const onRefresh = () => {
-        setRefresh(true)
-        setPages([])
-        setHidden('')
-        messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-    }
 
     if (pages.length === 0) return (
         <SectionList
@@ -160,7 +191,14 @@ export default function TimelineList({ useHistory }) {
             renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>}
             renderItem={RenderProjectTimer}
             keyExtractor={(item, index) => item.id + index}
-            onRefresh={onRefresh}
+            onEndReached={() => {
+                setRefresh(true)
+                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+            }}
+            onRefresh={() => {
+                setRefresh(true)
+                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+            }}
             refreshing={refresh}
         />
     )
@@ -169,16 +207,16 @@ export default function TimelineList({ useHistory }) {
             ListHeaderComponent={<TimelineHeader />}
             style={styles.list}
             ref={timelineList}
-            onLayout={layout => {debug && console.log(timelineList.current)}}
-            sections={pages.flat(1)}
+            onLayout={layout => { debug && console.log(timelineList.current) }}
+            sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
             renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{sayDay(title)}</Text></View>}
             renderItem={RenderProjectTimer}
-            onEndReached={endReached}
+            onRefresh={() => onRefresh()}
+            refreshing={refresh}
+            onEndReached={() => endReached()}
             onEndReachedThreshold={1}
             keyExtractor={(item, index) => item.id + index}
-            onScroll={scroll => {messenger.emit('pagelocation', scroll.nativeEvent.contentOffset)}}
-            onRefresh={onRefresh}
-            refreshing={refresh}
+            onScroll={scroll => { messenger.emit('pagelocation', scroll.nativeEvent.contentOffset) }}
         />
 
     )

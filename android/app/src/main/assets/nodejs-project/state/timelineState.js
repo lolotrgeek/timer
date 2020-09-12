@@ -42,18 +42,25 @@ exports.timelineState = p => {
             p.pagesize = msg.pagesize
             p.debug.listeners && console.log('[Timeline Listener] getPage received', msg)
             if (msg.currentday === 0) {
-                if (msg.all) {
-                    p.all = msg.all
-                }
                 if (msg.refresh) {
                     p.debug.listeners && console.log('[Timeline Listener] refreshing pages.')
                     await listDays()
+                    p.pages = []
                     p.currentday = 0
                     createPage()
                 }
+                else if(msg.day && msg.id) {
+                    p.debug.listeners && console.log('[Timeline Listener] updating day page.')
+                    await listDays()
+                    if(p.days[0] === msg.day) {
+                        let update = await getProjectDate(msg.day, msg.id)
+                        getTimersInDay(msg.day)
+                    }
+
+                }
                 else if (p.pages && p.pages.length === 0) {
-                    p.currentday = 0
                     p.debug.listeners && console.log('[Timeline Listener] getting pages.')
+                    p.currentday = 0
                     createPage()
                 } else {
                     p.debug.listeners && console.log('[Timeline Listener] updating pages.')
@@ -71,24 +78,24 @@ exports.timelineState = p => {
                 p.debug.listeners && console.log('[Timeline Listener] adding pages.')
                 createPage()
             }
+            else {
+                p.debug.listeners && console.log('[Timeline Listener] getting all pages.')
+                createPages()
+            }
         }
     }
 
     // STATE
 
     /**
-     * populate an array of sections
-     *  
-     * page
-     * `[{title: 'dd-mm-yyyy', data: [{timer}, {timer}, ...]}, ...]`
-     * 
+     * Creates all pages, then emits all on completion
      */
-    const createPage = () => {
-        let day = p.days[p.currentday]
+    const createPages = () => {
+        p.pages = []
+        let day = p.days[0]
         p.debug.state && console.log(`[State] day: ${p.currentday}/${p.days.length} [${day}], timer: ${p.page.length}/${p.pagesize} `)
-
         if (p.currentday >= p.days.length) {
-            p.debug.state && console.log('[Timeline State] No more p.days with full pages.')
+            p.debug.state && console.log('[Timeline State] No more days with full pages.')
             if (p.page.length > 0) {
                 p.debug.state && console.log('[Timeline State] Last Page ' + p.currentPage + ' Complete.')
                 setPage()
@@ -98,6 +105,7 @@ exports.timelineState = p => {
         else if (day && p.page.length >= p.pagesize) {
             p.debug.state && console.log('[Timeline State] Page ' + p.currentPage + ' Complete.')
             setPage()
+            p.messenger.emit('pages', p.pages)
         }
         else if (day) {
             p.debug.state && console.log('[Timeline State] Create Page.')
@@ -106,17 +114,49 @@ exports.timelineState = p => {
         } else {
             return
         }
+    }
+    /**
+     * populate an array of sections
+     *  
+     * page
+     * `[{title: 'dd-mm-yyyy', data: [{timer}, {timer}, ...]}, ...]`
+     * 
+     */
+    const createPage = (oneday) => {
+        let day = oneday ? oneday : p.days[p.currentday]
+        p.debug.state && console.log(`[State] day: ${p.currentday}/${p.days.length} [${day}], timer: ${p.page.length}/${p.pagesize} `)
 
+        if (p.currentday >= p.days.length) {
+            p.debug.state && console.log('[Timeline State] No more days with full pages.')
+            if (p.page.length > 0) {
+                p.debug.state && console.log('[Timeline State] Last Page ' + p.currentPage + ' Complete.')
+                p.messenger.emit('page', p.page)
+                setPage()
+                p.messenger.emit('lastpage', p.pages.length)
+            }
+            return
+        }
+        else if (day && p.page.length >= p.pagesize) {
+            p.debug.state && console.log('[Timeline State] Page ' + p.currentPage + ' Complete.')
+            p.messenger.emit('page', p.page)
+            setPage()
+        }
+        else if (day) {
+            p.debug.state && console.log('[Timeline State] Create Page.')
+            getTimersInDay(day)
+
+        } else {
+            return
+        }
     }
 
     /**
      * add page to pages
      */
     const setPage = () => {
-        p.messenger.emit('page', p.page)
         p.pages.push(p.page)
         p.page = []
-        p.currentPage++
+        p.currentPage++ // NOTE: may spawn undefined at end of pages...
     }
 
     /**
@@ -186,6 +226,23 @@ exports.timelineState = p => {
 
     })
 
+    const getProjectDate = (day, projectId) => new Promise((resolve, reject) => {
+        try {
+            p.store.chainer(p.chain.projectDate(day, projectId), p.store.app).map().on((data, key) => {
+                if (!data) {
+                    p.debug.data && console.log('[Timeline GUN node] getTimerDate No Data Found',)
+                }
+                let foundData = p.trimSoul(data)
+                resolve(foundData)
+                p.debug.data && console.log('[Timeline GUN node] getTimerDates Data Found: ', typeof foundData, key, foundData)
+            })
+
+        } catch (err) {
+            reject(err)
+
+        }
+    })
+
     const getTimerDates = () => new Promise((resolve, reject) => {
         try {
             let result = {}
@@ -202,6 +259,6 @@ exports.timelineState = p => {
             reject(err)
 
         }
-
     })
+
 }
