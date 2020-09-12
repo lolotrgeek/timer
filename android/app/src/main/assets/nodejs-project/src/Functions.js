@@ -32,6 +32,12 @@ function addHours(date, number) {
     return moment(date).add(number, 'hours')
 }
 
+const secondsToString = seconds => {
+    let day = moment("2015-01-01")
+    let start = day.startOf('day')
+    let second = start.seconds(seconds)
+    return moment.isMoment(second) ? second.format('H:mm:ss') : null
+};
 
 const isValid = date => Object.prototype.toString.call(date) === "[object Date]"
 const addMinutes = (date, number) => moment(date).add(number, 'minutes').toDate()
@@ -303,4 +309,5 @@ module.exports = {
     getMinutes,
     getSeconds,
     getDate,
+    secondsToString
 }

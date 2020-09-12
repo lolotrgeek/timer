@@ -1,4 +1,5 @@
-const messenger = require( './src/Messenger')
+const messenger = require('./src/Messenger')
+const { secondsToString } = require('./src/Functions')
 
 let debug = false
 let count = 0
@@ -9,18 +10,18 @@ exports.runCounter = () => {
     clearInterval(counter)
     counter = setInterval(() => {
         debug && console.log(`running counter: ${count}`)
-        messenger.emit('count', count.toString())
+        messenger.emit('count', secondsToString(count))
         count++
     }, 1000)
 }
 exports.stopCounter = () => {
     debug && console.log('[Timer node] Stop Counter')
     clearInterval(counter)
-    messenger.emit('count', count.toString())
+    messenger.emit('count', secondsToString(count))
 }
 
 exports.setCount = amount => {
-    if(Number.isInteger(amount)) {
+    if (Number.isInteger(amount)) {
         debug && console.log('setting count amount: ', amount)
         count = amount
     }
