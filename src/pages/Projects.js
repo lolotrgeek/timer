@@ -5,27 +5,49 @@ import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 
 const debug = false
+const attempts = 3
+
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()
     const [refresh, setRefresh] = useState(false)
     const [projects, setProjects] = useState([])
+    const refreshTimeout = useRef()
+    const refreshAttempts = useRef()
 
     useEffect(() => {
         messenger.addListener('projects', event => {
             debug && console.log(typeof event, event)
+            clearInterval(refreshTimeout.current)
             if (event && typeof event === 'object' && event.length > 0) {
                 setProjects(event)
                 setRefresh(false)
             }
         })
-        messenger.emit('getProjects', { all: true, refresh: true })
+        // messenger.emit('getProjects', { all: true, refresh: true })
+        refreshAttempts.current = 0
+        function getPages() {
+            const interval = refreshTimeout.current = setInterval(() => {
+                if (refreshAttempts >= attempts || projects.length > 0) {
+                    debug && console.log('Clearing refresh timeout')
+                    setRefresh(false)
+
+                    clearInterval(refreshTimeout.current)
+                } else {
+                    debug && console.log('Attempting to get Pages')
+                    messenger.emit('getProjects', { all: true, refresh: true })
+                    refreshAttempts.current++
+                }
+            }, 1000)
+            refreshTimeout.current = interval
+        }
+        getPages()
 
         return () => {
             messenger.removeAllListeners('projects')
+            clearInterval(refreshTimeout.current)
         }
     }, [])
-
 
     const renderRow = ({ item }) => {
         return (
@@ -44,7 +66,7 @@ export default function Projects({ useHistory, useParams }) {
     };
 
     const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', maxWidth: 400,  }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', maxWidth: 400, }}>
             <Button onPress={() => history.push(projectCreatelink())} title='Create Project' />
             <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
@@ -52,7 +74,7 @@ export default function Projects({ useHistory, useParams }) {
     )
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{fontSize: 30}}>Projects</Text>
+            <Text style={{ fontSize: 30 }}>Projects</Text>
         </View>
     )
     const Footer = () => (
@@ -65,6 +87,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
+                    ListHeaderComponent={projects.length === 0 ? <Text>Waiting on Projects... {refreshAttempts.current} </Text> : <Text></Text>}
                     style={{ width: '100%', marginTop: 30, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
@@ -76,6 +99,7 @@ export default function Projects({ useHistory, useParams }) {
                     }}
                     refreshing={refresh}
                 />
+
             </View>
             <Footer />
         </SafeAreaView>

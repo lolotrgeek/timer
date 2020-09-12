@@ -5,7 +5,7 @@ import messenger from '../constants/Messenger'
 // import Running from '../components/Running'
 import { projectlink } from '../routes'
 
-const debug = false
+const debug = true
 const test = false
 const loadAll = false
 const pagesize = 4
@@ -36,15 +36,15 @@ export default function TimelineList({ useHistory }) {
     const timelineList = useRef()
     const refreshTimeout = useRef()
     const refreshAttempts = useRef()
-    refreshAttempts.current = 0
 
     const endReached = () => {
+        // getRunning()
         clearInterval(refreshTimeout.current)
+        setRefresh(false)
         if (pages.length > 0) {
             debug && console.log('[get Page] End Reached')
             debug && console.log(pages, typeof pages, Array.isArray(pages))
             messenger.emit('getPage', { currentday: pages.length, pagesize: pagesize })
-            getRunning()
         }
     }
     const onRefresh = () => {
@@ -113,6 +113,22 @@ export default function TimelineList({ useHistory }) {
                 timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: event.x, y: event.y, animated: false })
             }
         })
+        refreshAttempts.current = 0
+
+        function getPages() {
+            const interval = setInterval(() => {
+                if (refreshAttempts >= attempts || pages.length > 0) {
+                    debug && console.log('Clearing refresh timeout')
+                    clearInterval(refreshTimeout.current)
+                } else {
+                    debug && console.log('Attempting to get Pages')
+                    messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+                    refreshAttempts.current++
+                }
+            }, 1000)
+            refreshTimeout.current = interval
+        }
+        getPages()
 
         return () => {
             messenger.removeAllListeners("App")
@@ -124,6 +140,7 @@ export default function TimelineList({ useHistory }) {
             messenger.removeAllListeners("lastpage")
             executed = false
             setPages([])
+            clearInterval(refreshTimeout.current)
         }
     }, [])
 
@@ -160,7 +177,7 @@ export default function TimelineList({ useHistory }) {
                         <Text style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
-                        <Text>{secondsToString(count)}</Text>
+                        <Text>{count}</Text>
                     </View>
                     <View style={{ width: '20%' }}>
                         {!running || !running.id ?
@@ -199,16 +216,7 @@ export default function TimelineList({ useHistory }) {
             keyExtractor={(item, index) => item.id + index}
             onEndReached={() => {
                 setRefresh(true)
-                refreshTimeout.current = setInterval(() => {
-                    if(refreshAttempts >= attempts || pages.length > 0) {
-                        console.log('Clearing refresh timeout')
-                        clearInterval(refreshTimeout.current)
-                    } else {
-                        console.log('Attempting to get Pages')
-                        messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
-                        refreshAttempts.current++
-                    }
-                },1000)
+                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
             }}
             onRefresh={() => {
                 setRefresh(true)

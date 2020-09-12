@@ -1,4 +1,5 @@
 import messenger from '../constants/Messenger'
+import {secondsToString} from '../constants/Functions'
 
 let debug = false
 let count = 0
@@ -9,14 +10,14 @@ export const runCounter = () => {
     clearInterval(counter)
     counter = setInterval(() => {
         debug && console.log(`running counter: ${count}`)
-        messenger.emit('count', count.toString())
+        messenger.emit('count', secondsToString(count))
         count++
     }, 1000)
 }
 export const stopCounter = () => {
     debug && console.log('[Timer node] Stop Counter')
     clearInterval(counter)
-    messenger.emit('count', count.toString())
+    messenger.emit('count', secondsToString(count))
 }
 
 export const setCount = amount => {
