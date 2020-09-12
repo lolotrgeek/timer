@@ -10,6 +10,7 @@ const test = false
 const loadAll = false
 const pagesize = 4
 var executed = false;
+const attempts = 3
 
 /**
  * get Running once on first load
@@ -18,7 +19,7 @@ var getRunning = (function () {
     return function () {
         if (!executed) {
             executed = true;
-            console.log('get Running')
+            debug && console.log('get Running')
             messenger.emit('getRunning')
         }
     };
@@ -33,8 +34,12 @@ export default function TimelineList({ useHistory }) {
     const [count, setCount] = useState(0)
     const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })
     const timelineList = useRef()
+    const refreshTimeout = useRef()
+    const refreshAttempts = useRef()
+    refreshAttempts.current = 0
 
     const endReached = () => {
+        clearInterval(refreshTimeout.current)
         if (pages.length > 0) {
             debug && console.log('[get Page] End Reached')
             debug && console.log(pages, typeof pages, Array.isArray(pages))
@@ -55,6 +60,7 @@ export default function TimelineList({ useHistory }) {
             debug && console.log('App', event)
         })
         messenger.addListener("page", event => {
+            clearInterval(refreshTimeout.current)
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
             setRefresh(false)
@@ -193,7 +199,16 @@ export default function TimelineList({ useHistory }) {
             keyExtractor={(item, index) => item.id + index}
             onEndReached={() => {
                 setRefresh(true)
-                messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+                refreshTimeout.current = setInterval(() => {
+                    if(refreshAttempts >= attempts || pages.length > 0) {
+                        console.log('Clearing refresh timeout')
+                        clearInterval(refreshTimeout.current)
+                    } else {
+                        console.log('Attempting to get Pages')
+                        messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
+                        refreshAttempts.current++
+                    }
+                },1000)
             }}
             onRefresh={() => {
                 setRefresh(true)
