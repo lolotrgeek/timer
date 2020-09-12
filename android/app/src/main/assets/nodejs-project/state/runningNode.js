@@ -14,4 +14,4 @@ const debug = false
 let running = {}
 let runningproject = {}
 
-runningState({store, messenger, chain, cloneTimer, doneTimer, newTimer, getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul, runCounter, stopCounter, setCount})
+runningState({store, messenger, chain, cloneTimer, doneTimer, newTimer, getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul, runCounter, stopCounter, setCount, running, runningproject})
