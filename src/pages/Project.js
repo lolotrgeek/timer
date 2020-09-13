@@ -28,8 +28,6 @@ export default function Project({ useHistory, useParams }) {
     useEffect(() => {
         messenger.addListener(`${projectId}/project`, event => {
             if (event) setProject(event)
-            setRefresh(false)
-
         })
         messenger.addListener(`${projectId}/pages`, event => {
             if (event && Array.isArray(event)) {
@@ -48,9 +46,9 @@ export default function Project({ useHistory, useParams }) {
             }
         })
         messenger.emit("getProject", { projectId })
-        if (pages.length === 0) 
+        if (pages.length === 0)
 
-        refreshAttempts.current = 0
+            refreshAttempts.current = 0
         function getPages() {
             setRefresh(true)
             const interval = refreshTimeout.current = setInterval(() => {
@@ -122,7 +120,7 @@ export default function Project({ useHistory, useParams }) {
         </View>
     )
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent:'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
+        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
             <HeaderButtons />
         </View>
     )
@@ -131,15 +129,15 @@ export default function Project({ useHistory, useParams }) {
         <SafeAreaView style={styles.container} >
             <Header />
             <SectionList
-                // TODO: simplify creating sticky header/footer with list
-                //app routes: 20 padding + 50 height
-                // header: 20 padding + 100 height
-                // 20 + 20 + 50 + 100 = 190
                 style={styles.list}
                 ref={timerList}
-                sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
+                sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Waiting on Timers...', data: '' }]}
                 renderSectionHeader={({ section: { title } }) => {
-                    return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{fullDay(title)}</Text></View>)
+                    return (
+                        <View style={{ marginTop: 10 }}>
+                            <Text style={{ fontSize: 20 }}>{refresh ? title : fullDay(title)}</Text>
+                        </View>
+                    )
                 }}
                 renderItem={RenderTimer}
                 onEndReached={() => {
@@ -170,7 +168,7 @@ const styles = StyleSheet.create({
     },
     list: {
         height: Dimensions.get('window').height - 170,
-        width:'100%',
+        width: '100%',
         backgroundColor: '#ccc',
         marginBottom: 50,
         padding: 10

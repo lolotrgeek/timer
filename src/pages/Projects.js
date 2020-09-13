@@ -5,8 +5,7 @@ import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 
 const debug = false
-const attempts = 3
-
+const attempts = 10
 
 export default function Projects({ useHistory, useParams }) {
     let history = useHistory()
@@ -87,7 +86,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
-                    ListHeaderComponent={projects.length === 0 ? <Text>Waiting on Projects...</Text> : <Text></Text>}
+                    ListHeaderComponent={refresh ? <Text>Waiting on Projects...</Text> : <Text></Text>}
                     style={{ width: '100%', marginTop: 30, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}
