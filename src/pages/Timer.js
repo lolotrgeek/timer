@@ -7,7 +7,7 @@ import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
 import {useAlert} from '../hooks/useAlert'
 
-const debug = false
+const debug = true
 const test = false
 const loadAll = false
 

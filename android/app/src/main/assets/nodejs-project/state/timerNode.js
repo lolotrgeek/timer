@@ -8,7 +8,7 @@ const store = require('../src/Store')
 const { timerState } = require('./timerState')
 const { newEntry } = require('../src/Models')
 
-let debug = false
+let debug = true
 // STATE
 let state = {}
 let previous = {}

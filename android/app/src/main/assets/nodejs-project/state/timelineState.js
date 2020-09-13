@@ -214,7 +214,8 @@ exports.timelineState = p => {
                     p.debug.data && console.log('[Timeline GUN node] getProjectDates No Data Found',)
                 }
                 let foundData = p.trimSoul(data)
-                if (foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active' && foundData.lastcount > 0) {
+                if (foundData.type === 'project' && foundData.status === 'active' && foundData.lastcount > 0) {
+                    // NOTE: lastrun does not reflect past runs, it reflects the last CURRENT run
                     result.push(foundData)
                 }
                 p.debug.data && console.log('[Timeline GUN node] getProjectDates Data Found: ', day, key, foundData)
@@ -252,7 +253,7 @@ exports.timelineState = p => {
                 }
                 let foundData = p.trimSoul(data)
                 result[key] = foundData
-                p.debug.data && console.log('[Timeline GUN node] getTimerDates Data Found: ', typeof foundData, foundData)
+                p.debug.data && console.log('[Timeline GUN node] getTimerDates Data Found: ', typeof foundData, key, foundData)
             })
             resolve(result)
         } catch (err) {
