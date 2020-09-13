@@ -10,7 +10,7 @@ const test = false
 const loadAll = false
 const pagesize = 4
 var executed = false;
-const attempts = 3
+const attempts = 10
 
 /**
  * get Running once on first load
@@ -212,7 +212,7 @@ export default function TimelineList({ useHistory }) {
             ListHeaderComponent={<TimelineHeader />}
             style={styles.list}
             ref={timelineList}
-            sections={[{ title: 'Waiting for Timers...', data: '' }]}
+            sections={[{ title: refreshAttempts.current === attempts ? 'Start a new Timer' : 'Waiting for Timers...', data: '' }]}
             renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>}
             renderItem={RenderProjectTimer}
             keyExtractor={(item, index) => item.id + index}

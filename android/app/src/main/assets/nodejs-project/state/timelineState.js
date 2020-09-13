@@ -214,7 +214,7 @@ exports.timelineState = p => {
                     p.debug.data && console.log('[Timeline GUN node] getProjectDates No Data Found',)
                 }
                 let foundData = p.trimSoul(data)
-                if (foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active') {
+                if (foundData.type === 'project' && foundData.lastrun === day && foundData.status === 'active' && foundData.lastcount > 0) {
                     result.push(foundData)
                 }
                 p.debug.data && console.log('[Timeline GUN node] getProjectDates Data Found: ', day, key, foundData)
