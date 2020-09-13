@@ -10,6 +10,8 @@ import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timer
 const debug = false
 const test = false
 const loadAll = false
+const pagesize = 4
+const attempts = 3
 
 
 export default function Project({ useHistory, useParams }) {
@@ -20,6 +22,8 @@ export default function Project({ useHistory, useParams }) {
     const [pages, setPages] = useState([])
     const [location, setLocation] = useState({ x: 0, y: 0, animated: false })
     const timerList = useRef()
+    const refreshTimeout = useRef()
+    const refreshAttempts = useRef()
 
     useEffect(() => {
         messenger.addListener(`${projectId}/project`, event => {
@@ -44,11 +48,32 @@ export default function Project({ useHistory, useParams }) {
             }
         })
         messenger.emit("getProject", { projectId })
-        if (pages.length === 0) messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
+        if (pages.length === 0) 
+
+        refreshAttempts.current = 0
+        function getPages() {
+            setRefresh(true)
+            const interval = refreshTimeout.current = setInterval(() => {
+                if (refreshAttempts.current >= attempts || pages.length > 0) {
+                    debug && console.log('Clearing refresh Project timeout')
+                    setRefresh(false)
+                    clearInterval(refreshTimeout.current)
+                } else {
+                    debug && console.log('Attempting to get Project Pages ' + refreshAttempts.current)
+                    messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: pagesize })
+                    refreshAttempts.current++
+                }
+            }, 1000)
+            refreshTimeout.current = interval
+        }
+        getPages()
+
+
         return () => {
             messenger.removeAllListeners(`${projectId}/project`)
             messenger.removeAllListeners(`${projectId}/pages`)
             messenger.removeAllListeners(`${projectId}/pagelocation`)
+            clearInterval(refreshTimeout.current)
         }
     }, [])
 
@@ -127,7 +152,7 @@ export default function Project({ useHistory, useParams }) {
                 onRefresh={() => {
                     setRefresh(true)
                     setPages([])
-                    messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: 4 })
+                    messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: pagesize })
                 }}
                 refreshing={refresh}
             />
