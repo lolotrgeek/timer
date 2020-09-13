@@ -4,7 +4,7 @@ import Running from '../components/Running'
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 
-const debug = false
+const debug = true
 const attempts = 3
 
 
@@ -18,23 +18,23 @@ export default function Projects({ useHistory, useParams }) {
     useEffect(() => {
         messenger.addListener('projects', event => {
             debug && console.log(typeof event, event)
-            clearInterval(refreshTimeout.current)
             if (event && typeof event === 'object' && event.length > 0) {
+                clearInterval(refreshTimeout.current)
                 setProjects(event)
                 setRefresh(false)
             }
         })
-        // messenger.emit('getProjects', { all: true, refresh: true })
+
         refreshAttempts.current = 0
         function getPages() {
+            setRefresh(true)
             const interval = refreshTimeout.current = setInterval(() => {
-                if (refreshAttempts >= attempts || projects.length > 0) {
-                    debug && console.log('Clearing refresh timeout')
+                if (refreshAttempts.current >= attempts || projects.length > 0) {
+                    debug && console.log('Clearing refresh Project timeout')
                     setRefresh(false)
-
                     clearInterval(refreshTimeout.current)
                 } else {
-                    debug && console.log('Attempting to get Pages')
+                    debug && console.log('Attempting to get Project Pages ' + refreshAttempts.current)
                     messenger.emit('getProjects', { all: true, refresh: true })
                     refreshAttempts.current++
                 }
@@ -87,7 +87,7 @@ export default function Projects({ useHistory, useParams }) {
             <Header />
             <View style={styles.list}>
                 <FlatList
-                    ListHeaderComponent={projects.length === 0 ? <Text>Waiting on Projects... {refreshAttempts.current} </Text> : <Text></Text>}
+                    ListHeaderComponent={projects.length === 0 ? <Text>Waiting on Projects...</Text> : <Text></Text>}
                     style={{ width: '100%', marginTop: 30, height: Dimensions.get('window').height - 170 }}
                     data={projects}
                     renderItem={renderRow}

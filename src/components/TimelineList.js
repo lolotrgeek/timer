@@ -56,6 +56,7 @@ export default function TimelineList({ useHistory }) {
 
     //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
+        getRunning()
         messenger.addListener('App', event => {
             debug && console.log('App', event)
         })
@@ -117,11 +118,12 @@ export default function TimelineList({ useHistory }) {
 
         function getPages() {
             const interval = setInterval(() => {
-                if (refreshAttempts >= attempts || pages.length > 0) {
-                    debug && console.log('Clearing refresh timeout')
+                if (refreshAttempts.current >= attempts || pages.length > 0) {
+                    debug && console.log('Clearing refresh Timeline timeout')
                     clearInterval(refreshTimeout.current)
+                    setRefresh(false)
                 } else {
-                    debug && console.log('Attempting to get Pages')
+                    debug && console.log('Attempting to get Timeline Pages ' + refreshAttempts.current)
                     messenger.emit('getPage', { currentday: 0, refresh: true, pagesize: pagesize })
                     refreshAttempts.current++
                 }
