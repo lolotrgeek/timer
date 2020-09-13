@@ -9,7 +9,7 @@ const { getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay
 const { runCounter, stopCounter, setCount } = require('../counter')
 const {runningState} = require('./runningState')
 
-const debug = true
+const debug = false
 
 let running = {}
 let runningproject = {}

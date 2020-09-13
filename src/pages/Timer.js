@@ -5,7 +5,7 @@ import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secon
 import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
-import {useAlert} from '../hooks/useAlert'
+import { useAlert } from '../hooks/useAlert'
 
 const debug = true
 const test = false
@@ -17,22 +17,31 @@ export default function Timer({ useHistory, useParams }) {
     const [refresh, setRefresh] = useState(false)
     const [timer, setTimer] = useState({});
     const alert = useAlert()
-    
+
     useEffect(() => {
         messenger.addListener('alert', msg => {
             if (msg && msg.length > 0) {
                 alert.show(msg[1], {
-                  type: msg[0]
+                    type: msg[0]
                 })
-              }
+            }
         })
         // TODO: destroys edits on refresh, keep state through refresh
+        if (timerId) {
         messenger.addListener(`${timerId}`, event => { setTimer(event) })
-        if (timerId) messenger.emit('getTimer', { timerId })
-        else if (projectId) messenger.emit('newEntry', { projectId })
+            messenger.emit('getTimer', { timerId })
+        }
+        else if (projectId) {
+            messenger.addListener('newEntryCreated', event => {
+                setTimer(event)
+                timerId = event.id
+                messenger.addListener(`${event.id}`, event => { setTimer(event) })
+            })
+            messenger.emit('newEntry', { projectId })
+        }
         return () => {
             messenger.removeAllListeners(`${timerId}`)
-            messenger.removeAllListeners(`${timerId}/editComplete`)
+            messenger.removeAllListeners('newEntryCreated')
             messenger.removeAllListeners('alert')
         }
     }, [])

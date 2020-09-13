@@ -7,7 +7,7 @@ import * as chain from '../data/Chains'
 import messenger from '../constants/Messenger'
 const { runningState } = require('node/state/runningState')
 
-const debug = true
+const debug = false
 
 let running = {}
 let runningproject = {}

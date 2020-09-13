@@ -5,7 +5,7 @@ import messenger from '../constants/Messenger'
 // import Running from '../components/Running'
 import { projectlink } from '../routes'
 
-const debug = true
+const debug = false
 const test = false
 const loadAll = false
 const pagesize = 4

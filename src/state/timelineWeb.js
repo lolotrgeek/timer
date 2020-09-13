@@ -6,7 +6,7 @@ const { timelineState } = require('node/state/timelineState')
 
 let debug = {
     state: false,
-    data: true,
+    data: false,
     listeners: false,
     parsing: false,
     sorting: false
