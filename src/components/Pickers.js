@@ -17,7 +17,7 @@ export function PickerDate(props) {
             format="MM-DD-YYYY"
             value={props.startdate}
             disableFuture={true}
-            onChange={date => props.onDateChange(date.toDate())}
+            onChange={date => props.onDateChange(date)}
             maxDate={props.maxDate}
 
           />
@@ -48,7 +48,7 @@ export function PickerTime(props) {
               views={['hours', 'minutes', 'seconds']}
               opento='hours'
               value={props.time}
-              onChange={date => props.onTimeChange(date.toDate())}
+              onChange={date => props.onTimeChange(date)}
               // onAccept={props.onTimeChange}
               format="HH:mm:ss a"
               ampm={true}

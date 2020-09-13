@@ -19,7 +19,7 @@ import * as store from '../data/Store'
 import { newEntry } from '../data/Models'
 const { timerState } = require('node/state/timerState')
 
-let debug = false
+let debug = true
 // STATE
 let state = {}
 let previous = {}

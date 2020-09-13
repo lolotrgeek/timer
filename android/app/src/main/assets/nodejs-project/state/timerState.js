@@ -222,19 +222,18 @@ exports.timerState = p => {
         let oldEnd = p.isValid(timer.ended) ? timer.ended : new Date(timer.ended)
         let newStart = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldStart.getHours(), oldStart.getMinutes(), oldStart.getSeconds())
         let newEnd = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(), oldEnd.getHours(), oldEnd.getMinutes(), oldEnd.getSeconds())
-        p.debug && console.log(newStart, newEnd)
         if (dateRulesEnforcer(newStart, newEnd) === true) {
+            p.debug && console.log('newStart',typeof newStart , newStart)
+            p.debug && console.log('newEnd', typeof newEnd , newEnd)
             timer.started = p.isValid(newStart) ? newStart.toString() : timer.started
             timer.ended = p.isValid(newEnd) ? newEnd.toString() : timer.ended
         }
         return timer
     }
 
-    const chooseNewDate = (date, timer) => {
-        let newDate = changeDate(date, timer)
-        if (dateRules(newDate) === true) {
-            let newTimer = changeDate(newDate, p.current)
-
+    const chooseNewDate = (date) => {
+        if (dateRules(date) === true) {
+            let newTimer = changeDate(date, p.current)
             p.current = newTimer
         }
     }

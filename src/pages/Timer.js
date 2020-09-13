@@ -64,9 +64,9 @@ export default function Timer({ useHistory, useParams }) {
             <HeaderButtons />
         </View>
     )
-    const onDateChoose = date => { messenger.emit('chooseNewDate', date); setRefresh(!refresh) }
-    const onTimeStart = date => { messenger.emit('chooseNewStart', date); setRefresh(!refresh) }
-    const onTimeEnd = date => { messenger.emit('chooseNewEnd', date); setRefresh(!refresh) }
+    const onDateChoose = date => { messenger.emit('chooseNewDate', new Date(date)); setRefresh(!refresh) }
+    const onTimeStart = date => { messenger.emit('chooseNewStart', new Date(date)); setRefresh(!refresh) }
+    const onTimeEnd = date => { messenger.emit('chooseNewEnd', new Date(date)); setRefresh(!refresh) }
 
     if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
