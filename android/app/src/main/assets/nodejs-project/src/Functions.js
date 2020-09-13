@@ -181,13 +181,13 @@ const settingCount = (timer, project) => {
 const sameDay = (a, b) => moment(a).isSame(b, 'day')
 const timeRules = (start, end) => moment(start).isBefore(end)
 const dateRules = date => moment(date).isBefore(new Date())
-const simpleDate = date => moment(date ? date : new Date()).format("MMM d yyyy")
+const simpleDate = date => moment(date ? date : new Date()).format("YYYY-MM-DD")
 
 function dayHeaders(timerlist) {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
-        return { day: fullDay(new Date(timer.started)), timer: timer }
+        return { day: simpleDate(timer.started), timer: timer }
     })
     // //// debug && console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
     timerdays.forEach(timerday => {
@@ -309,5 +309,6 @@ module.exports = {
     getMinutes,
     getSeconds,
     getDate,
-    secondsToString
+    secondsToString,
+    fullDay
 }

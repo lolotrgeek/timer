@@ -9,9 +9,9 @@ const { getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay
 const { runCounter, stopCounter, setCount } = require('../counter')
 const {runningState} = require('./runningState')
 
-const debug = false
+const debug = true
 
 let running = {}
 let runningproject = {}
 
-runningState({store, messenger, chain, cloneTimer, doneTimer, newTimer, getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul, runCounter, stopCounter, setCount, running, runningproject})
+runningState({store, messenger, chain, debug, cloneTimer, doneTimer, newTimer, getTodaysCount, dateSimple, totalTime, settingCount, isRunning, multiDay, newEntryPerDay, trimSoul, runCounter, stopCounter, setCount, running, runningproject})

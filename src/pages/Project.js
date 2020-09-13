@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
-import { timeSpan, secondsToString } from '../constants/Functions'
+import { timeSpan, secondsToString, fullDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
 
@@ -114,7 +114,7 @@ export default function Project({ useHistory, useParams }) {
                 ref={timerList}
                 sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : []}
                 renderSectionHeader={({ section: { title } }) => {
-                    return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>)
+                    return (<View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{fullDay(title)}</Text></View>)
                 }}
                 renderItem={RenderTimer}
                 onEndReached={() => {

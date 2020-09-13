@@ -150,7 +150,7 @@ export const getMonth = date => {
  * return date as a simplifed date string `dd month yyy`
  * @param {*} date optional, default: `today`
  */
-export const simpleDate = date => moment(date ? date : new Date()).format("MMM D yyyy")
+export const simpleDate = date => moment(date ? date : new Date()).format("YYYY-MM-DD")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
 
 export const fullDate = date => moment(date).format("ddd MMM Do YYYY, h:mm:ss a")
@@ -406,7 +406,7 @@ export const dayHeaders = timerlist => {
     const output = [] // [days...]
     // organize timers by day
     const timerdays = timerlist.map(timer => {
-        return { day: fullDay(new Date(timer.started)), timer: timer }
+        return { day: simpleDate(timer.started), timer: timer }
     })
     // //// debug && console.log(pagename + '- DAYHEADERS - TIMERDAYS : ', timerdays)
     timerdays.forEach(timerday => {

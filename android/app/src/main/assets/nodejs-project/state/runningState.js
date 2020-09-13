@@ -86,6 +86,7 @@ exports.runningState = p => {
             p.store.put(p.chain.timer(timer.id), timer)
             p.store.set(p.chain.timerHistory(timer.id), timer)
             p.store.put(p.chain.timerDate(timer.started, timer.id), true) // maybe have a count here?
+            p.debug && console.log('[react Data] Project Date Storing ', endproject.lastrun, endproject.id, endproject)
             p.store.put(p.chain.projectDate(endproject.lastrun, endproject.id), endproject)
             p.store.put(p.chain.projectTimer(endproject.id, timer.id), timer)
             p.debug && console.log('[react Data] Ended', timer, endproject)
