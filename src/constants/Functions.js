@@ -277,7 +277,7 @@ export const sayRunning = timer => timer.ended === timer.started ? 'running' : t
  * validator...
  * @param {*} timer 
  */
-export const isRunning = timer => timer && typeof timer === 'object' && timer.status === 'running' ? true : false
+export const isRunning = timer => timer && typeof timer === 'object' && timer.status === 'running'
 
 
 /**

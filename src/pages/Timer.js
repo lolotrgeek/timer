@@ -28,7 +28,7 @@ export default function Timer({ useHistory, useParams }) {
         })
         // TODO: destroys edits on refresh, keep state through refresh
         if (timerId) {
-        messenger.addListener(`${timerId}`, event => { setTimer(event) })
+            messenger.addListener(`${timerId}`, event => { setTimer(event) })
             messenger.emit('getTimer', { timerId })
         }
         else if (projectId) {
@@ -83,18 +83,19 @@ export default function Timer({ useHistory, useParams }) {
             <View style={styles.list}>
                 <View style={{ marginTop: 10, maxWidth: 400, }}>
                     <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
-                    <Text style={{ textAlign: 'center', fontSize: 30 }}>{secondsToString(totalTime(timer.started, timer.ended))}</Text>
+                    <Text style={{ textAlign: 'center', fontSize: 30 }}>{timerId === 'running' ? 'Tracking...' : secondsToString(totalTime(timer.started, timer.ended))}</Text>
                 </View>
                 <View style={{ maxWidth: 400, alignItems: 'center' }}>
 
                     {/* <Text>{timer.status}</Text> */}
                     <PickerDate
                         label='Date'
-                        startdate={new Date(timer.started)}
+                        startdate={timerId === 'running' ? dateSimple(timer.started) : timer.started}
                         onDateChange={onDateChoose}
                         maxDate={endOfDay(new Date())}
                         previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
                         nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
+                        running={timerId === 'running'}
                     />
                     {/* <Text>{timer.started.toString()}</Text> */}
                     <PickerTime
@@ -110,7 +111,7 @@ export default function Timer({ useHistory, useParams }) {
                         time={new Date(timer.ended)}
                         onTimeChange={onTimeEnd}
                         addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
-                        running={isRunning(timer)}
+                        running={timerId === 'running'}
                         subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
                     />
                     <View style={styles.button}>

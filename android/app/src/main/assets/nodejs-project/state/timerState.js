@@ -29,7 +29,6 @@ exports.timerState = p => {
 
     })
 
-
     p.messenger.on('newEntry', msg => {
         if (msg && msg.projectId) {
             createEntry(msg.projectId).then(newTimer => {

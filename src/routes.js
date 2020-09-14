@@ -9,3 +9,4 @@ export const projectEditlink = (projectId) => `/edit/project/${projectId}/`
 export const projectHistorylink = (projectId) => `/history/project/${projectId}/`
 export const projectCreatelink = () => `/create/project/`
 export const projectsListLink = () => `/projects/`
+export const runninglink = () => `/running/`

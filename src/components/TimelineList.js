@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
 import { isToday, secondsToString, sayDay, dateSimple } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 // import Running from '../components/Running'
-import { projectlink } from '../routes'
+import { projectlink, runninglink } from '../routes'
 
 const debug = false
 const test = false
@@ -169,6 +170,7 @@ export default function TimelineList({ useHistory }) {
         if (!running || running.id === 'none') return (<View></View>)  // TODO: do a stylesheet update here? to minimize timer space, or runnning component in list and let it auto size
         else return (
             <View>
+
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: '20%' }}>
                         <Text style={{ fontSize: 20 }}>Tracking</Text>
@@ -176,7 +178,7 @@ export default function TimelineList({ useHistory }) {
                 </View>
                 <View style={styles.row}>
                     <View style={{ width: '30%' }}>
-                        <Text style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
+                        <Text onPress={() =>history.push(runninglink())} style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
                         <Text>{count}</Text>

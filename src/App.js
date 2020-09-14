@@ -16,6 +16,7 @@ import Timer from './pages/Timer'
 import Timers from './pages/Timers'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
+import Running from './pages/Running'
 
 const alertOptions = {
     // you can also just use 'bottom center'
@@ -51,6 +52,8 @@ export default function App() {
                     <Route path={'/timers'} children={<Timers useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} />} />
+                    <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} />} />
+
                 </Switch>
             </Router >
         </AlertProvider>
