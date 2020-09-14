@@ -5,9 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, FlatList } from 'react-native';
 import { dateSimple } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import * as Data from '../data/Data'
-import * as store from '../data/Store'
-import * as chain from '../data/Chains'
+
 
 const debug = false
 const test = false

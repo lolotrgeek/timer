@@ -13,7 +13,6 @@ import { timeRules,
     addDays, 
      toDate  } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import * as Data from '../data/Data'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
 import { newEntry } from '../data/Models'
@@ -38,6 +37,6 @@ const setTotal = number => current.total = number
 timerState({
     addMinutes, isValid, subDays, addDays,
     timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay, toDate,
-    messenger, Data, chain, store, debug, state, previous, current, project, newEntry,
+    messenger, chain, store, debug, state, previous, current, project, newEntry,
     setAlert, setTimer, setEnded, setStarted, setEnergy, setMood, setTotal
 })

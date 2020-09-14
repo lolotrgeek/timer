@@ -2,7 +2,6 @@
 const { addMinutes, isValid, subDays, addDays } = require('../src/Functions')
 const { timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay } = require('../src/Functions')
 const messenger = require('../src/Messenger')
-const Data = require('../src/Data')
 const chain = require('../src/Chains')
 const store = require('../src/Store')
 const { timerState } = require('./timerState')
@@ -27,6 +26,6 @@ const setTotal = number => current.total = number
 timerState({
     addMinutes, isValid, subDays, addDays,
     timeRules, dateRules, totalTime, trimSoul, isRunning, dateSimple, settingCount, sameDay,
-    messenger, Data, chain, store, debug, state, previous, current, project, newEntry,
+    messenger, chain, store, debug, state, previous, current, project, newEntry,
     setAlert, setTimer, setEnded, setStarted, setEnergy, setMood, setTotal
 })
