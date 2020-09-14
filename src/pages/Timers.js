@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     listContainer: {
         width: '100%',
         flexDirection: 'row',
-        backgroundColor: '#ccc'
     },
     list: {
         marginTop: 30, height: Dimensions.get('window').height - 170

@@ -14,7 +14,6 @@ const pagesize = 4
 
 export default function Timeline({ useHistory }) {
     let history = useHistory()
-    const [refresh, setRefresh] = useState(false)
 
     const Header = () => (
         <View style={styles.header}>
@@ -24,8 +23,7 @@ export default function Timeline({ useHistory }) {
     )
 
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', backgroundColor: 'white', zIndex: 999999, flexDirection: 'column', height: 50 }}>
-
+        <View style={{padding: 10, width: '100%', backgroundColor: 'white', height: 50 }}>
             <Button
                 onPress={() => history.push(projectCreatelink())}
                 title='Create Project'
@@ -34,7 +32,6 @@ export default function Timeline({ useHistory }) {
             </View>
 
     )
-    // if (!ready) return (<View style={styles.container}><Text> Loading...</Text></View>)
     return (
         <SafeAreaView style={styles.container}>
             <Header />
@@ -50,14 +47,12 @@ const styles = StyleSheet.create({
         padding: 10,
         width: '100%',
         backgroundColor: 'white',
-        flexDirection: 'column'
     },
     container: {
         flex: 1,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ccc',
     },
     button: {
         margin: 20,

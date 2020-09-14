@@ -77,29 +77,27 @@ export default function Projects({ useHistory, useParams }) {
         </View>
     )
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', backgroundColor: 'white', zIndex: 999999, flexDirection: 'column', height: 50 }}>
+        <View style={{ padding: 10, width: '100%', backgroundColor: 'white', height: 50 }}>
             <HeaderButtons />
         </View>
     )
     return (
         <SafeAreaView style={styles.container}>
             <Header />
-            <View style={styles.list}>
-                <FlatList
-                    ListHeaderComponent={refresh ? <Text>Waiting on Projects...</Text> : <Text></Text>}
-                    style={{ width: '100%', marginTop: 30, height: Dimensions.get('window').height - 170 }}
-                    data={projects}
-                    renderItem={renderRow}
-                    keyExtractor={project => project.id}
-                    onRefresh={() => {
-                        setRefresh(true)
-                        setProjects([])
-                        messenger.emit('getProjects', { all: true, refresh: true })
-                    }}
-                    refreshing={refresh}
-                />
+            <FlatList
+                ListHeaderComponent={refresh ? <Text>Waiting on Projects...</Text> : <Text></Text>}
+                style={styles.list}
+                data={projects}
+                renderItem={renderRow}
+                keyExtractor={project => project.id}
+                onRefresh={() => {
+                    setRefresh(true)
+                    setProjects([])
+                    messenger.emit('getProjects', { all: true, refresh: true })
+                }}
+                refreshing={refresh}
+            />
 
-            </View>
             <Footer />
         </SafeAreaView>
     );
@@ -120,11 +118,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    list: {
+    listcontainer: {
         width: '100%',
-        flexDirection: 'row',
-        backgroundColor: '#ccc'
+
     },
+    list: { width:'100%',  height: Dimensions.get('window').height - 180 },
     button: {
         margin: 20,
     },

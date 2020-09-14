@@ -79,7 +79,7 @@ export default function Project({ useHistory, useParams }) {
 
     const RenderTimer = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, }}>
+            <View style={styles.listedtimer}>
 
                 <View style={{ width: '70%' }}>
                     <Text onPress={() => { history.push(timerlink(item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
@@ -91,8 +91,8 @@ export default function Project({ useHistory, useParams }) {
         );
     };
 
-    const HeaderButtons = () => (
-        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly', }}>
+    const FooterButtons = () => (
+        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly' }}>
             <Button title='New Entry' onPress={() => history.push(timernew(projectId))} />
             <Button title='Edit' onPress={() => {
                 history.push(projectEditlink(projectId))
@@ -116,12 +116,12 @@ export default function Project({ useHistory, useParams }) {
 
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{ color: project.color ? project.color : 'black', textAlign: 'center', fontSize: 30 }}>{project && project.name ? project.name : projectId}</Text>
+            <Text style={{ color: project.color ? project.color : 'black', fontSize: 30 }}>{project && project.name ? project.name : projectId}</Text>
         </View>
     )
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
-            <HeaderButtons />
+        <View style={{ height: 50, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white' }}>
+            <FooterButtons />
         </View>
     )
 
@@ -160,18 +160,19 @@ export default function Project({ useHistory, useParams }) {
 }
 
 const styles = StyleSheet.create({
-    header: { width: '100%', padding: 10, backgroundColor: 'white', flexDirection: 'column' },
+    header: { width: '100%', padding: 10, backgroundColor: 'white',},
     container: {
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
     list: {
-        height: Dimensions.get('window').height - 170,
+        height: Dimensions.get('window').height - 180,
         width: '100%',
-        backgroundColor: '#ccc',
-        marginBottom: 50,
         padding: 10
+    },
+    listedtimer: {
+        flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500,
     },
     button: {
         margin: 20,

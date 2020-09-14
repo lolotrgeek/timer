@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   list: {
     flexDirection: 'row',
     width: '100%',
-    backgroundColor: '#ccc'
   },
   button: {
     margin: 20,

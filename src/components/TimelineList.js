@@ -151,7 +151,7 @@ export default function TimelineList({ useHistory }) {
             item.id === hidden && isToday(item.lastrun) ? <View></View> :
                 <View style={styles.row}>
                     <View style={{ width: '30%' }}>
-                        <Text onPress={() => history.push(projectlink(item.id))} style={{ color: !item.color || item.color.length === 0 || item.color === '#ccc' ? 'red' : item.color }}>{item.name ? item.name : ''}</Text>
+                        <Text onPress={() => history.push(projectlink(item.id))} style={{ color: !item.color || item.color.length === 0 ? 'red' : item.color }}>{item.name ? item.name : ''}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
                         <Text style={{ color: 'black' }}>{secondsToString(item.lastcount)}</Text>
@@ -249,10 +249,9 @@ export default function TimelineList({ useHistory }) {
 
 const styles = StyleSheet.create({
     list: {
-        height: Dimensions.get('window').height - 170,
+        height: Dimensions.get('window').height - 180,
         width: '100%',
-        backgroundColor: '#ccc',
-        marginBottom: 50,
+        padding: 10
     },
     row: { flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, },
     hide: { display: 'none' }

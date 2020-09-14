@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
     list: {
         height: Dimensions.get('window').height - 120,
         width: '100%',
-        backgroundColor: '#ccc',
         marginBottom: 50,
     },
     button: {
