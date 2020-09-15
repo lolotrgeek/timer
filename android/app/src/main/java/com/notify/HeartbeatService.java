@@ -82,10 +82,13 @@ public class HeartbeatService extends NodeJS {
         this.countHandler.removeCallbacks(this.runnableCode);
     }
 
-
     public void sendMessageToReact(String event, String msg) {
         if(DEBUG_PUT) Log.d(TAG, "Android to react: "+ event + " data: " + msg);
-        HeartbeatModule.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(event, msg);
+        if(HeartbeatModule.reactContext != null) {
+            HeartbeatModule.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(event, msg);
+        } else {
+            if(DEBUG_PUT) Log.d(TAG, "Android to react: React Not Ready.");
+        }
     }
 
     public JSONObject msgParse(String msg) {

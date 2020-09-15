@@ -20,10 +20,7 @@
         android:name="com.notify.HeartbeatService"
         android:enabled="true"
         android:exported="false" />
-    <service
-        android:name="com.notify.DataService"
-        android:enabled="true"
-        android:exported="false" />
+
 
     <receiver android:name="com.notify.BootUpReceiver" android:enabled="true" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
       <intent-filter>
