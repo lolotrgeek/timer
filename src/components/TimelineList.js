@@ -161,6 +161,7 @@ export default function TimelineList({ useHistory }) {
                     </View>
                     <View style={{ width: '20%' }}>
                         <Button title='start' onPress={() => {
+                            timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: 0, y:0, animated: false })
                             messenger.emit('start', { projectId: item.id })
                         }} />
                     </View>
@@ -190,7 +191,7 @@ export default function TimelineList({ useHistory }) {
                             <Text>No Running Timer</Text> : running.status === 'done' ?
                                 //TODO: assuming that project exists on start... needs validation
                                 <Button title='start' onPress={() => {
-
+                                    
                                     messenger.emit('start', { projectId: running.project })
                                 }} /> :
                                 <Button title='stop' onPress={() => {
