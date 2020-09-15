@@ -8,7 +8,7 @@ export function PickerDate(props) {
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <View style={{ flexDirection: 'row', alignItems: 'center'  }}>
-        <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View>
+      {props.label ? <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View> : <View></View>}
         <View style={{ width: 30, margin: 20 }}><Button title='<' onPress={props.previousDay} /></View>
         <View style={{ width: 100, margin: 20 }}>
           <DatePicker
@@ -31,7 +31,7 @@ export function PickerTime(props) {
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <View style={{ flexDirection: 'row', alignItems: 'center'  }}>
-        <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View>
+        {props.label ? <View style={{ width: 50, margin: 20 }}><Text>{props.label}</Text></View> : <View></View>}
         <View style={{ width: 30, margin: 20 }}><Button title='<' onPress={props.subtractMinutes} /></View>
         <View style={{ width: 100, margin: 20 }}>
           {props.running && props.running.status === 'running' ?

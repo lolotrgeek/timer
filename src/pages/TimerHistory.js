@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import messenger from '../constants/Messenger'
-import { simpleDate, fullTime, timeSpan, totalOver, totalTime, secondsToString } from '../constants/Functions'
+import { simpleDate, timeSpan, totalTime, secondsToString } from '../constants/Functions'
+import styles from '../styles/mainStyles'
 
 export default function TimerHistory({ useHistory, useParams }) {
     let history = useHistory()
@@ -18,6 +19,7 @@ export default function TimerHistory({ useHistory, useParams }) {
         })
 
         messenger.emit('getTimerHistory', { timerId })
+        return () => messenger.removeAllListeners
     }, [])
 
 
@@ -27,10 +29,10 @@ export default function TimerHistory({ useHistory, useParams }) {
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', }}>
                     <View style={{ margin: 5 }}>
                         {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
-                        <Text style={{fontSize: 20}}>{index + 1 + '.'}</Text>
+                        <Text style={{ fontSize: 20 }}>{index + 1 + '.'}</Text>
                     </View>
                     <View style={{ margin: 5 }}>
-                        <Text style={{fontSize: 20}}>{item.edited ? simpleDate(item.edited) : simpleDate(item.started)}</Text>
+                        <Text style={{ fontSize: 20 }}>{item.edited ? simpleDate(item.edited) : simpleDate(item.started)}</Text>
                     </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', }}>
@@ -42,8 +44,8 @@ export default function TimerHistory({ useHistory, useParams }) {
                         <Text>{secondsToString(totalTime(item.started, item.ended))}</Text>
                     </View>
                     <View style={{ margin: 10 }}>
-                        {edits.length - 1 === index ?
-                            <Text>Active</Text> :
+                        {edits.length - 1 === index ? <Text>Active</Text> :
+                            index === 0 ? <Text>Running</Text>  :
                             <Button onPress={() => { messenger.emit('TimerRestore', item); setRefresh(!refresh) }} title='Restore' />
                         }
                     </View>
@@ -55,7 +57,11 @@ export default function TimerHistory({ useHistory, useParams }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={{ textAlign: 'center', fontSize: 30 }}>Timer History: {timerId}</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>Timer History</Text>
+                <Text style={styles.subtitle}>ID: {timerId}</Text>
+
+            </View>
             <FlatList
                 // ListHeaderComponent={}
                 style={styles.list}
@@ -72,21 +78,3 @@ export default function TimerHistory({ useHistory, useParams }) {
         </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    list: {
-        marginTop: 20,
-        marginLeft: '10%',
-        marginRight: '10%'
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

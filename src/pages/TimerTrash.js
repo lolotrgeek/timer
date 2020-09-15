@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } f
 import messenger from '../constants/Messenger'
 import * as routes from '../routes'
 import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
+import styles from '../styles/mainStyles'
+
 
 export default function TimerTrash({ useHistory, useParams }) {
     let history = useHistory()
@@ -23,7 +25,7 @@ export default function TimerTrash({ useHistory, useParams }) {
     }, [])
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{ fontSize: 30 }}>Deleted Timers</Text>
+            <Text style={styles.title}>Deleted Timers</Text>
         </View>
     )
 
@@ -80,23 +82,3 @@ export default function TimerTrash({ useHistory, useParams }) {
         </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    header: { padding: 10, width: '100%', backgroundColor: 'white', },
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-    },
-    list: {
-        height: Dimensions.get('window').height - 170,
-        width: '100%',
-        backgroundColor: '#fff'
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

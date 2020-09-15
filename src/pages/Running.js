@@ -5,6 +5,7 @@ import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secon
 import messenger from '../constants/Messenger'
 import { PickerTime } from '../components/Pickers'
 import { useAlert } from '../hooks/useAlert'
+import styles from '../styles/mainStyles'
 
 const debug = false
 var executed = false;
@@ -61,93 +62,46 @@ export default function Running({ useHistory }) {
         }
     }, [])
 
-    const FooterButtons = () => (
-        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly', }}>
-            <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
-            {/* <Button title='Delete' onPress={() => {
-                messenger.emit(`running/delete`, running)
-                history.push('/')
-            }} /> */}
-        </View>
-    )
-
-    const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
-            <FooterButtons />
-        </View>
-    )
     const onTimeStart = date => { messenger.emit('chooseRunningStart', new Date(date)); setRefresh(!refresh) }
 
     if (!running || !running.id || running.id === 'none') return (
         <View style={{ maxWidth: 400, }}>
             <Text style={{ fontSize: 30 }}> No Running</Text>
-            <View style={{width: 100, margin: 10}}>
-            <Button onPress={() => history.push('/')} title='Go Home' />
+            <View style={{ width: 100, margin: 10 }}>
+                <Button onPress={() => history.push('/')} title='Go Home' />
             </View>
         </View>
     )
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.list}>
-                <View style={{ marginTop: 10, maxWidth: 400, }}>
-                    <Text style={{ textAlign: 'center', }}>{running.name} | {running.id} | {running.status}</Text>
-                    <Text style={{ textAlign: 'center', fontSize: 30 }}>{count}</Text>
+            <View style={styles.header}>
+                <Text >{running.name} | {running.id} | {running.status}</Text>
+                <Text style={styles.title}>{count}</Text>
+            </View>
+            <PickerTime
+                time={new Date(running.started)}
+                onTimeChange={onTimeStart}
+                addMinutes={() => { messenger.emit('increaseRunning', running); setRefresh(!refresh) }}
+                subtractMinutes={() => { messenger.emit('decreaseRunning', running); setRefresh(!refresh) }}
+            />
+            <View style={styles.row}>
+                <View style={styles.button}>
+                    <Button title='Save' onPress={() => {
+                        messenger.emit("saveRunningEdits", { timerId: running.id })
+                    }} />
                 </View>
-                <View style={{ maxWidth: 400, alignItems: 'center' }}>
-                    <View style={styles.button} >
-                        {running.status === 'done' ?
-                            //TODO: assuming that project exists on start... needs validation
-                            <Button title='start' onPress={() => {
-
-                                messenger.emit('start', { projectId: running.project })
-                            }} /> :
-                            <Button title='stop' onPress={() => {
-                                messenger.emit('stop', { projectId: running.project })
-                            }} />
-                        }
-                    </View>
-                    {/* <Text>{running.started.toString()}</Text> */}
-                    <PickerTime
-                        label='Start'
-                        time={new Date(running.started)}
-                        onTimeChange={onTimeStart}
-                        addMinutes={() => { messenger.emit('increaseRunning', running); setRefresh(!refresh) }}
-                        subtractMinutes={() => { messenger.emit('decreaseRunning', running); setRefresh(!refresh) }}
-                    />
-                    <View style={styles.button}>
-                        <Button title='Save' onPress={() => {
-                            messenger.emit("saveRunningEdits", { timerId: running.id })
+                <View style={styles.button}>
+                    {running.status === 'done' ?
+                        //TODO: assuming that project exists on start... needs validation
+                        <Button title='start' onPress={() => {
+                            messenger.emit('start', { projectId: running.project })
+                        }} /> :
+                        <Button title='stop' onPress={() => {
+                            messenger.emit('stop', { projectId: running.project })
                         }} />
-                    </View>
+                    }
                 </View>
             </View>
-            <Footer />
         </SafeAreaView >
     );
 }
-
-const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        padding: 10,
-        width: '100%',
-
-    },
-    container: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    list: {
-        height: Dimensions.get('window').height - 120,
-        width: '100%',
-        marginBottom: 50,
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});
-

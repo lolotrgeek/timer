@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import messenger from '../constants/Messenger'
 import { fullTime, simpleDate } from '../constants/Functions'
+import styles from '../styles/mainStyles'
 
 export default function ProjectHistory({ useHistory, useParams }) {
     let history = useHistory()
@@ -24,16 +25,17 @@ export default function ProjectHistory({ useHistory, useParams }) {
 
     const renderProject = ({ item, index }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%', justifyContent:'space-evenly' }}>
-
-                <View style={{ margin: 5 }}>
+            <View style={styles.row}>
+                <View style={{ margin: '1%' }}>
                     <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
                 </View>
-                <View style={{ margin: 5 }}>
+                <View style={{ margin: '1%' }}>
                     <Text>{simpleDate(item.edited ? item.edited : item.started)}</Text>
+                </View>
+                <View style={{ margin: '1%' }}>
                     <Text>{fullTime(item.edited ? item.edited : item.started)}</Text>
                 </View>
-                <View style={{ margin: 5 }}>
+                <View style={{ margin: '1%' }}>
                     {edits.length - 1 === index ?
                         <Text>Active</Text> :
                         <Button onPress={() => { messenger.emit('ProjectRestore', item); setRefresh(!refresh) }} title='Restore' />
@@ -45,10 +47,12 @@ export default function ProjectHistory({ useHistory, useParams }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={{ textAlign: 'center', fontSize: 30 }}>Project History</Text>
+        <View styles={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Project History</Text>
+            </View>
             <FlatList
-                ListHeaderComponent={<Text style={{ textAlign: 'center', fontSize: 18 }}>{projectId}</Text>}
+                ListHeaderComponent={<Text style={styles.subtitle}>{projectId}</Text>}
                 style={styles.list}
                 data={edits}
                 renderItem={renderProject}
@@ -60,24 +64,7 @@ export default function ProjectHistory({ useHistory, useParams }) {
                 }}
                 refreshing={refresh}
             />
-        </SafeAreaView>
+        </View>
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        width: '100%',
-    },
-    list: {
-        alignContent: 'center'
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } from 'react-native';
+import { Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
 import messenger from '../constants/Messenger'
+import styles from '../styles/mainStyles'
+
 
 export default function ProjectTrash({ useHistory, useParams }) {
     let history = useHistory()
@@ -18,7 +20,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
 
         messenger.emit('getProjectTrash', {})
         return () => {
-
+            messenger.removeAllListeners(`projectTrash`)
         }
     }, [])
 
@@ -26,15 +28,14 @@ export default function ProjectTrash({ useHistory, useParams }) {
     const renderProject = ({ item }) => {
         if (!item.id || item.id === 'none' || item.status !== 'deleted') return (<View></View>)
         else return (
-            <View style={{ flexDirection: 'row', margin: 10, alignItems: 'center', justifyContent: 'space-evenly', maxWidth: 400 }}>
-
-                <View style={{ margin: 5 }}>
+            <View style={styles.row}>
+                <View style={{ margin: '1%' }}>
                     <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
                 </View>
-                <View style={{ margin: 5 }}>
+                <View style={{ margin: '1%' }}>
                     <Text>{fullDate(item.deleted)}</Text>
                 </View>
-                <View style={{ margin: 5 }}>
+                <View style={{ margin: '1%' }}>
                     <Button title='Restore' onPress={() => {
                         messenger.emit('ProjectRestore', item)
                         setRefresh(false)
@@ -46,7 +47,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
 
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{fontSize: 30 }}>Deleted Projects</Text>
+            <Text style={styles.title}>Deleted Projects</Text>
         </View>
     )
     return (
@@ -67,24 +68,3 @@ export default function ProjectTrash({ useHistory, useParams }) {
         </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    header: { padding: 10, width: '100%', backgroundColor: 'white',  },
-
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-    },
-    list: {
-        height: Dimensions.get('window').height - 170,
-        width: '100%',
-        backgroundColor: '#fff'
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

@@ -6,6 +6,8 @@ import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
 import { useAlert } from '../hooks/useAlert'
+import styles from '../styles/mainStyles'
+
 
 const debug = false
 const test = false
@@ -46,8 +48,8 @@ export default function Timer({ useHistory, useParams }) {
         }
     }, [])
 
-    const HeaderButtons = () => (
-        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly', }}>
+    const FooterButtons = () => (
+        <View style={styles.footerbuttons}>
             <Button title='Refresh' onPress={() => setRefresh(!refresh)} />
             {timer && timer.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
@@ -69,8 +71,8 @@ export default function Timer({ useHistory, useParams }) {
         </View>
     )
     const Footer = () => (
-        <View style={{ position: 'absolute', bottom: 0, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white', zIndex: 999999, height: 50 }}>
-            <HeaderButtons />
+        <View style={styles.footer}>
+            <FooterButtons />
         </View>
     )
     const onDateChoose = date => { messenger.emit('chooseNewDate', new Date(date)); setRefresh(!refresh) }
@@ -80,13 +82,12 @@ export default function Timer({ useHistory, useParams }) {
     if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.list}>
-                <View style={{ marginTop: 10, maxWidth: 400, }}>
+            <View style={styles.timer}>
+                <View style={styles.header}>
                     <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
                     <Text style={{ textAlign: 'center', fontSize: 30 }}>{timerId === 'running' ? 'Tracking...' : secondsToString(totalTime(timer.started, timer.ended))}</Text>
                 </View>
-                <View style={{ maxWidth: 400, alignItems: 'center' }}>
-
+                <View style={styles.timercontainer}>
                     {/* <Text>{timer.status}</Text> */}
                     <PickerDate
                         label='Date'
@@ -121,35 +122,8 @@ export default function Timer({ useHistory, useParams }) {
                         }} />
                     </View>
                 </View>
-
             </View>
             <Footer />
         </SafeAreaView >
     );
 }
-
-const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        padding: 10,
-        width: '100%',
-
-    },
-    container: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    list: {
-        height: Dimensions.get('window').height - 120,
-        width: '100%',
-        marginBottom: 50,
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});
-

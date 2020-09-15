@@ -2,10 +2,11 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, SectionList, Dimensions, } from 'react-native';
+import { Text, View, SafeAreaView, Button, SectionList } from 'react-native';
 import { timeSpan, secondsToString, fullDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
+import styles from '../styles/mainStyles'
 
 const debug = false
 const test = false
@@ -75,12 +76,9 @@ export default function Project({ useHistory, useParams }) {
         }
     }, [])
 
-
-
     const RenderTimer = ({ item }) => {
         return (
-            <View style={styles.listedtimer}>
-
+            <View style={styles.row}>
                 <View style={{ width: '70%' }}>
                     <Text onPress={() => { history.push(timerlink(item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
                 </View>
@@ -92,7 +90,7 @@ export default function Project({ useHistory, useParams }) {
     };
 
     const FooterButtons = () => (
-        <View style={{ maxWidth: 400, flexDirection: 'row', justifyContent: 'space-evenly' }}>
+        <View style={styles.footerbuttons}>
             <Button title='New Entry' onPress={() => history.push(timernew(projectId))} />
             <Button title='Edit' onPress={() => {
                 history.push(projectEditlink(projectId))
@@ -116,11 +114,13 @@ export default function Project({ useHistory, useParams }) {
 
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{ color: project.color ? project.color : 'black', fontSize: 30 }}>{project && project.name ? project.name : projectId}</Text>
+            <Text style={[styles.title, { color: project.color ? project.color : 'black' }]}>
+                {project && project.name ? project.name : projectId}
+            </Text>
         </View>
     )
     const Footer = () => (
-        <View style={{ height: 50, padding: 10, width: '100%', alignContent: 'center', backgroundColor: 'white' }}>
+        <View style={styles.footer}>
             <FooterButtons />
         </View>
     )
@@ -134,8 +134,8 @@ export default function Project({ useHistory, useParams }) {
                 sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Waiting on Timers...', data: '' }]}
                 renderSectionHeader={({ section: { title } }) => {
                     return (
-                        <View style={{ marginTop: 10 }}>
-                            <Text style={{ fontSize: 20 }}>{refresh ? title : fullDay(title)}</Text>
+                        <View style={styles.listitem}>
+                            <Text style={styles.subtitle}>{refresh ? title : fullDay(title)}</Text>
                         </View>
                     )
                 }}
@@ -158,26 +158,3 @@ export default function Project({ useHistory, useParams }) {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    header: { width: '100%', padding: 10, backgroundColor: 'white',},
-    container: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    list: {
-        height: Dimensions.get('window').height - 180,
-        width: '100%',
-        padding: 10
-    },
-    listedtimer: {
-        flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500,
-    },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

@@ -4,7 +4,7 @@ import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink, projectsListLink } from '../routes'
 import Messenger from '../constants/Messenger'
 import { ColorPicker } from '../components/ColorPicker'
-
+import styles from '../styles/mainStyles'
 const debug = false
 
 export default function ProjectCreate({ useHistory, useParams }) {
@@ -96,9 +96,9 @@ export default function ProjectCreate({ useHistory, useParams }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.flexcontainer}>
       <TextInput
-        style={{ color: color, fontSize: 30, alignContent: 'center', textAlign: 'center', margin: 10 }}
+        style={[{color: color }, styles.input]}
         value={name}
         onChangeText={text => setName(text)}
         maxLength={30}
@@ -106,27 +106,8 @@ export default function ProjectCreate({ useHistory, useParams }) {
       />
       <ColorPicker selectColor={handleSelectedColor} selected={selected} />
       <View>
-        <Button style={{ margin: 10 }} title='Submit' onPress={() => submit()} />
+        <Button style={styles.button} title='Submit' onPress={() => submit()} />
       </View>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  list: {
-    flexDirection: 'row',
-    width: '100%',
-  },
-  button: {
-    margin: 20,
-  },
-  status: {
-    fontSize: 30,
-  }
-});

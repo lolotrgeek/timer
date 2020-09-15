@@ -11,7 +11,6 @@ import ProjectCreate from './pages/ProjectCreate'
 import ProjectHistory from './pages/ProjectHistory'
 import ProjectTrash from './pages/ProjectTrash'
 import Timer from './pages/Timer'
-import Timers from './pages/Timers'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
@@ -29,10 +28,8 @@ export default function App() {
                     </View>
                 </View>
 
-
                 <Switch >
                     <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={'/timers'} children={<Timers useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
@@ -41,7 +38,6 @@ export default function App() {
                     <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timernew(':projectId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={'/timers'} children={<Timers useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} />} />

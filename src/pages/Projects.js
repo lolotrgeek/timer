@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, Platform } from 'react-native';
-import Running from '../components/Running'
+import {Text, View, SafeAreaView, Button, FlatList } from 'react-native';
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
+import styles from '../styles/mainStyles'
+
 
 const debug = false
 const attempts = 10
@@ -50,11 +51,11 @@ export default function Projects({ useHistory, useParams }) {
 
     const renderRow = ({ item }) => {
         return (
-            <View style={{ flexDirection: 'row', margin: 10, width: '100%', maxWidth: 400, alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <View style={{ width: '50%' }}>
+            <View style={styles.row}>
+                <View style={{width:'70%'}}>
                     <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? item.color : 'black' }}>{item.name}</Text>
                 </View>
-                <View style={{ width: '25%' }}>
+                <View style={{width:'20%'}}>
                     <Button title='start' onPress={() => {
                         messenger.emit('start', { projectId: item.id })
                         history.push('/')
@@ -64,8 +65,8 @@ export default function Projects({ useHistory, useParams }) {
         );
     };
 
-    const HeaderButtons = () => (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', maxWidth: 400, }}>
+    const FooterButtons = () => (
+        <View style={styles.footerbuttons}>
             <Button onPress={() => history.push(projectCreatelink())} title='Create Project' />
             <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
@@ -73,16 +74,16 @@ export default function Projects({ useHistory, useParams }) {
     )
     const Header = () => (
         <View style={styles.header}>
-            <Text style={{ fontSize: 30 }}>Projects</Text>
+            <Text style={styles.title}>Projects</Text>
         </View>
     )
     const Footer = () => (
-        <View style={{ padding: 10, width: '100%', backgroundColor: 'white', height: 50 }}>
-            <HeaderButtons />
+        <View style={styles.footer}>
+            <FooterButtons />
         </View>
     )
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.flexcontainer}>
             <Header />
             <FlatList
                 ListHeaderComponent={refresh ? <Text>Waiting on Projects...</Text> : <Text></Text>}
@@ -102,31 +103,3 @@ export default function Projects({ useHistory, useParams }) {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        padding: 10,
-        width: '100%',
-        backgroundColor: 'white',
-        flexDirection: 'column'
-    },
-
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    listcontainer: {
-        width: '100%',
-
-    },
-    list: { width:'100%',  height: Dimensions.get('window').height - 180 },
-    button: {
-        margin: 20,
-    },
-    status: {
-        fontSize: 30,
-    }
-});

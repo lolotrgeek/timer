@@ -3,8 +3,8 @@ import { TouchableOpacity } from 'react-native';
 import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
 import { isToday, secondsToString, sayDay, dateSimple } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-// import Running from '../components/Running'
 import { projectlink, runninglink } from '../routes'
+import styles from '../styles/mainStyles'
 
 const debug = false
 const test = false
@@ -157,7 +157,7 @@ export default function TimelineList({ useHistory }) {
                         <Text onPress={() => history.push(projectlink(item.id))} style={{ color: !item.color || item.color.length === 0 ? 'red' : item.color }}>{item.name ? item.name : ''}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
-                        <Text style={{ color: 'black' }}>{secondsToString(item.lastcount)}</Text>
+                        <Text>{secondsToString(item.lastcount)}</Text>
                     </View>
                     <View style={{ width: '20%' }}>
                         <Button title='start' onPress={() => {
@@ -173,10 +173,9 @@ export default function TimelineList({ useHistory }) {
         if (!running || running.id === 'none') return (<View></View>)  // TODO: do a stylesheet update here? to minimize timer space, or runnning component in list and let it auto size
         else return (
             <View>
-
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: '20%' }}>
-                        <Text style={{ fontSize: 20 }}>Tracking</Text>
+                        <Text style={styles.subtitle}>Tracking</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -206,7 +205,7 @@ export default function TimelineList({ useHistory }) {
     }
     const TimelineHeader = () => {
         return (
-            <View style={{ marginTop: 20 }}>
+            <View style={{ marginTop: 10 }}>
                 <Running />
             </View>
         )
@@ -218,7 +217,7 @@ export default function TimelineList({ useHistory }) {
             style={styles.list}
             ref={timelineList}
             sections={[{ title: refreshAttempts.current === attempts ? 'Start a new Timer' : 'Waiting for Timers...', data: '' }]}
-            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{title}</Text></View>}
+            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={styles.subtitle}>{title}</Text></View>}
             renderItem={RenderProjectTimer}
             keyExtractor={(item, index) => item.id + index}
             onEndReached={() => {
@@ -239,7 +238,7 @@ export default function TimelineList({ useHistory }) {
             ref={timelineList}
             onLayout={layout => { debug && console.log(timelineList.current) }}
             sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
-            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={{ fontSize: 20 }}>{sayDay(title)}</Text></View>}
+            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={styles.subtitle}>{sayDay(title)}</Text></View>}
             renderItem={RenderProjectTimer}
             onRefresh={() => onRefresh()}
             refreshing={refresh}
@@ -251,13 +250,3 @@ export default function TimelineList({ useHistory }) {
 
     )
 }
-
-const styles = StyleSheet.create({
-    list: {
-        height: Dimensions.get('window').height - 180,
-        width: '100%',
-        padding: 10
-    },
-    row: { flexDirection: 'row', margin: 10, width: '100%', maxWidth: 500, },
-    hide: { display: 'none' }
-});
