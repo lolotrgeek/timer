@@ -243,7 +243,7 @@ exports.runningState = p => {
 
     //EDITING
     const editRunning = () => {
-        if (!chooseNewStart(p.running.started, new Date())) return false
+        if (!timeRulesEnforcer(p.running.started, new Date())) return false
         if (p.running && p.running.type === 'timer') {
             p.debug && console.log('[react Data] Editing Timer', p.running)
             p.store.put(p.chain.running(), p.running)
@@ -258,18 +258,13 @@ exports.runningState = p => {
     p.messenger.on('increaseRunning', msg => {
         if (msg && msg.id === p.running.id) {
             p.running.started = increaseStarted(p.running)
-            p.running.total = p.totalTime(p.running.started, p.running.ended)
-            p.debug && console.log('[Running] total: ', p.running.total, ' previous total: ', p.previous.total)
-            editRunning()
+            p.debug && console.log('[Running]' , typeof p.running.started, p.running.started)
         }
     })
     p.messenger.on('decreaseRunning', msg => {
         if (msg && msg.id === p.running.id) {
             p.running.started = decreaseStarted(p.running)
-            p.running.total = p.totalTime(p.running.started, p.running.ended)
-            p.debug && console.log('[Running] total: ', p.running.total, ' previous total: ', p.previous.total)
-            editRunning()
-            
+            p.debug && console.log('[Running]' , typeof p.running.started, p.running.started)
         }
     })
 
@@ -280,20 +275,24 @@ exports.runningState = p => {
             p.debug && console.log('[Running] [Alert] NewStart:', newStart, date.toString())
             p.running.started = newStart === true ? date.toString() : p.running.started
             p.debug && console.log('[Running] chooseNewStart:', p.running)
-            editRunning()
         }
     })
     const decreaseStarted = timer => {
         let newStarted = p.addMinutes(timer.started, -5)
-        let checkedEnd = new Date()
-        return chooseNewStart(newStarted, checkedEnd) ? newStarted : timer.started
+        p.debug && console.log('[Running] [Alert] NewStart:', typeof newStarted, newStarted)
+        let checkedEnd = new Date().toString()
+        return timeRulesEnforcer(newStarted, checkedEnd) ? newStarted.toString() : timer.started
     }
 
     const increaseStarted = timer => {
-        let newStarted = p.addMinutes(timer.started, 5)
-        let checkedEnd = new Date()
-        return chooseNewStart(newStarted, checkedEnd) ? newStarted : timer.started
+        let newStarted = p.addMinutes(new Date(timer.started), 5)
+        let checkedEnd = new Date().toString()
+        return timeRulesEnforcer(newStarted, checkedEnd) ? newStarted.toString() : timer.started
     }
+
+    p.messenger.on('saveRunningEdits', msg => {
+        editRunning()
+    })
 
     const chooseNewStart = (newTime, ended) => {
         if (p.isValid(newTime) === false) {
@@ -323,6 +322,27 @@ exports.runningState = p => {
                 'Cannot Pick Date before Today.',
             ])
             return false
+        }
+        else {
+            p.setAlert(false)
+            return true
+        }
+    }
+    const timeRulesEnforcer = (start, end) => {
+        if (!p.timeRules(start, end)) {
+            p.setAlert([
+                'Error',
+                'Cannot Start after End.',
+            ])
+            return false
+        }
+        else if (!p.timeRules(start, new Date())) {
+            p.setAlert([
+                'Error',
+                'Cannot Start before now.',
+            ])
+            return false
+
         }
         else {
             p.setAlert(false)
