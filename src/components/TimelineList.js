@@ -55,7 +55,6 @@ export default function TimelineList({ useHistory }) {
         setHidden('')
     }
 
-    //OPTIMIZE: pre-flatten pages...
     useEffect(() => {
         getRunning()
         messenger.addListener('App', event => {
@@ -65,6 +64,9 @@ export default function TimelineList({ useHistory }) {
             clearInterval(refreshTimeout.current)
             debug && console.log('page:', event)
             setPages(pages => [...pages, event])
+            //OPTIMIZE: pre-flatten pages...
+            // setPages(pages => [...pages, ...event])
+            // setPages(pages => pages.concat(event))
             setRefresh(false)
         })
         messenger.addListener("pages", event => {
@@ -178,7 +180,7 @@ export default function TimelineList({ useHistory }) {
                 </View>
                 <View style={styles.row}>
                     <View style={{ width: '30%' }}>
-                        <Text onPress={() =>history.push(runninglink())} style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
+                        <Text onPress={() => history.push(runninglink())} style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
                         <Text>{count}</Text>
