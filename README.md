@@ -23,6 +23,15 @@ npm i
 react-native run-android
 ```
 
+## Deploying
+### Android
+Copy Assets
+```
+react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
+```
+delete duplicate app.json
+Build and Sign APK from android Studio
+
 ## Notes
 When testing remote with android emulator use `adb forward tcp:8765 tcp:8765` 
 

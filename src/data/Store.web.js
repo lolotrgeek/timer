@@ -4,7 +4,7 @@ import messenger from '../constants/Messenger'
 const debug = false
 //TODO process to find signal server
 const port = '8765'
-const address = '127.0.0.1'
+const address = '192.168.1.109'
 const peers = [`http://${address}:${port}/gun`]
 
 const gun = new Gun({

@@ -10,7 +10,7 @@ const config = {
   host: 'localhost'
 };
 const port = '8765'
-const address = '10.0.2.2'
+const address = '192.168.1.109'
 const peers = [`http://${address}:${port}/gun`]
 
 config.server = require('http').createServer(Gun.serve(__dirname))
