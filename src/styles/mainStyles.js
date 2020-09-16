@@ -2,12 +2,7 @@ import {
     StyleSheet,
     Dimensions,
     Platform,
-    PixelRatio
 } from 'react-native';
-
-const ratio = PixelRatio.get()
-console.log('Font Pixel Ratio :', ratio)
-
 
 const windowheight = Dimensions.get('window').height
 
