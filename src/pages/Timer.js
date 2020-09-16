@@ -82,12 +82,12 @@ export default function Timer({ useHistory, useParams }) {
     if (!timer || !timer.id) return (<Text>No Timer</Text>)
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.timer}>
+            <View style={styles.list}>
                 <View style={styles.header}>
                     <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
                     <Text style={{ textAlign: 'center', fontSize: 30 }}>{timerId === 'running' ? 'Tracking...' : secondsToString(totalTime(timer.started, timer.ended))}</Text>
                 </View>
-                <View style={styles.timercontainer}>
+                <View style={styles.containerwidth}>
                     {/* <Text>{timer.status}</Text> */}
                     <PickerDate
                         label='Date'

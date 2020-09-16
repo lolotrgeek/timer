@@ -67,7 +67,7 @@ export default function Projects({ useHistory, useParams }) {
 
     const FooterButtons = () => (
         <View style={styles.footerbuttons}>
-            <Button onPress={() => history.push(projectCreatelink())} title='Create Project' />
+            <Button title='Create Project' onPress={() => history.push(projectCreatelink())}  />
             <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} />
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
@@ -83,7 +83,7 @@ export default function Projects({ useHistory, useParams }) {
         </View>
     )
     return (
-        <SafeAreaView style={styles.flexcontainer}>
+        <SafeAreaView style={styles.container}>
             <Header />
             <FlatList
                 ListHeaderComponent={refresh ? <Text>Waiting on Projects...</Text> : <Text></Text>}

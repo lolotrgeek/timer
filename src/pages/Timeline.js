@@ -15,21 +15,10 @@ export default function Timeline({ useHistory }) {
         </View>
     )
 
-    const Footer = () => (
-        <View style={styles.footer}>
-            <Button
-                onPress={() => history.push(projectCreatelink())}
-                title='Create Project'
-            /> 
-            {/* <Button title='Test Projects' onPress={() => messenger.emit('GenerateProjects')} /> */}
-            </View>
-
-    )
     return (
         <SafeAreaView style={styles.container}>
             <Header />
             <TimelineList useHistory={useHistory} />
-            <Footer />
         </SafeAreaView>
     );
 }

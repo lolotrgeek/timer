@@ -96,7 +96,7 @@ export default function ProjectCreate({ useHistory, useParams }) {
   }
 
   return (
-    <View style={styles.flexcontainer}>
+    <View style={styles.containercenter}>
       <TextInput
         style={[{color: color }, styles.input]}
         value={name}

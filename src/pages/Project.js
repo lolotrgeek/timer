@@ -134,8 +134,8 @@ export default function Project({ useHistory, useParams }) {
                 sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Waiting on Timers...', data: '' }]}
                 renderSectionHeader={({ section: { title } }) => {
                     return (
-                        <View style={styles.listitem}>
-                            <Text style={styles.subtitle}>{refresh ? title : fullDay(title)}</Text>
+                        <View style={styles.listtitle}>
+                            <Text style={styles.subtitle}>{refresh || pages.length === 0 ? title : fullDay(title)}</Text>
                         </View>
                     )
                 }}
@@ -153,6 +153,8 @@ export default function Project({ useHistory, useParams }) {
                     messenger.emit("getProjectPages", { projectId: projectId, currentday: 0, pagesize: pagesize })
                 }}
                 refreshing={refresh}
+                ListFooterComponent={() => <View style={styles.row}><Text style={styles.listend}>End of List.</Text></View>}
+
             />
             <Footer />
         </SafeAreaView>

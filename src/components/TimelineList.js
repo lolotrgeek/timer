@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { StyleSheet, Text, View, Button, SectionList, Dimensions } from 'react-native';
-import { isToday, secondsToString, sayDay, dateSimple } from '../constants/Functions'
+import { Text, View, Button, SectionList } from 'react-native';
+import { isToday, secondsToString, sayDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import { projectlink, runninglink } from '../routes'
+import { projectlink, runninglink, projectsListLink } from '../routes'
 import styles from '../styles/mainStyles'
 
 const debug = false
@@ -161,7 +160,7 @@ export default function TimelineList({ useHistory }) {
                     </View>
                     <View style={{ width: '20%' }}>
                         <Button title='start' onPress={() => {
-                            timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: 0, y:0, animated: false })
+                            timelineList.current._wrapperListRef._listRef._scrollRef.scrollTo({ x: 0, y: 0, animated: false })
                             messenger.emit('start', { projectId: item.id })
                         }} />
                     </View>
@@ -174,7 +173,7 @@ export default function TimelineList({ useHistory }) {
         else return (
             <View>
                 <View style={{ flexDirection: 'row' }}>
-                    <View style={{ width: '20%' }}>
+                    <View>
                         <Text style={styles.subtitle}>Tracking</Text>
                     </View>
                 </View>
@@ -190,7 +189,7 @@ export default function TimelineList({ useHistory }) {
                             <Text>No Running Timer</Text> : running.status === 'done' ?
                                 //TODO: assuming that project exists on start... needs validation
                                 <Button title='start' onPress={() => {
-                                    
+
                                     messenger.emit('start', { projectId: running.project })
                                 }} /> :
                                 <Button title='stop' onPress={() => {
@@ -217,8 +216,18 @@ export default function TimelineList({ useHistory }) {
             style={styles.list}
             ref={timelineList}
             sections={[{ title: refreshAttempts.current === attempts ? 'Start a new Timer' : 'Waiting for Timers...', data: '' }]}
-            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={styles.subtitle}>{title}</Text></View>}
-            renderItem={RenderProjectTimer}
+            renderSectionHeader={({ section: { title } }) => (
+                <View style={styles.listtitle}>
+                    <Text style={styles.subtitle}>{title}</Text>
+                    {refreshAttempts.current === attempts ? <View style={styles.row}>
+                        <Button
+                            onPress={() => history.push(projectsListLink())}
+                            title='Go to Projects'
+                        />
+                    </View> :
+                        <View></View>}
+                </View>)}
+            renderItem={({ item }) => <View></View>}
             keyExtractor={(item, index) => item.id + index}
             onEndReached={() => {
                 setRefresh(true)
@@ -238,7 +247,7 @@ export default function TimelineList({ useHistory }) {
             ref={timelineList}
             onLayout={layout => { debug && console.log(timelineList.current) }}
             sections={pages && pages.flat(1).length > 0 ? pages.flat(1) : [{ title: 'Day', data: [{ name: 'nothing here' }] }]}
-            renderSectionHeader={({ section: { title } }) => <View style={{ marginTop: 10 }}><Text style={styles.subtitle}>{sayDay(title)}</Text></View>}
+            renderSectionHeader={({ section: { title } }) => <View style={styles.listtitle}><Text style={styles.subtitle}>{sayDay(title)}</Text></View>}
             renderItem={RenderProjectTimer}
             onRefresh={() => onRefresh()}
             refreshing={refresh}
@@ -246,6 +255,8 @@ export default function TimelineList({ useHistory }) {
             onEndReachedThreshold={1}
             keyExtractor={(item, index) => item.id + index}
             onScroll={scroll => { messenger.emit('pagelocation', scroll.nativeEvent.contentOffset) }}
+            ListFooterComponent={() => <View style={styles.row}><Text style={styles.listend}>End of List.</Text></View>}
+
         />
 
     )
