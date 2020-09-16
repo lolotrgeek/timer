@@ -172,7 +172,7 @@ export default function TimelineList({ useHistory }) {
         if (!running || running.id === 'none') return (<View></View>)  // TODO: do a stylesheet update here? to minimize timer space, or runnning component in list and let it auto size
         else return (
             <View>
-                <View style={{ flexDirection: 'row' }}>
+                <View style={styles.row}>
                     <View>
                         <Text style={styles.subtitle}>Tracking</Text>
                     </View>

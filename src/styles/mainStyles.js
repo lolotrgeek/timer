@@ -76,9 +76,9 @@ export default StyleSheet.create({
         alignItems: 'center'
     },
     list: {
-        flex:1,
+        flex: 1,
         width: '100%',
-        height: Platform.OS === 'web' ? bodyheight : 'auto'
+        height: Platform.OS === 'web' ? bodyheight : 'auto',
     },
     listtitle: {
         marginTop: 10,
@@ -104,7 +104,7 @@ export default StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        marginLeft: 20,
+        marginLeft: 10,
         marginTop: 10,
         marginRight: 10,
         marginBottom: 10,
