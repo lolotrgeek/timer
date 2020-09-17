@@ -56,6 +56,7 @@ android/.settings
 android/.settings/**
 android/.settings/org.eclipse.buildship.core.prefs
 android/app/.settings/org.eclipse.buildship.core.prefs
+android/app/release
 
 
 # node.js

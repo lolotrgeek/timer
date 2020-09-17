@@ -291,7 +291,7 @@ exports.runningState = p => {
     }
 
     p.messenger.on('saveRunningEdits', msg => {
-        editRunning()
+        if(msg) editRunning()
     })
 
     const chooseNewStart = (newTime, ended) => {

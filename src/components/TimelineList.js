@@ -49,7 +49,9 @@ export default function TimelineList({ useHistory }) {
     }
     const onRefresh = () => {
         debug && console.log('[get Page] Refreshing')
+        executed = false
         setRefresh(true)
+        getRunning()
         setPages([])
         setHidden('')
     }
