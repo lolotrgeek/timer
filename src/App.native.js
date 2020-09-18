@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { NativeRouter, Switch, Route, useParams, useHistory, BackButton, Link } from "react-router-native"
 import * as routes from './routes'
+import messenger from './constants/Messenger.native'
+
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -16,6 +18,14 @@ import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
 
 export default function App() {
+    const [online, setOnline] = useState('offline')
+
+    useEffect(() => {
+        messenger.addListener('status', msg => {
+            setOnline(msg)
+        })
+        return () => messenger.removeAllListeners('status')
+    })
     return (
         <NativeRouter>
             <BackButton >
@@ -25,6 +35,9 @@ export default function App() {
                     </View>
                     <View style={{ margin: 10 }}>
                         <Link to={'/projects'}><Text>Projects</Text></Link>
+                    </View>
+                    <View style={{ margin: 10 }}>
+                        <Text >{online}</Text>
                     </View>
                 </View>
 

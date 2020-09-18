@@ -6,8 +6,8 @@ const messenger = require('./Messenger')
 
 const debug = false
 const config = {
-  port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
-  host: 'localhost'
+    port: process.env.OPENSHIFT_NODEJS_PORT || process.env.VCAP_APP_PORT || process.env.PORT || process.argv[2] || 8765,
+    host: 'localhost'
 };
 const port = '8765'
 const address = '192.168.1.109'
@@ -16,10 +16,10 @@ const peers = [`http://${address}:${port}/gun`]
 config.server = require('http').createServer(Gun.serve(__dirname))
 // debug && console.log('GUN config ', config)
 const gun = new Gun({
-  // Defaults
-  web: config.server.listen(config.port, config.host),
-  file: path.join(__dirname, 'radata'),
-  peers: peers
+    // Defaults
+    web: config.server.listen(config.port, config.host),
+    file: path.join(__dirname, 'radata'),
+    peers: peers
 
 })
 debug && console.log('Relay peer started on port ' + config.port + ' with /gun')
@@ -28,7 +28,7 @@ const app = gun.get('app')
 
 const updateStatus = () => {
     let livepeers = gun._.opt.peers
-    console.log(livepeers)
+    debug && console.log(livepeers)
     if (livepeers) {
         messenger.emit('status', 'online')
     }
@@ -38,12 +38,12 @@ const updateStatus = () => {
     })
 
     gun.on('bye', peer => {
-        if (Object.keys(livepeers).length === 0) {
+        if (Object.keys(livepeers).length <= 1) {
             messenger.emit('status', 'offline')
         }
     })
 }
-updateStatus()
+
 
 /**
  * 
@@ -287,14 +287,15 @@ const offAll = msg => {
 }
 
 module.exports = {
-  chainer,
-  app,
-  get: getOne,
-  getAll,
-  getAllOnce,
-  put : putAll,
-  set: setAll,
-  unset: unsetAll,
-  off: offAll,
+    updateStatus,
+    chainer,
+    app,
+    get: getOne,
+    getAll,
+    getAllOnce,
+    put: putAll,
+    set: setAll,
+    unset: unsetAll,
+    off: offAll,
 };
 

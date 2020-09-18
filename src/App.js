@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { BrowserRouter as Router, Link, Switch, Route, useParams, useHistory } from "react-router-dom"
 import * as routes from './routes'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
+import messenger from './constants/Messenger'
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -27,6 +28,14 @@ const alertOptions = {
 }
 
 export default function App() {
+    const [online, setOnline] = useState('offline')
+
+    useEffect(() => {
+        messenger.addListener('status', msg => {
+            setOnline(msg)
+        })
+        return () => messenger.removeAllListeners('status')
+    })
     return (
         <AlertProvider template={AlertTemplate} {...alertOptions}>
             <Router>
@@ -36,6 +45,9 @@ export default function App() {
                     </View>
                     <View style={{ margin: 10 }}>
                         <Link to={'/projects'}><Text>Projects</Text></Link>
+                    </View>
+                    <View style={{ margin: 10 }}>
+                        <Text >{online}</Text>
                     </View>
                 </View>
                 <Switch >

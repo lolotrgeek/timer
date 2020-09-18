@@ -23,7 +23,7 @@ export const testGun = () => {
 
 const updateStatus = () => {
     let livepeers = gun._.opt.peers
-    console.log(livepeers)
+    debug && console.log(livepeers)
     if (livepeers) {
         messenger.emit('status', 'online')
     }
