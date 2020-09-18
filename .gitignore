@@ -94,3 +94,4 @@ buck-out/
 /.history
 cases.md
 android/app/src/main/assets/index.android.bundle
+debug.log
