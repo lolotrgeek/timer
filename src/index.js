@@ -11,6 +11,7 @@ if (Platform.OS === 'web') {
   const rootTag = document.getElementById('root') || document.getElementById('main')
   AppRegistry.runApplication('Notify', { rootTag })
   require('./data/Tests')
+  require('./state/appWeb')
   require('./state/runningWeb')
   require('./state/timelineWeb')
   require('./state/projectCreateWeb')
