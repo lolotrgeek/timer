@@ -21,6 +21,25 @@ export const testGun = () => {
     })
 }
 
+const updateStatus = () => {
+    let livepeers = gun._.opt.peers
+    console.log(livepeers)
+    if (livepeers) {
+        messenger.emit('status', 'online')
+    }
+
+    gun.on('hi', peer => {
+        messenger.emit('status', 'online')
+    })
+
+    gun.on('bye', peer => {
+        if (Object.keys(livepeers).length === 0) {
+            messenger.emit('status', 'offline')
+        }
+    })
+}
+updateStatus()
+
 /**
  * 
  * @param {*} input
@@ -284,10 +303,10 @@ messenger.on('getAll', msg => {
 messenger.on('put', msg => {
     debug && console.log('[React node] incoming put: ' + typeof msg, msg)
     try {
-        debug && console.log('[React node] storing - ' , msg)
+        debug && console.log('[React node] storing - ', msg)
         let input = parse(msg)
-        if(input && typeof input === 'object')
-        putAll(input.key, input.value)
+        if (input && typeof input === 'object')
+            putAll(input.key, input.value)
     } catch (error) {
         debug && console.log('[GUN node] : Putting failed ' + error)
     }
@@ -296,10 +315,10 @@ messenger.on('put', msg => {
 messenger.on('set', msg => {
     debug && console.log('[React node] incoming set: ' + typeof msg, msg)
     try {
-        debug && console.log('[React node] storing - ' , msg)
+        debug && console.log('[React node] storing - ', msg)
         let input = parse(msg)
-        if(input && typeof input === 'object')
-        setAll(input.key, input.value)
+        if (input && typeof input === 'object')
+            setAll(input.key, input.value)
     } catch (error) {
         debug && console.log('[GUN node] : Setting failed ' + error)
     }

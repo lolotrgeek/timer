@@ -26,6 +26,24 @@ debug && console.log('Relay peer started on port ' + config.port + ' with /gun')
 const app = gun.get('app')
 // debug && console.log('App prototype:', Object.getPrototypeOf(app))
 
+const updateStatus = () => {
+    let livepeers = gun._.opt.peers
+    console.log(livepeers)
+    if (livepeers) {
+        messenger.emit('status', 'online')
+    }
+
+    gun.on('hi', peer => {
+        messenger.emit('status', 'online')
+    })
+
+    gun.on('bye', peer => {
+        if (Object.keys(livepeers).length === 0) {
+            messenger.emit('status', 'offline')
+        }
+    })
+}
+updateStatus()
 
 /**
  * 

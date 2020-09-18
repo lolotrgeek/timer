@@ -1,10 +1,13 @@
 import messenger from '../constants/Messenger'
 import * as chain from '../data/Chains'
 import * as store from '../data/Store'
-import {appState} from 'node/state/appState'
+import { trimSoul } from '../constants/Functions'
+import { appState } from 'node/state/appState'
 
 let debug = false
-let state = {}
+let state = {
+    projects:[]
+}
 
 
-appState({debug, state, messenger, chain, store})
+appState({ debug, state, messenger, chain, store, trimSoul })

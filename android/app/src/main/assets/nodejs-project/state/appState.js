@@ -1,5 +1,5 @@
 exports.appState = p => {
-    // Get projects when app is first loaded.
+    // Get projects when app is first loaded
     const getProjects = () => {
         return new Promise((resolve, reject) => {
             p.store.chainer(p.chain.projects(), p.store.app).map().on((data, key) => {
