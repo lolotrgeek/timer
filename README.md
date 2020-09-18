@@ -1,45 +1,59 @@
-# NodeJS Notify Native
-Create a reboot tolerant persistent service for react native that runs a nodeJS instance in foreground or background with an updatable notification.
+# Timer
+Project based time tracking app to demonstrate the power of backend native nodeJS with realtime updates.
 
-* Project is a Work In Progress, in Demo Mode for Testing
+## Architecture
+runs a nodeJS instanace as a background service on Android which handles storage and state.
+This version uses Gun for real time storage syncing with a graph across many devices. 
 
-## Features
-- runs a service in a separate thread
-- service spawns a persistent notification
-- service restarts on reboot
-- service task defined in JS
+It is designed so that any storage provider can be swapped in easily with a simple adapater using the chainer API.
 
-## Future
-* Heavily integrated with timer, could decouple and create build process...
+Data is moved around the app using a messaging system. This allows everything to be decoupled.
+On the Data side this looks like this:
 
+React <-> Native Bridge <-> NodeJS
+
+The native bridge exposes the native APIs and props up frontend and service wrappers so that javascript can be executed in both the UI and Service layers of the app.
 
 ## Install
+Install UI
 ```
+yarn install
+```
+Install service
+```
+cd /timer/android/app/src/main/assets/nodejs-project
 npm i
 ```
+_
+## Running
+Use the following to run development and testing.
+### Web
+```
+yarn web
+```
 
-## Running 
+### Android
 ```
-react-native run-android
+yarn start
 ```
+Open Android Studio, 
+Open `/timer/android` as project
+Use Run 'app' command to open on device/emulator 
+
+NOTE* To test Android service as a relay peer use `adb forward tcp:8765 tcp:8765` 
+
+_
 
 ## Deploying
+
 ### Android
-Copy Assets
+1. Copy Assets and build UI bundle:
 ```
 react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
 ```
-delete duplicate app.json
-Build and Sign APK from android Studio
+2. Delete duplicate app.json
 
-## Notes
-When testing remote with android emulator use `adb forward tcp:8765 tcp:8765` 
-
-## ToDo
-- decouple HeartbeatModule from timer example
-- rename things for clarity
-- cleanup unused files in repo
-- wrap into module form for re-use
+3. Build and Sign APK from Android Studio
 
 ## Reference 
 [Article](https://medium.com/reactbrasil/how-to-create-an-unstoppable-service-in-react-native-using-headless-js-93656b6fd5d1)
