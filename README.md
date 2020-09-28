@@ -40,8 +40,11 @@ Open Android Studio,
 Open `/timer/android` as project
 Use Run 'app' command to open on device/emulator 
 
-NOTE* To test Android service as a relay peer use `adb forward tcp:8765 tcp:8765` 
-
+To test Android service as a relay peer use 
+```
+adb forward tcp:8765 tcp:8765
+``` 
+NOTE* make sure you are connected to `127.0.0.1` as a peer to use Android service as relay peer.
 _
 
 ## Deploying

@@ -19,7 +19,7 @@ const gun = new Gun({
     // Defaults
     web: config.server.listen(config.port, config.host),
     file: path.join(__dirname, 'radata'),
-    peers: peers
+    // peers: peers
 
 })
 debug && console.log('Relay peer started on port ' + config.port + ' with /gun')
