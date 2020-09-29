@@ -3,10 +3,9 @@ import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, Dimensions, } f
 import messenger from '../constants/Messenger'
 import * as routes from '../routes'
 import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
-import styles from '../styles/mainStyles'
 
 
-export default function TimerTrash({ useHistory, useParams }) {
+export default function TimerTrash({ useHistory, useParams, styles }) {
     let history = useHistory()
     let { projectId } = useParams();
     const [refresh, setRefresh] = useState(false)

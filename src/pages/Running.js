@@ -5,7 +5,6 @@ import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secon
 import messenger from '../constants/Messenger'
 import { PickerTime } from '../components/Pickers'
 import { useAlert } from '../hooks/useAlert'
-import styles from '../styles/mainStyles'
 
 const debug = false
 var executed = false;
@@ -22,7 +21,7 @@ var getRunning = (function () {
         }
     };
 })();
-export default function Running({ useHistory }) {
+export default function Running({ useHistory, styles }) {
     let history = useHistory();
     const [refresh, setRefresh] = useState(false)
     const [running, setRunning] = useState({ id: 'none', name: 'none', project: 'none' })

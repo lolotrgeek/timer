@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import messenger from '../constants/Messenger'
 import { simpleDate, timeSpan, totalTime, secondsToString } from '../constants/Functions'
-import styles from '../styles/mainStyles'
 
-export default function TimerHistory({ useHistory, useParams }) {
+export default function TimerHistory({ useHistory, useParams, styles }) {
     let history = useHistory()
     let { timerId } = useParams()
     const [refresh, setRefresh] = useState(false)

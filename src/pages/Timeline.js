@@ -2,10 +2,8 @@ import React from 'react';
 import { Text, View, SafeAreaView, Button, } from 'react-native';
 import TimelineList from '../components/TimelineList'
 import { projectsListLink } from '../routes';
-import styles from '../styles/mainStyles'
 
-
-export default function Timeline({ useHistory }) {
+export default function Timeline({ useHistory, styles }) {
     let history = useHistory()
     const Header = () => (
         <View style={styles.header}>
@@ -25,7 +23,7 @@ export default function Timeline({ useHistory }) {
     return (
         <SafeAreaView style={styles.container}>
             <Header />
-            <TimelineList useHistory={useHistory} />
+            <TimelineList useHistory={useHistory} styles={styles} />
             <Footer />
         </SafeAreaView>
     );

@@ -3,7 +3,6 @@ import { Text, View, Button, SectionList } from 'react-native';
 import { isToday, secondsToString, sayDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectlink, runninglink, projectsListLink } from '../routes'
-import styles from '../styles/mainStyles'
 
 const debug = false
 const test = false
@@ -25,7 +24,7 @@ var getRunning = (function () {
     };
 })();
 
-export default function TimelineList({ useHistory }) {
+export default function TimelineList({ useHistory, styles }) {
     let history = useHistory()
     const [pages, setPages] = useState([]) // [[{title: 'mm-dd-yyyy', data: [{id, }]}, ...], ... ]
     const [refresh, setRefresh] = useState(false)

@@ -6,14 +6,13 @@ import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'
 import { PickerDate, PickerTime } from '../components/Pickers'
 import { useAlert } from '../hooks/useAlert'
-import styles from '../styles/mainStyles'
 
 
 const debug = false
 const test = false
 const loadAll = false
 
-export default function Timer({ useHistory, useParams }) {
+export default function Timer({ useHistory, useParams, styles }) {
     let history = useHistory();
     let { timerId, projectId } = useParams();
     const [refresh, setRefresh] = useState(false)
@@ -66,10 +65,6 @@ export default function Timer({ useHistory, useParams }) {
         </View>
     )
 
-    const Header = () => (
-        <View style={styles.header}>
-        </View>
-    )
     const Footer = () => (
         <View style={styles.footer}>
             <FooterButtons />

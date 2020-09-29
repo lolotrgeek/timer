@@ -3,7 +3,7 @@ import { View, Text, Button } from 'react-native'
 import messenger from '../constants/Messenger'
 
 
-export default function Navigation({useHistory, useLocation}) {
+export default function Navigation({ useHistory, useLocation }) {
     const [online, setOnline] = useState('offline')
     let history = useHistory()
     let location = useLocation()
@@ -21,6 +21,9 @@ export default function Navigation({useHistory, useLocation}) {
                 {location && typeof location === 'object' && location.pathname === "/" ?
                     <View></View> : <Button title="back" onPress={() => history.goBack()} />
                 }
+            </View>
+            <View style={{ margin: 10 }}>
+                
             </View>
             <View style={{ margin: 10 }}>
                 <Text >{online}</Text>

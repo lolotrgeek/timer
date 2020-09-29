@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
 import { fullDate, simpleDate, timeSpan } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import styles from '../styles/mainStyles'
 
 
-export default function ProjectTrash({ useHistory, useParams }) {
+export default function ProjectTrash({ useHistory, useParams, styles }) {
     let history = useHistory()
     const [refresh, setRefresh] = useState(false)
     const [trash, setTrash] = useState([{ id: 'none' }])

@@ -1,8 +1,9 @@
 import React from 'react'
-import { BrowserRouter as Router,  Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
+import { BrowserRouter as Router, Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
 import * as routes from './routes'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
+import getStyleSheet from './styles/mainStyles';
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -27,25 +28,24 @@ const alertOptions = {
 }
 
 export default function App() {
+    const styles = getStyleSheet('dark')
     return (
-        <AlertProvider template={AlertTemplate} {...alertOptions}>
+        <AlertProvider style={styles.app} template={AlertTemplate} {...alertOptions}>
             <Router>
-            <Navigation useHistory={useHistory} useLocation={useLocation} />
-
+                <Navigation useHistory={useHistory} useLocation={useLocation} />
                 <Switch >
-                    <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timernew(':projectId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} />} />
-
+                    <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.timernew(':projectId')} children={<Timer useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} styles={styles} />} />
                 </Switch>
             </Router >
         </AlertProvider>

@@ -4,10 +4,9 @@ import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink, projectsListLink } from '../routes'
 import Messenger from '../constants/Messenger'
 import { ColorPicker } from '../components/ColorPicker'
-import styles from '../styles/mainStyles'
 const debug = false
 
-export default function ProjectCreate({ useHistory, useParams }) {
+export default function ProjectCreate({ useHistory, useParams, styles }) {
   let history = useHistory()
   let { projectId } = useParams()
   const [name, setName] = useState('')

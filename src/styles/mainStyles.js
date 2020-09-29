@@ -5,28 +5,11 @@ import {
 } from 'react-native';
 
 const windowheight = Dimensions.get('window').height
-
-// factors must total 1
 const
-    navfactor = .05,
-    headerfactor = .1,
-    bodyfactor = .75,
-    bodynofooterfactor = .85,
-    footerfactor = .1
-
-// const
-//     navheight = windowheight * navfactor,
-//     headerheight = windowheight * headerfactor,
-//     footerheight = windowheight * footerfactor,
-//     bodyheight = windowheight * bodyfactor
-
-const titlefont = 30
-const
+    titlefont = 30,
     navpadding = 10,
     footerpadding = 10,
-    headerpadding = 10
-
-const
+    headerpadding = 10,
     navheight = 50,
     headerheight = 50,
     footerheight = 55,
@@ -34,17 +17,45 @@ const
     nofooterheight = windowheight - (navheight + headerheight)
 
 
+export const Colors = {
+    dark: 'black',
+    darkfont: 'white',
+    light: 'white',
+    lightfont: 'black'
+}
 
-
-export default StyleSheet.create({
+const baseStyles = StyleSheet.create({
     app: {
-        flex:1,
-        backgroundColor: 'white',
+        flex: 1,
     },
+})
+
+const lightStyleSheet = StyleSheet.create({
+    app: {
+        ...baseStyles.app,
+        backgroundColor: Colors.light,
+        color: Colors.lightfont
+    },
+});
+
+const darkStyleSheet = StyleSheet.create({
+    app: {
+        ...baseStyles.app,
+        backgroundColor: Colors.dark,
+        color: Colors.darkfont
+
+    },
+});
+
+export const mainStyles = StyleSheet.create({
     navigation: {
         flexDirection: 'row',
         width: '100%',
-        backgroundColor: 'white',
+    },
+    header: {
+        width: '100%',
+        maxWidth: Platform.OS === 'web' ? 400 : '100%',
+        padding: headerpadding,
     },
     title: {
         fontSize: titlefont
@@ -52,20 +63,13 @@ export default StyleSheet.create({
     subtitle: {
         fontSize: 20
     },
-    header: {
-        width: '100%',
-        maxWidth: Platform.OS === 'web' ? 400 : '100%',
-        padding: headerpadding,
-    },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'flex-start',
         justifyContent: 'center',
     },
     containercenter: {
         flex: 1,
-        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -116,7 +120,7 @@ export default StyleSheet.create({
         width: '100%',
         padding: footerpadding,
         backgroundColor: 'grey',
-        height:  Platform.OS === 'web' ? footerheight : 'auto',
+        height: Platform.OS === 'web' ? footerheight : 'auto',
     },
     footerbuttons: {
         maxWidth: Platform.OS === 'web' ? 400 : '100%',
@@ -124,3 +128,13 @@ export default StyleSheet.create({
         justifyContent: 'space-evenly'
     },
 });
+
+/**
+ * 
+ * @param {*} useTheme `dark` or `light` | default `light`
+ */
+export default function getStyleSheet(useTheme) {
+    if( useTheme === 'dark' ) return {...mainStyles, ...darkStyleSheet}
+    else return {...mainStyles, ...lightStyleSheet}
+    
+}

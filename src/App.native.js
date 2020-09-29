@@ -1,7 +1,7 @@
 import React from 'react'
 import { NativeRouter, Switch, Route, useParams, useHistory, BackButton, useLocation } from "react-router-native"
 import * as routes from './routes'
-
+import getStyleSheet from './styles/mainStyles';
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -17,23 +17,24 @@ import Running from './pages/Running'
 import Navigation from './components/Navigation'
 
 export default function App() {
+    const styles = getStyleSheet('dark')
     return (
-        <NativeRouter>
+        <NativeRouter style={styles.app}>
             <BackButton >
                 <Navigation useHistory={useHistory} useLocation={useLocation} />
                 <Switch >
-                    <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timernew(':projectId')} children={<Timer useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} />} />
-                    <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} />} />
+                    <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectlink(':projectId')} children={<Project useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectCreatelink()} children={<ProjectCreate useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                    <Route path={routes.projectEditlink(':projectId')} children={<ProjectCreate useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.projectHistorylink(':projectId')} children={<ProjectHistory useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.projectTrashlink()} children={<ProjectTrash useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.timerlink(':timerId')} children={<Timer useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.timernew(':projectId')} children={<Timer useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} styles={styles}/>} />
+                    <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} styles={styles}/>} />
                 </Switch>
             </BackButton>
         </NativeRouter >

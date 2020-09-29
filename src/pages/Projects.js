@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, SafeAreaView, Button, FlatList } from 'react-native';
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
-import styles from '../styles/mainStyles'
-
 
 const debug = false
 const attempts = 10
 
-export default function Projects({ useHistory, useParams }) {
+export default function Projects({ useHistory, useParams, styles }) {
     let history = useHistory()
     const [refresh, setRefresh] = useState(false)
     const [projects, setProjects] = useState([])

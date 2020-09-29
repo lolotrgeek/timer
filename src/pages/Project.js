@@ -6,7 +6,6 @@ import { Text, View, SafeAreaView, Button, SectionList } from 'react-native';
 import { timeSpan, secondsToString, fullDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
-import styles from '../styles/mainStyles'
 
 const debug = false
 const test = false
@@ -15,7 +14,7 @@ const pagesize = 4
 const attempts = 3
 
 
-export default function Project({ useHistory, useParams }) {
+export default function Project({ useHistory, useParams, styles }) {
     let history = useHistory();
     let { projectId } = useParams();
     const [refresh, setRefresh] = useState(false)
