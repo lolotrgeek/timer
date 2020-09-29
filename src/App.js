@@ -41,12 +41,6 @@ export default function App() {
             <Router>
                 <View style={{ flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', height: 50 }}>
                     <View style={{ margin: 10 }}>
-                        <Link to={'/'}><Text>Timeline</Text></Link>
-                    </View>
-                    <View style={{ margin: 10 }}>
-                        <Link to={'/projects'}><Text>Projects</Text></Link>
-                    </View>
-                    <View style={{ margin: 10 }}>
                         <Text >{online}</Text>
                     </View>
                 </View>

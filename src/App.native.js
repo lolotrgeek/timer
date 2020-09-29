@@ -31,12 +31,6 @@ export default function App() {
             <BackButton >
                 <View style={{ flexDirection: 'row', padding: 5, width: '100%', backgroundColor: 'white', }}>
                     <View style={{ margin: 10 }}>
-                        <Link to={'/'}><Text>Timeline</Text></Link>
-                    </View>
-                    <View style={{ margin: 10 }}>
-                        <Link to={'/projects'}><Text>Projects</Text></Link>
-                    </View>
-                    <View style={{ margin: 10 }}>
                         <Text >{online}</Text>
                     </View>
                 </View>

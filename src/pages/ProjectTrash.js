@@ -38,7 +38,7 @@ export default function ProjectTrash({ useHistory, useParams }) {
                 <View style={{ margin: '1%' }}>
                     <Button title='Restore' onPress={() => {
                         messenger.emit('ProjectRestore', item)
-                        setRefresh(false)
+                        setRefresh(true)
                     }} />
                 </View>
             </View>

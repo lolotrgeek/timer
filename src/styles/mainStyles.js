@@ -35,8 +35,6 @@ const
     headerpadding = 10
 
 
-
-
 export default StyleSheet.create({
     app: {
         flex:1,
