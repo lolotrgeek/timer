@@ -74,9 +74,6 @@ export default function Projects({ useHistory, useParams }) {
     )
     const Header = () => (
         <View style={styles.header}>
-            <View style={{ margin: 10, width: 100 }}>
-                <Button title="back" onPress={() => history.goBack()} />
-            </View>
             <Text style={styles.title}>Projects</Text>
         </View>
     )

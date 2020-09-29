@@ -21,18 +21,19 @@ const
 //     bodyheight = windowheight * bodyfactor
 
 const titlefont = 30
-
-const
-    navheight = 50,
-    headerheight = 50,
-    footerheight = 50,
-    bodyheight = windowheight - (navheight + headerheight + titlefont  + footerheight),
-    nofooterheight = windowheight - (navheight + headerheight)
-
 const
     navpadding = 10,
     footerpadding = 10,
     headerpadding = 10
+
+const
+    navheight = 50,
+    headerheight = 50,
+    footerheight = 55,
+    bodyheight = windowheight - (navheight + headerheight + footerheight + navpadding),
+    nofooterheight = windowheight - (navheight + headerheight)
+
+
 
 
 export default StyleSheet.create({
@@ -112,10 +113,10 @@ export default StyleSheet.create({
         display: 'none'
     },
     footer: {
-        bottom:0,
         width: '100%',
         padding: footerpadding,
-        backgroundColor: 'grey'
+        backgroundColor: 'grey',
+        height:  Platform.OS === 'web' ? footerheight : 'auto',
     },
     footerbuttons: {
         maxWidth: Platform.OS === 'web' ? 400 : '100%',
