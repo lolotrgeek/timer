@@ -80,7 +80,7 @@ export default function Project({ useHistory, useParams, styles }) {
         return (
             <View style={styles.row}>
                 <View style={{ width: '70%' }}>
-                    <Text onPress={() => { history.push(timerlink(item.id)) }} style={{ color: 'black' }}>{timeSpan(item.started, item.ended)}</Text>
+                    <Text onPress={() => { history.push(timerlink(item.id)) }} >{timeSpan(item.started, item.ended)}</Text>
                 </View>
                 <View style={{ width: '30%' }}>
                     <Text style={{ color: 'red' }}>{secondsToString(item.total)}</Text>
@@ -114,7 +114,7 @@ export default function Project({ useHistory, useParams, styles }) {
 
     const Header = () => (
         <View style={styles.header}>
-            <Text style={[styles.title, { color: project.color ? project.color : 'black' }]}>
+            <Text style={[styles.title, { color: project.color ? project.color : styles.text.color }]}>
                 {project && project.name ? project.name : projectId}
             </Text>
         </View>

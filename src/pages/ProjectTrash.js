@@ -30,7 +30,7 @@ export default function ProjectTrash({ useHistory, useParams, styles }) {
         else return (
             <View style={styles.row}>
                 <View style={{ margin: '1%' }}>
-                    <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
+                    <Text style={{ color: item.color ? item.color : styles.text.color }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ margin: '1%' }}>
                     <Text>{fullDate(item.deleted)}</Text>

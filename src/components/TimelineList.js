@@ -182,7 +182,7 @@ export default function TimelineList({ useHistory, styles }) {
                 </View>
                 <View style={styles.row}>
                     <View style={{ width: '30%' }}>
-                        <Text onPress={() => history.push(runninglink())} style={{ color: running.color ? running.color : 'black' }}>{running.name ? running.name : 'None'}</Text>
+                        <Text onPress={() => history.push(runninglink())} style={{ color: running.color ? running.color : styles.text.color }}>{running.name ? running.name : 'None'}</Text>
                     </View>
                     <View style={{ width: '30%' }}>
                         <Text>{count}</Text>

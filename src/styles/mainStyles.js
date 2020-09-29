@@ -124,7 +124,7 @@ export const mainStyles = StyleSheet.create({
     footer: {
         width: '100%',
         padding: footerpadding,
-        backgroundColor: 'grey',
+        backgroundColor: '#292929',
         height: Platform.OS === 'web' ? footerheight : 'auto',
     },
     footerbuttons: {

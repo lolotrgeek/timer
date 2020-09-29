@@ -28,7 +28,6 @@ export default function TimerHistory({ useHistory, useParams, styles }) {
             <View>
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', }}>
                     <View style={{ margin: 5 }}>
-                        {/* <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text> */}
                         <Text style={{ fontSize: 20 }}>{index + 1 + '.'}</Text>
                     </View>
                     <View style={{ margin: 5 }}>

@@ -10,7 +10,7 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
   let history = useHistory()
   let { projectId } = useParams()
   const [name, setName] = useState('')
-  const [color, setColor] = useState('#000')
+  const [color, setColor] = useState(styles.text.color)
   const [selected, setSelected] = useState(0)
   const [alert, setAlert] = useState([])
 
@@ -102,6 +102,8 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
         onChangeText={text => setName(text)}
         maxLength={30}
         placeholder='Project Title'
+        placeholderTextColor='#999'
+        underlineColorAndroid={styles.text.color}
       />
       <ColorPicker selectColor={handleSelectedColor} selected={selected} />
       <View>

@@ -4,5 +4,5 @@ import getStyleSheet from '../styles/mainStyles'
 
 export default function Text(props) {
     const styles = getStyleSheet('dark')
-    return (<DefaultText style={[styles.text, props.style]}>{props.children}</DefaultText>)
+    return (<DefaultText {...props} style={[styles.text, props.style]}>{props.children}</DefaultText>)
 }

@@ -27,7 +27,7 @@ export default function ProjectHistory({ useHistory, useParams, styles }) {
         return (
             <View style={styles.row}>
                 <View style={{ margin: '1%' }}>
-                    <Text style={{ color: item.color ? item.color : 'black' }}>{item.name ? item.name : ''}</Text>
+                    <Text style={{ color: item.color ? item.color : styles.text.color }}>{item.name ? item.name : ''}</Text>
                 </View>
                 <View style={{ margin: '1%' }}>
                     <Text>{simpleDate(item.edited ? item.edited : item.started)}</Text>
