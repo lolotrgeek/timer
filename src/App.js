@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text } from 'react-native'
-import { BrowserRouter as Router, Link, Switch, Route, useParams, useHistory } from "react-router-dom"
+import React from 'react'
+import { BrowserRouter as Router,  Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
 import * as routes from './routes'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
-import messenger from './constants/Messenger'
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -17,6 +15,7 @@ import Timer from './pages/Timer'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
+import Navigation from './components/Navigation'
 
 const alertOptions = {
     // you can also just use 'bottom center'
@@ -28,22 +27,11 @@ const alertOptions = {
 }
 
 export default function App() {
-    const [online, setOnline] = useState('offline')
-
-    useEffect(() => {
-        messenger.addListener('status', msg => {
-            setOnline(msg)
-        })
-        return () => messenger.removeAllListeners('status')
-    })
     return (
         <AlertProvider template={AlertTemplate} {...alertOptions}>
             <Router>
-                <View style={{ flexDirection: 'row', padding: 10, width: '100%', backgroundColor: 'white', height: 50 }}>
-                    <View style={{ margin: 10 }}>
-                        <Text >{online}</Text>
-                    </View>
-                </View>
+            <Navigation useHistory={useHistory} useLocation={useLocation} />
+
                 <Switch >
                     <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text } from 'react-native'
-import { NativeRouter, Switch, Route, useParams, useHistory, BackButton, Link } from "react-router-native"
+import React from 'react'
+import { NativeRouter, Switch, Route, useParams, useHistory, BackButton, useLocation } from "react-router-native"
 import * as routes from './routes'
-import messenger from './constants/Messenger.native'
 
 
 // NOTE: order matters for parameter routing
@@ -16,25 +14,13 @@ import Timer from './pages/Timer'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
+import Navigation from './components/Navigation'
 
 export default function App() {
-    const [online, setOnline] = useState('offline')
-
-    useEffect(() => {
-        messenger.addListener('status', msg => {
-            setOnline(msg)
-        })
-        return () => messenger.removeAllListeners('status')
-    })
     return (
         <NativeRouter>
             <BackButton >
-                <View style={{ flexDirection: 'row', padding: 5, width: '100%', backgroundColor: 'white', }}>
-                    <View style={{ margin: 10 }}>
-                        <Text >{online}</Text>
-                    </View>
-                </View>
-
+                <Navigation useHistory={useHistory} useLocation={useLocation} />
                 <Switch >
                     <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} />} />
                     <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} />} />

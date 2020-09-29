@@ -55,7 +55,6 @@ export default StyleSheet.create({
         width: '100%',
         maxWidth: Platform.OS === 'web' ? 400 : '100%',
         padding: headerpadding,
-        backgroundColor: 'white',
     },
     container: {
         flex: 1,
@@ -116,7 +115,7 @@ export default StyleSheet.create({
         bottom:0,
         width: '100%',
         padding: footerpadding,
-        backgroundColor: 'white'
+        backgroundColor: 'grey'
     },
     footerbuttons: {
         maxWidth: Platform.OS === 'web' ? 400 : '100%',

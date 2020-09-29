@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {Text, View, SafeAreaView, Button, FlatList } from 'react-native';
+import { Text, View, SafeAreaView, Button, FlatList } from 'react-native';
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 import styles from '../styles/mainStyles'
@@ -52,10 +52,10 @@ export default function Projects({ useHistory, useParams }) {
     const renderRow = ({ item }) => {
         return (
             <View style={styles.row}>
-                <View style={{width:'70%'}}>
+                <View style={{ width: '70%' }}>
                     <Text onPress={() => history.push(projectlink(item.id))} style={{ color: item.color ? item.color : 'black' }}>{item.name}</Text>
                 </View>
-                <View style={{width:'20%'}}>
+                <View style={{ width: '20%' }}>
                     <Button title='start' onPress={() => {
                         messenger.emit('start', { projectId: item.id })
                         history.push('/')
@@ -67,13 +67,16 @@ export default function Projects({ useHistory, useParams }) {
 
     const FooterButtons = () => (
         <View style={styles.footerbuttons}>
-            <Button title='Create Project' onPress={() => history.push(projectCreatelink())}  />
+            <Button title='Create Project' onPress={() => history.push(projectCreatelink())} />
             {/* <Button title='Add Timers' onPress={() => messenger.emit('GenerateTimers', { projects: projects })} /> */}
             <Button title='Trash' onPress={() => history.push(projectTrashlink())} />
         </View>
     )
     const Header = () => (
         <View style={styles.header}>
+            <View style={{ margin: 10, width: 100 }}>
+                <Button title="back" onPress={() => history.goBack()} />
+            </View>
             <Text style={styles.title}>Projects</Text>
         </View>
     )
