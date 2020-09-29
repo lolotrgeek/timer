@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, Dimensions, } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Button, Dimensions, } from 'react-native';
+import Text from '../components/Text'
 import { timeSpan, totalTime, timeString, dateSimple, endOfDay, isRunning, secondsToString } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { timerHistorylink, projectlink } from '../routes'

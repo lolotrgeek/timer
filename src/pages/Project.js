@@ -2,7 +2,8 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, SafeAreaView, Button, SectionList } from 'react-native';
+import { View, SafeAreaView, Button, SectionList } from 'react-native';
+import Text from '../components/Text'
 import { timeSpan, secondsToString, fullDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, SectionList } from 'react-native';
+import {View, Button, SectionList } from 'react-native';
+import Text from './Text'
+
 import { isToday, secondsToString, sayDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
 import { projectlink, runninglink, projectsListLink } from '../routes'

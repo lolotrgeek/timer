@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, TextInput, Text, Button, StyleSheet, } from 'react-native'
+import { View, TextInput, Button, } from 'react-native'
 import { nameValid, colorValid, projectValid } from '../constants/Validators'
 import { projectlink, projectsListLink } from '../routes'
 import Messenger from '../constants/Messenger'

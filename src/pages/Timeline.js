@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View, SafeAreaView, Button, } from 'react-native';
+import { View, SafeAreaView, Button, } from 'react-native';
+import Text from '../components/Text'
 import TimelineList from '../components/TimelineList'
 import { projectsListLink } from '../routes';
 

@@ -36,6 +36,9 @@ const lightStyleSheet = StyleSheet.create({
         backgroundColor: Colors.light,
         color: Colors.lightfont
     },
+    text : {
+        color: Colors.lightfont
+    }
 });
 
 const darkStyleSheet = StyleSheet.create({
@@ -43,8 +46,10 @@ const darkStyleSheet = StyleSheet.create({
         ...baseStyles.app,
         backgroundColor: Colors.dark,
         color: Colors.darkfont
-
     },
+    text : {
+        color: Colors.darkfont
+    }
 });
 
 export const mainStyles = StyleSheet.create({
@@ -131,7 +136,7 @@ export const mainStyles = StyleSheet.create({
 
 /**
  * 
- * @param {*} useTheme `dark` or `light` | default `light`
+ * @param {String} useTheme `dark` or `light` (default)
  */
 export default function getStyleSheet(useTheme) {
     if( useTheme === 'dark' ) return {...mainStyles, ...darkStyleSheet}

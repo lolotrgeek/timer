@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Button, FlatList, } from 'react-native';
+import { View, Button, FlatList, } from 'react-native';
+import Text from '../components/Text'
 import messenger from '../constants/Messenger'
 import { fullTime, simpleDate } from '../constants/Functions'
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import 'date-fns';
 import MomentUtils from '@date-io/moment'
-import { View, Button, Text } from 'react-native';
+import { View, Button } from 'react-native';
+import Text from './Text'
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from '@material-ui/pickers';
 
 export function PickerDate(props) {

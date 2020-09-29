@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, SafeAreaView, Button, FlatList } from 'react-native';
+import { View, SafeAreaView, Button, FlatList } from 'react-native';
+import Text from '../components/Text'
 import messenger from '../constants/Messenger'
 import { projectlink, projectTrashlink, projectCreatelink } from '../routes'
 

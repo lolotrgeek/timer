@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { dateSimple, simpleDate, timeString } from '../constants/Functions'
 
-import { Text, TouchableOpacity, View, Button } from 'react-native';
+import { TouchableOpacity, View, Button } from 'react-native';
+import Text from './Text'
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const debug = false
