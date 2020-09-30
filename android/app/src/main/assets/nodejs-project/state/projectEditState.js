@@ -73,7 +73,7 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(projectEdit.id), projectEdit)
             p.store.put(p.chain.project(projectEdit.id), projectEdit)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
                 if (days && days.length > 0) {
                     days.forEach(async day => {
                         let projectDates = await getProjectDates(day)
@@ -105,7 +105,7 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(projectDelete.id), projectDelete)
             p.store.put(p.chain.project(projectDelete.id), projectDelete)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
                 p.debug && console.log(days)
                 if (days && days.length > 0) {
                     days.forEach(async day => {
@@ -122,6 +122,10 @@ exports.projectEditState = p => {
                         })
                     })
                 }
+                let running = await getRunning()
+                if(running && running.project === projectDelete.id) {
+                    p.messenger.emit('stop', { projectId: projectDelete.id })
+                }
                 resolve(projectDelete)
             } catch (error) {
                 reject('could not delete ', error)
@@ -137,7 +141,7 @@ exports.projectEditState = p => {
             p.store.set(p.chain.projectHistory(project.id), project)
             p.store.put(p.chain.project(project.id), project)
             try {
-                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping, also in one of the timer files I discovered a non-mapping way to update... 
+                let days = Object.keys(await getTimerDates()) // OPTIMIZE: triple mapping
                 p.debug && console.log(days)
                 if (days && days.length > 0) {
                     days.forEach(async day => {
@@ -235,4 +239,16 @@ exports.projectEditState = p => {
 
     })
 
+    const getRunning = () => new Promise((resolve, reject) => {
+        p.store.chainer('running', p.store.app).once((data, key) => {
+            if (!data) reject('no Running')
+            data = p.trimSoul(data)
+            p.debug && console.log('[GUN node] getRunning Data Found: ', key, data)
+            if (data && data.type === 'timer') {
+                p.debug && console.log('Got Running Timer...')
+                resolve(data)
+            }
+        })
+
+    })
 }

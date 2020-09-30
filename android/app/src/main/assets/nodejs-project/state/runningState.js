@@ -1,5 +1,6 @@
 /* eslint-disable no-async-promise-executor */
 
+//TODO: add a model for running 
 exports.runningState = p => {
     const parseRunning = async (data) => {
         if (data.status === 'running' && data.id) {
