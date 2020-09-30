@@ -117,6 +117,11 @@ export default function Project({ useHistory, useParams, styles }) {
             <Text style={[styles.title, { color: project.color ? project.color : styles.text.color }]}>
                 {project && project.name ? project.name : projectId}
             </Text>
+            {project.status === 'deleted' ?
+                <View>
+                    <Text style={{ color: 'red' }}>deleted</Text>
+                </View>
+                : <View></View>}
         </View>
     )
     const Footer = () => (
