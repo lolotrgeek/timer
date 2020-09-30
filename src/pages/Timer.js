@@ -78,7 +78,7 @@ export default function Timer({ useHistory, useParams, styles }) {
     if (!timer || !timer.id) return (<View style={styles.header}><Text style={styles.title}>No Timer</Text></View>)
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.list}>
+            <View style={styles.body}>
                 <View style={styles.header}>
                     <Text style={{ textAlign: 'center', }}>{timer.name} | {timer.id} | {timer.status}</Text>
                     <Text style={{ textAlign: 'center', fontSize: 30 }}>{timerId === 'running' ? 'Tracking...' : secondsToString(totalTime(timer.started, timer.ended))}</Text>

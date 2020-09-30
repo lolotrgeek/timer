@@ -3,8 +3,13 @@ import {
     Dimensions,
     Platform,
 } from 'react-native';
+let windowheight = Dimensions.get('window').height
 
-const windowheight = Dimensions.get('window').height
+if (Platform.OS === 'web') {
+    Dimensions.addEventListener("change", ({window}) => {
+        windowheight = window.height
+    })
+}
 const
     titlefont = 30,
     navpadding = 10,
@@ -13,8 +18,8 @@ const
     navheight = 50,
     headerheight = 50,
     footerheight = 55,
-    bodyheight = windowheight - (navheight + headerheight + footerheight + navpadding),
-    nofooterheight = windowheight - (navheight + headerheight)
+    listheight = windowheight - (navheight + headerheight + footerheight + navpadding),
+    bodyheight = windowheight - (navheight + headerheight)
 
 
 export const Colors = {
@@ -35,7 +40,7 @@ const lightStyleSheet = StyleSheet.create({
         ...baseStyles.app,
         backgroundColor: Colors.light,
     },
-    text : {
+    text: {
         color: Colors.lightfont
     }
 });
@@ -45,12 +50,17 @@ const darkStyleSheet = StyleSheet.create({
         ...baseStyles.app,
         backgroundColor: Colors.dark,
     },
-    text : {
+    text: {
         color: Colors.darkfont
     }
 });
 
 export const mainStyles = StyleSheet.create({
+    body: {
+        width: '100%',
+        flex: Platform.OS === 'web' ? -1 : 1,
+        height: Platform.OS === 'web' ? bodyheight : 'auto',
+    },
     navigation: {
         flexDirection: 'row',
         width: '100%',
@@ -81,9 +91,9 @@ export const mainStyles = StyleSheet.create({
         alignItems: 'center'
     },
     list: {
-        flex: 1,
+        flex: Platform.OS === 'web' ? -1 : 1,
         width: '100%',
-        height: Platform.OS === 'web' ? bodyheight : 'auto',
+        height: Platform.OS === 'web' ? listheight : 'auto',
     },
     listtitle: {
         marginTop: 10,
@@ -137,7 +147,7 @@ export const mainStyles = StyleSheet.create({
  * @param {String} useTheme `dark` or `light` (default)
  */
 export default function getStyleSheet(useTheme) {
-    if( useTheme === 'dark' ) return {...mainStyles, ...darkStyleSheet}
-    else return {...mainStyles, ...lightStyleSheet}
-    
+    if (useTheme === 'dark') return { ...mainStyles, ...darkStyleSheet }
+    else return { ...mainStyles, ...lightStyleSheet }
+
 }

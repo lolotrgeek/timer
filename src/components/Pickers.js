@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import 'date-fns';
 import MomentUtils from '@date-io/moment'
 import { View, Button, TouchableOpacity } from 'react-native';
 import Text from './Text'
 import { MuiPickersUtilsProvider, TimePicker, DatePicker } from '@material-ui/pickers';
 import { createMuiTheme } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
-import { dateSimple, simpleDate, timeString } from '../constants/Functions'
+import { dateSimple, timeString } from '../constants/Functions'
 
 const materialTheme = createMuiTheme({
   overrides: {
