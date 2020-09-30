@@ -140,6 +140,13 @@ export const mainStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly'
     },
+    sidemenu: {
+        position: 'absolute',
+        top: 0 ,
+        right: 0 ,
+        backgroundColor: 'transparent',
+        zIndex: 1500,
+    },
 });
 
 /**
