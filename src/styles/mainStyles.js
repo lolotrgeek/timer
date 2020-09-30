@@ -34,7 +34,6 @@ const lightStyleSheet = StyleSheet.create({
     app: {
         ...baseStyles.app,
         backgroundColor: Colors.light,
-        color: Colors.lightfont
     },
     text : {
         color: Colors.lightfont
@@ -45,7 +44,6 @@ const darkStyleSheet = StyleSheet.create({
     app: {
         ...baseStyles.app,
         backgroundColor: Colors.dark,
-        color: Colors.darkfont
     },
     text : {
         color: Colors.darkfont
