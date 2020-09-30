@@ -9,5 +9,7 @@ let state = {
     projects:[]
 }
 
-
+// TODO settings:
+// user -> settings -> device name -> {colors, ...}
+// device names [web. android, ios, desktop]
 appState({ debug, state, messenger, chain, store, trimSoul })

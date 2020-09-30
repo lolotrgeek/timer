@@ -78,7 +78,7 @@ export const toDate = moment => moment.toDate()
 export const isYesterday = (date, format) => {
     let today = moment(new Date())
     let yesterday = today.clone().subtract(1, 'days').startOf('day')
-    if(!format) format = 'MM-DD-YYYY'
+    if (!format) format = 'MM-DD-YYYY'
     return moment(date, format).isSame(yesterday)
 }
 /**
@@ -104,15 +104,15 @@ const addSeconds = (date, amount) => {
  */
 export const simpleDateContructor = string => {
     let date = string.split('-')
-    let month = parseInt(date[0])-1
+    let month = parseInt(date[0]) - 1
     let day = parseInt(date[1])
     let year = parseInt(date[2])
-    return new Date(year, month, day) 
+    return new Date(year, month, day)
 }
 
 export const isToday = (date, format) => {
     let given = simpleDateContructor(date)
-    if(!format) format = 'MM-DD-YYYY'
+    if (!format) format = 'MM-DD-YYYY'
     let same = moment(date, format).isSame(new Date(), 'day')
     debug && console.log('isToday?: ', date, new Date(), same)
     return same
@@ -152,10 +152,10 @@ export const getMonth = date => {
  */
 export const simpleDate = date => moment(date ? date : new Date()).format("YYYY-MM-DD")
 export const simpleDateOld = date => date.getDate() + " " + getMonth(date) + " " + date.getFullYear()
-
 export const fullDate = date => moment(date).format("ddd MMM Do YYYY, h:mm:ss a")
 export const fullTime = date => moment(date).format("h:mm:ss a")
 export const fullDay = date => moment(date).format("ddd MMM Do YYYY")
+export const readDay = date => moment(date, 'MM-DD-YYYY').format("ddd MMM D")
 /**
  * 
  */
@@ -165,7 +165,7 @@ export const listDay = timers => timers.map(timer => new Date(timer.started))
  * @param {*} start 
  * @param {*} end 
  */
-export const timeRules = (start, end) => moment(start).isBefore(end) 
+export const timeRules = (start, end) => moment(start).isBefore(end)
 
 /**
  * 
@@ -210,7 +210,7 @@ export const totalProjectTime = timers => timers.reduce((acc, timer) => acc + ti
  * 
  * @param {*} datestring 
  */
-export const sayDay = datestring => isToday(datestring) ? 'Today' : isYesterday(datestring) ? 'Yesterday' : datestring
+export const sayDay = datestring => isToday(datestring) ? 'Today' : isYesterday(datestring) ? 'Yesterday' : readDay( datestring)
 /**
  * 
  * @param {*} t timestring or date object
@@ -479,3 +479,4 @@ export const sumProjectTimers = dayheaders => {
     })
 
 }
+
