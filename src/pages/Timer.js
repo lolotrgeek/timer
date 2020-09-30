@@ -75,7 +75,7 @@ export default function Timer({ useHistory, useParams, styles }) {
     const onTimeStart = date => { messenger.emit('chooseNewStart', new Date(date)); setRefresh(!refresh) }
     const onTimeEnd = date => { messenger.emit('chooseNewEnd', new Date(date)); setRefresh(!refresh) }
 
-    if (!timer || !timer.id) return (<Text>No Timer</Text>)
+    if (!timer || !timer.id) return (<View style={styles.header}><Text style={styles.title}>No Timer</Text></View>)
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.list}>
@@ -93,6 +93,7 @@ export default function Timer({ useHistory, useParams, styles }) {
                         previousDay={() => { messenger.emit('prevDay', timer); setRefresh(!refresh) }}
                         nextDay={() => { messenger.emit('nextDay', timer); setRefresh(!refresh) }}
                         running={timerId === 'running'}
+                        styles={styles}
                     />
                     {/* <Text>{timer.started.toString()}</Text> */}
                     <PickerTime
@@ -101,6 +102,8 @@ export default function Timer({ useHistory, useParams, styles }) {
                         onTimeChange={onTimeStart}
                         addMinutes={() => { messenger.emit('increaseStarted', timer); setRefresh(!refresh) }}
                         subtractMinutes={() => { messenger.emit('decreaseStarted', timer); setRefresh(!refresh) }}
+                        styles={styles}
+
                     />
                     {/* <Text>{timer.ended.toString()}</Text> */}
                     <PickerTime
@@ -110,6 +113,8 @@ export default function Timer({ useHistory, useParams, styles }) {
                         addMinutes={() => { messenger.emit('increaseEnded', timer); setRefresh(!refresh) }}
                         running={timerId === 'running'}
                         subtractMinutes={() => { messenger.emit('decreaseEnded', timer); setRefresh(!refresh) }}
+                        styles={styles}
+
                     />
                     <View style={styles.button}>
                         <Button title='Save' onPress={() => {
