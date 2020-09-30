@@ -22,7 +22,7 @@ export function PickerDate(props) {
       {show && (
         <DateTimePicker
           mode='date'
-          value={props.startdate}
+          value={new Date(props.startdate)}
           onChange={(event, newDate) => { setShow(false); props.onDateChange(newDate); }}
         />)}
 
