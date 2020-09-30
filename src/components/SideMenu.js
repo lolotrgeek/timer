@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { View, TouchableOpacity } from 'react-native'
+import ThemeContext from '../contexts/ThemeContext';
 
 const debug = false
 
@@ -15,6 +16,7 @@ const ITEM_HEIGHT = 48;
 export default function SideMenu(props) {
     const [show, setShow] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
+    const styles = useContext(ThemeContext)
 
     const handleClick = event => {
         console.log(event.nativeEvent)
@@ -30,11 +32,11 @@ export default function SideMenu(props) {
     return (
         <View style={{}} >
             {debug && console.log(anchorEl)}
-            <TouchableOpacity onPress={(event) => handleClick(event)} style={{}} >
-                <MenuIcon size={30} color='black' />
+            <TouchableOpacity onPress={(event) => handleClick(event)} >
+                <Text>Menu</Text>
             </TouchableOpacity>
 
-            <View
+            <View 
                 anchor={anchorEl}
                 keepMounted
                 visible={show}
@@ -42,8 +44,8 @@ export default function SideMenu(props) {
                 contentStyle={{
                     maxHeight: ITEM_HEIGHT * 4.5,
                     width: 200,
-                }
-                }
+                }}
+                style={styles.sidemenu}
             >
                 {Array.isArray(props.options) ? props.options.map(option => (
                     option.link ?
