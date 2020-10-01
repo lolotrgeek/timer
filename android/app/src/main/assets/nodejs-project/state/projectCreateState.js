@@ -32,11 +32,8 @@ exports.projectCreate = (p) => {
             if (!project) reject('No Project')
             p.debug && console.log('[react Data] Creating Project', project)
             // store.set(chain.projectHistory(project.id), project)
-            p.store.chainer(p.chain.project(project.id), p.store.app).put(project, ack => {
-                p.debug && console.log('[NODE_DEBUG_PUT] ERR? ', ack.err)
-                if (!ack.err) resolve(project)
-                else reject(ack.err)
-            })
+            p.store.put(p.chain.project(project.id), project)
+            resolve(project)
         })
     }
 }

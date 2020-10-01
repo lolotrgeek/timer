@@ -27,10 +27,8 @@ exports.projectEditState = p => {
                 updateProject(p.state.edit).then(project => {
                     p.debug && console.log(`success! ${project.id}`)
                     p.messenger.emit('ProjectCreateSuccess', project)
-                    p.setAlert(['Success',`Project Edited!`,])
                 }).catch(err => {
                     p.debug && console.log(err)
-                    p.setAlert(['Error',`Project not Edited!`,])
                 })
             }
         }
