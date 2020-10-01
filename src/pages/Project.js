@@ -6,7 +6,9 @@ import { View, SafeAreaView, Button, SectionList } from 'react-native';
 import Text from '../components/Text'
 import { timeSpan, secondsToString, fullDay } from '../constants/Functions'
 import messenger from '../constants/Messenger'
-import { projectHistorylink, projectsListLink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
+import { projectHistorylink, projectEditlink, timerlink, timerTrashlink, timernew } from '../routes'
+import { useAlert } from '../hooks/useAlert'
+
 
 const debug = false
 const test = false
@@ -25,8 +27,13 @@ export default function Project({ useHistory, useParams, styles }) {
     const timerList = useRef()
     const refreshTimeout = useRef()
     const refreshAttempts = useRef()
+    const alert = useAlert()
 
     useEffect(() => {
+        messenger.addListener('alert', msg => {
+            if (msg && msg.length > 0) alert.show(msg[1], { type: msg[0] })
+          })
+      
         messenger.addListener(`${projectId}/project`, event => {
             if (event) setProject(event)
         })
@@ -101,7 +108,7 @@ export default function Project({ useHistory, useParams, styles }) {
             {project && project.status !== 'deleted' ?
                 <Button title='Delete' onPress={() => {
                     messenger.emit('ProjectDelete', project)
-                    history.push(projectsListLink())
+                    history.goBack()
                 }} />
                 : project.status === 'deleted' ?
                     <Button title='Restore' onPress={() => { messenger.emit('ProjectRestore', project) }} />
