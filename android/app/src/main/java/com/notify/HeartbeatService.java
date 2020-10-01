@@ -317,7 +317,7 @@ public class HeartbeatService extends NodeJS {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher).setContentTitle(TITLE).setContentText(SUBTITLE)
                 .setContentIntent(contentIntent).setPriority(NotificationCompat.PRIORITY_HIGH).setOnlyAlertOnce(true)
-                .setOngoing(true).addAction(buttonAction);
+                .setOngoing(true).addAction(buttonAction).setSilent(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         // send notification
@@ -345,8 +345,8 @@ public class HeartbeatService extends NodeJS {
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher).setContentTitle(TITLE).setContentText(SUBTITLE)
-                .setContentIntent(contentIntent).setPriority(NotificationCompat.PRIORITY_HIGH).setOnlyAlertOnce(true)
-                .setOngoing(false).addAction(buttonAction);
+                .setContentIntent(contentIntent).setPriority(NotificationCompat.PRIORITY_LOW).setOnlyAlertOnce(true)
+                .setOngoing(false).addAction(buttonAction).setSilent(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         // send notification
@@ -366,7 +366,7 @@ public class HeartbeatService extends NodeJS {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Timer")
                 .setContentText("Listening...").setSmallIcon(R.mipmap.ic_launcher).setContentIntent(contentIntent)
-                .setOnlyAlertOnce(true).setPriority(NotificationCompat.PRIORITY_HIGH).setOngoing(true).build();
+                .setOnlyAlertOnce(true).setPriority(NotificationCompat.PRIORITY_LOW).setOngoing(true).setSilent(true).build();
         startForeground(SERVICE_NOTIFICATION_ID, notification);
         ISRUNNING = true;
         return START_STICKY;
