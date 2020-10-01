@@ -30,12 +30,8 @@ public class HeartbeatModule extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "Heartbeat";
     public static ReactApplicationContext reactContext;
-    private static final int SERVICE_NOTIFICATION_ID = 12345;
-    private static final String CHANNEL_ID = "HEARTBEAT";
     private static String TITLE = "Title";
     private static String STATUS = "STOPPED";
-    private static String COUNT = "PAUSED";
-    private static String TICK;
     private static boolean DEBUG = false;
     private static HeartbeatModule instance;
 

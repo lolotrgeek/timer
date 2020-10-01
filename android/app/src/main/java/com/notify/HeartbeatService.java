@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.RequiresApi;
@@ -15,7 +14,6 @@ import android.app.NotificationManager;
 import android.app.NotificationChannel;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -31,8 +29,6 @@ public class HeartbeatService extends NodeJS {
     private static final String CHANNEL_ID = "HEARTBEAT";
     public String TITLE;
     public String SUBTITLE;
-    private static int INTERVAL = 1000;
-    public static int COUNT = 0;
     private static HeartbeatService instance;
     private static String TAG = "HEARTBEAT-SERVICE";
     private static boolean DEBUG = false;
@@ -52,34 +48,9 @@ public class HeartbeatService extends NodeJS {
     public Context getApplicationContext() {
         return super.getApplicationContext();
     }
-// private int CURRENT_TICK = 0;
-
-    private Handler countHandler = new Handler();
-    private Runnable runnableCode = new Runnable() {
-        @Override
-        public void run() {
-            COUNT++;
-            SUBTITLE = Integer.toString(COUNT);
-            notificationUpdate();
-            sendMessageToReact("count", SUBTITLE);
-            countHandler.postDelayed(this, INTERVAL);
-        }
-    };
 
     public static HeartbeatService getInstance() {
         return instance;
-    }
-
-    // resumes the countHandler, use carefully, can cause service to step on itself
-    // TODO: make this a closure
-    public void resume() {
-        this.countHandler.post(this.runnableCode);
-    }
-
-    // suspends the countHandler, use carefully, can cause service to step on itself
-    // TODO: make this a closure
-    public void pause() {
-        this.countHandler.removeCallbacks(this.runnableCode);
     }
 
     public void sendMessageToReact(String event, String msg) {
@@ -263,6 +234,7 @@ public class HeartbeatService extends NodeJS {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "HEARTBEAT", importance);
+            channel.setImportance(importance);
             channel.setDescription("CHANEL DESCRIPTION");
             channel.setSound(null, null);
             channel.setShowBadge(false);
@@ -289,7 +261,6 @@ public class HeartbeatService extends NodeJS {
     public void onDestroy() {
         super.onDestroy();
         ISRUNNING = false;
-        this.countHandler.removeCallbacks(this.runnableCode);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
