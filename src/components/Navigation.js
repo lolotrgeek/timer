@@ -21,7 +21,7 @@ export default function Navigation({ useHistory, useLocation }) {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, height: 50, }}>
             <View style={{ margin: 10, }}>
                 {location && typeof location === 'object' && location.pathname === "/" ?
-                    <View></View> : <Button title="back" onPress={() => history.goBack()} />
+                    <View></View> : <Button title="back" onPress={() => history.length > 0  ? history.goBack() : history.push('/') } />
                 }
             </View>
             <View style={{ margin: 10 }}>

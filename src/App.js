@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaView } from 'react-native'
-import { BrowserRouter as Router, Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
+import { MemoryRouter as Router, Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
 import * as routes from './routes'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
