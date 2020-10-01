@@ -9,5 +9,6 @@ let state = {
     edit: {},
     original: {}
 }
+const setAlert = alert => messenger.emit('alert', alert)
 
-projectEditState({messenger, colorValid, nameValid, projectValid, trimSoul, chain, store, debug, state})
+projectEditState({messenger, colorValid, nameValid, projectValid, trimSoul, chain, store, debug, state, setAlert})

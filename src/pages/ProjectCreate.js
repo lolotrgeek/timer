@@ -12,10 +12,11 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(styles.text.color)
   const [selected, setSelected] = useState(0)
-  const [alert, setAlert] = useState([])
+  const alert = useAlert()
 
   useEffect(() => {
     if (projectId && typeof projectId === 'string') {
+      console.log(projectId)
       Messenger.addListener(`${projectId}_details`, msg => {
         setName(msg.name)
         setColor(msg.color)
@@ -23,27 +24,16 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
       })
       Messenger.emit('ProjectDetails', projectId)
     }
+    Messenger.addListener('alert', msg => {
+      if (msg && msg.length > 0) alert.show(msg[1], { type: msg[0] })
+    })
+
     Messenger.addListener('ProjectCreateSuccess', msg => {
-      // TODO: being pushed multiple times...
-      debug && console.log('ProjectCreateSuccess', msg)
-      setAlert([
-        'Success',
-        `Project ${name} Created!`,
-      ])
       // if (projectValid(msg)) history.push(projectlink(msg.id))
       if (projectValid(msg)) history.goBack()
     })
-
-    Messenger.addListener('ProjectCreateError', msg => {
-      setAlert([
-        'Error',
-        msg,
-      ])
-      debug && console.log(msg)
-    })
-
     return () => {
-      Messenger.removeAllListeners('ProjectCreateError')
+      Messenger.removeAllListeners('alert')
       Messenger.removeAllListeners('ProjectCreateSuccess')
       if (projectId && typeof projectId === 'string') {
         Messenger.removeAllListeners(`${projectId}_details`)
@@ -58,46 +48,18 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
     setSelected(swatch)
   }
 
-  const handleSubmitProject = () => {
-    if (!nameValid(name)) {
-      // alert('Need valid name');
-      setAlert([
-        'Error',
-        'Need valid name',
-      ])
-      return false
-    }
-    if (!colorValid(color)) {
-      // alert('Need valid color');
-      setAlert([
-        'Error',
-        'Need valid color',
-      ])
-      return false
-    }
-    else {
-      setAlert([
-        'Success',
-        `Project ${name} Created!`,
-      ])
-      return true
-    }
-  }
-
   const submit = () => {
-    if (handleSubmitProject() === true) {
-      if (projectId && typeof projectId === 'string') {
-        Messenger.emit('ProjectEdit', { name, color, selected })
-      } else {
-        Messenger.emit('ProjectCreate', { name, color, selected })
-      }
+    if (projectId && typeof projectId === 'string') {
+      Messenger.emit('ProjectEdit', { name, color, selected })
+    } else {
+      Messenger.emit('ProjectCreate', { name, color, selected })
     }
   }
 
   return (
     <View style={styles.containercenter}>
       <TextInput
-        style={[{color: color }, styles.input]}
+        style={[{ color: color }, styles.input]}
         value={name}
         onChangeText={text => setName(text)}
         maxLength={30}

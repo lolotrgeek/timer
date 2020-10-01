@@ -15,18 +15,22 @@ exports.projectEditState = p => {
             p.state.edit.name = event.name
             p.state.edit.selected = event.selected
             if (!p.nameValid(p.state.edit.name)) {
-                p.messenger.emit('ProjectCreateError', `${p.state.edit.name} is not valid name`)
+                p.setAlert(['Error','Need valid name',])
                 return false
             }
             if (!p.colorValid(p.state.edit.color)) {
                 // alert('Need valid color');
-                p.messenger.emit('ProjectCreateError', `${p.state.edit.color} is not valid color`)
+                p.setAlert(['Error','Need valid color',])
                 return false
             }
             else if (p.projectValid(p.state.edit)) {
                 updateProject(p.state.edit).then(project => {
                     p.debug && console.log(`success! ${project.id}`)
                     p.messenger.emit('ProjectCreateSuccess', project)
+                    p.setAlert(['Success',`Project Edited!`,])
+                }).catch(err => {
+                    p.debug && console.log(err)
+                    p.setAlert(['Error',`Project not Edited!`,])
                 })
             }
         }
@@ -90,8 +94,10 @@ exports.projectEditState = p => {
                         })
                     })
                 }
+                p.setAlert(['Success',`Project Updated!`,])
                 resolve(projectEdit)
             } catch (error) {
+                p.setAlert(['Error',' Could not update.',])
                 reject('could not update ', error)
             }
         })
@@ -126,8 +132,10 @@ exports.projectEditState = p => {
                 if(running && running.project === projectDelete.id) {
                     p.messenger.emit('stop', { projectId: projectDelete.id })
                 }
+                p.setAlert(['Success',`Project Deleted!`,])
                 resolve(projectDelete)
             } catch (error) {
+                p.setAlert(['Error',' Could not delete.',])
                 reject('could not delete ', error)
             }
         })
@@ -156,8 +164,10 @@ exports.projectEditState = p => {
                         })
                     })
                 }
+                p.setAlert(['Success',`Project Restored!`,])
                 resolve(project)
             } catch (error) {
+                p.setAlert(['Error',' Could not restore.',])
                 reject('could not restore ', error)
             }
 
