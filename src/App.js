@@ -18,6 +18,7 @@ import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
 import Navigation from './components/Navigation'
+import None from './pages/404'
 
 const alertOptions = {
     // you can also just use 'bottom center'
@@ -29,7 +30,7 @@ const alertOptions = {
 }
 
 export default function App() {
-    const styles = getStyleSheet('dark')
+    const styles = getStyleSheet('dark') // TODO: use context here
     return (
         <SafeAreaView style={styles.app}>
             <AlertProvider template={AlertTemplate} {...alertOptions}>
@@ -48,6 +49,7 @@ export default function App() {
                         <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} styles={styles} />} />
                         <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} styles={styles} />} />
                         <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                        <Route children={<None useLocation={useLocation} styles={styles} />} />
                     </Switch>
                 </Router >
             </AlertProvider>
