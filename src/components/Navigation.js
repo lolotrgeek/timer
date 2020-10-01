@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Button } from 'react-native'
 import Text from './Text'
 import messenger from '../constants/Messenger'
+import SideMenu from './SideMenu'
 
 
 export default function Navigation({ useHistory, useLocation }) {
@@ -22,9 +23,6 @@ export default function Navigation({ useHistory, useLocation }) {
                 {location && typeof location === 'object' && location.pathname === "/" ?
                     <View></View> : <Button title="back" onPress={() => history.goBack()} />
                 }
-            </View>
-            <View style={{ margin: 10 }}>
-                
             </View>
             <View style={{ margin: 10 }}>
                 <Text >{online}</Text>

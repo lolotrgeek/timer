@@ -142,10 +142,13 @@ export const mainStyles = StyleSheet.create({
     },
     sidemenu: {
         position: 'absolute',
-        top: 0 ,
+        top: 50 ,
         right: 0 ,
         backgroundColor: 'transparent',
         zIndex: 1500,
+        height: 100,
+        width: 50,
+        backgroundColor: 'white'
     },
 });
 

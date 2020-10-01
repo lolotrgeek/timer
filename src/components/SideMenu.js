@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { View, TouchableOpacity } from 'react-native'
+import Text from './Text'
 import ThemeContext from '../contexts/ThemeContext';
 
 const debug = false
@@ -28,41 +29,36 @@ export default function SideMenu(props) {
         setShow(false);
     };
 
-
+// TODO: NEXT ACTION FIX MENU STYLING
     return (
-        <View style={{}} >
+        <View>
             {debug && console.log(anchorEl)}
             <TouchableOpacity onPress={(event) => handleClick(event)} >
                 <Text>Menu</Text>
             </TouchableOpacity>
 
             <View 
-                anchor={anchorEl}
-                keepMounted
-                visible={show}
-                onDismiss={handleClose}
-                contentStyle={{
+                style={{
                     maxHeight: ITEM_HEIGHT * 4.5,
                     width: 200,
                 }}
-                style={styles.sidemenu}
+                style={[{display: show ? 'flex' :'none'}, styles.sidemenu]}
             >
                 {Array.isArray(props.options) ? props.options.map(option => (
                     option.link ?
-
-                        <View key={option.name} onPress={() => {
+                        <Text key={option.name} onPress={() => {
                             handleClose()
                             if (option.action) return option.action()
                         }}>
                             {option.name}
-                        </View>
+                        </Text>
                         :
-                        <View key={option.name} onPress={() => {
+                        <Text key={option.name} onPress={() => {
                             handleClose()
                             if (option.action) return option.action()
                         }}>
                             {option.name}
-                        </View>
+                        </Text>
                 )) : null}
             </View>
         </View>
