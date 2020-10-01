@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { SafeAreaView } from 'react-native'
 import { MemoryRouter as Router, Switch, Route, useParams, useHistory, useLocation } from "react-router-dom"
 import * as routes from './routes'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
-import getStyleSheet from './styles/mainStyles'
+import ThemeContext from './contexts/ThemeContext'
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -30,7 +30,7 @@ const alertOptions = {
 }
 
 export default function App() {
-    const styles = getStyleSheet('dark') // TODO: use context here
+    const styles = useContext(ThemeContext)
     return (
         <SafeAreaView style={styles.app}>
             <AlertProvider template={AlertTemplate} {...alertOptions}>

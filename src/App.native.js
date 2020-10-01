@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { SafeAreaView } from 'react-native'
 import { NativeRouter, Switch, Route, useParams, useHistory, BackButton, useLocation } from "react-router-native"
 import * as routes from './routes'
-import getStyleSheet from './styles/mainStyles'
+import ThemeContext from './contexts/ThemeContext'
 
 // NOTE: order matters for parameter routing
 import Timeline from './pages/Timeline'
@@ -18,7 +18,7 @@ import Running from './pages/Running'
 import Navigation from './components/Navigation'
 
 export default function App() {
-    const styles = getStyleSheet('dark')
+    const styles = useContext(ThemeContext)
     return (
         <SafeAreaView style={styles.app}>
             <NativeRouter>
