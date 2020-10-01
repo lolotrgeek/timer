@@ -1,18 +1,25 @@
 # Timer
-Project based time tracking app to demonstrate the power of backend native nodeJS with realtime updates.
+Project based time tracking app to demonstrate the power of native nodeJS service with realtime updates.
 
 ## Architecture
-runs a nodeJS instanace as a background service on Android which handles storage and state.
+The native layer acts as a messaging system and a UI placeholder.
+- the messaging system runs as a service
+- while the UI placeholder runs as an activity. 
+
+Runs a nodeJS instanace as a background service on Android which handles storage and state.
 This version uses Gun for real time storage syncing with a graph across many devices. 
 
 It is designed so that any storage provider can be swapped in easily with a simple adapater using the chainer API.
 
-Data is moved around the app using a messaging system. This allows everything to be decoupled.
+Data is moved around the app with an emit/listen messaging pattern. This allows everything to be decoupled.
 On the Data side this looks like this:
 
 React <-> Native Bridge <-> NodeJS
 
 The native bridge exposes the native APIs and props up frontend and service wrappers so that javascript can be executed in both the UI and Service layers of the app.
+
+- Data layer
+-
 
 ## Install
 Install UI
