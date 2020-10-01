@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { View, TextInput, Button, } from 'react-native'
 import { nameValid, colorValid, projectValid } from '../constants/Validators'
-import { projectlink, projectsListLink } from '../routes'
 import Messenger from '../constants/Messenger'
 import { ColorPicker } from '../components/ColorPicker'
+import { useAlert } from '../hooks/useAlert'
 const debug = false
 
 export default function ProjectCreate({ useHistory, useParams, styles }) {
@@ -31,7 +31,7 @@ export default function ProjectCreate({ useHistory, useParams, styles }) {
         `Project ${name} Created!`,
       ])
       // if (projectValid(msg)) history.push(projectlink(msg.id))
-      if (projectValid(msg)) history.push(projectsListLink(msg.id))
+      if (projectValid(msg)) history.goBack()
     })
 
     Messenger.addListener('ProjectCreateError', msg => {

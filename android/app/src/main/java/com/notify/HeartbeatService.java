@@ -328,6 +328,8 @@ public class HeartbeatService extends NodeJS {
         // SERVICE_NOTIFICATION_ID is a unique int for each notification that you must
         // define
         notificationManager.notify(SERVICE_NOTIFICATION_ID, builder.build());
+
+        // Makes notification dismissible, but then the Service is vulnerable to garbage collection.
         stopForeground(true);
     }
 
