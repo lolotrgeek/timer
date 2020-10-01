@@ -269,6 +269,10 @@ public class HeartbeatService extends NodeJS {
         super.systemMessageToNode();
     }
 
+    public void stopService(){
+        stopForeground(true);
+    }
+
     public void notificationUpdate() {
         if (DEBUG || DEBUG_COUNT) Log.i(TAG, "updating notification");
         // set Intent for what happens when tapping notification
@@ -324,6 +328,7 @@ public class HeartbeatService extends NodeJS {
         // SERVICE_NOTIFICATION_ID is a unique int for each notification that you must
         // define
         notificationManager.notify(SERVICE_NOTIFICATION_ID, builder.build());
+        stopForeground(true);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
