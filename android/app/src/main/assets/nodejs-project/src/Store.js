@@ -3,6 +3,7 @@
 const Gun = require('gun')
 const path = require('path')
 const messenger = require('./Messenger')
+const fs = require("fs")
 
 const debug = false
 const config = {
@@ -121,6 +122,18 @@ const chainer = (input, chain) => {
 }
 
 const getOne = (msg) => {
+    const input = inputParser(msg)
+    debug && console.log('msg from react', input)
+    const chain = chainer(input, app)
+    // debug && console.log('[React node] Chain :', chain)
+    chain.once((data, key) => {
+        const foundData = trimSoul(data)
+        debug && console.log('[GUN node] getOne Data Found: ', foundData)
+        messenger.emit(input, foundData)
+    })
+}
+
+const getOnce = (msg) => {
     const input = inputParser(msg)
     debug && console.log('msg from react', input)
     const chain = chainer(input, app)
@@ -286,16 +299,80 @@ const offAll = msg => {
     chain.off()
 }
 
+// EXPORT FUNCTIONS
+
+/**
+ * 
+ * @param {array} values typically an array of `Object.values()`
+ */
+function iskeyset(values) {
+    return values.some(value => value && value['#'] && typeof value['#'] === 'string')
+}
+
+/**
+ * 
+ * @param {*} file 
+ * @param {*} entry 
+ */
+const save = (file, entry) => fs.writeFile(file, entry, "utf8", () => { })
+/**
+ * Walks the graph
+ * @param {*} key 
+ * @param {*} final 
+ * @todo works, but seems to miss certain keys... cause unknown... see TODO below
+ */
+const recursiveCall = (key, final) => {
+    return new Promise((resolve) => {
+        
+        gun.get(key).once((current, currentkey) => {
+            if (current && current !== null && current !== undefined) {
+                current = trimSoul(current)
+                final[key] = current
+                let entry = `${JSON.stringify(key)}:${JSON.stringify(current)}`
+                // final.push(entry)
+                // log(`[Updating] ${JSON.stringify(entry)}`)
+                let values = Object.values(current)
+                if (iskeyset(values) === true) {
+                    values.forEach( async value => {
+                        resolve(recursiveCall(value['#'], final))
+                    })
+                }
+                else {
+                    save(output, JSON.stringify(final))
+                    return resolve()
+                }
+            }
+        })
+        // printProgress(key)
+    })
+
+}
+
+
+/**
+ * Convert radata into JSON and save it
+ */
+const Export = () => {
+    let final = {}
+    recursiveCall('app', final).then(() => {
+        debug && console.log('done.')
+    });
+    // root promise will resolve before the children promises resolve, not sure how to await recursive promises...
+
+}
+
 module.exports = {
     updateStatus,
     chainer,
     app,
     get: getOne,
+    getOnce: getOnce,
     getAll,
     getAllOnce,
     put: putAll,
     set: setAll,
     unset: unsetAll,
     off: offAll,
+    export: Export,
 };
 
