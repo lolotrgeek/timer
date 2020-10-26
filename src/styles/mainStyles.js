@@ -2,26 +2,27 @@ import {
     StyleSheet,
     Dimensions,
     Platform,
-} from 'react-native';
-let windowheight = Dimensions.get('window').height
+} from 'react-native'
 
-if (Platform.OS === 'web') {
-    Dimensions.addEventListener("change", ({window}) => {
-        windowheight = window.height
-    })
-}
 const
     titlefont = 30,
     navpadding = 10,
     footerpadding = 10,
     headerpadding = 10,
-    navheight = 50,
+    navheight = 50
+
+let
     headerheight = 50,
     footerheight = 55,
+    windowheight = Dimensions.get('window').height,
     listheight = windowheight - (navheight + headerheight + footerheight + navpadding),
     bodyheight = windowheight - (navheight + headerheight)
 
-
+if (Platform.OS === 'web') {
+    Dimensions.addEventListener("change", ({ window }) => {
+        windowheight = window.height
+    })
+}
 export const Colors = {
     dark: 'black',
     darkfont: 'white',
@@ -58,8 +59,9 @@ const darkStyleSheet = StyleSheet.create({
 export const mainStyles = StyleSheet.create({
     body: {
         width: '100%',
-        flex: Platform.OS === 'web' ? -1 : 1,
-        height: Platform.OS === 'web' ? bodyheight : 'auto',
+        // flex: Platform.OS === 'web' ? -1 : 1,
+        // height: Platform.OS === 'web' ? bodyheight : 'auto',
+        aspectRatio: 1.5,
     },
     navigation: {
         flexDirection: 'row',
@@ -142,8 +144,8 @@ export const mainStyles = StyleSheet.create({
     },
     sidemenu: {
         position: 'absolute',
-        top: 50 ,
-        right: 0 ,
+        top: 50,
+        right: 0,
         backgroundColor: 'transparent',
         zIndex: 1500,
         height: 100,
