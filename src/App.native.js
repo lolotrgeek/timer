@@ -15,6 +15,7 @@ import Timer from './pages/Timer'
 import TimerHistory from './pages/TimerHistory'
 import TimerTrash from './pages/TimerTrash'
 import Running from './pages/Running'
+import Settings from './pages/Settings'
 import Navigation from './components/Navigation'
 
 export default function App() {
@@ -37,6 +38,7 @@ export default function App() {
                         <Route path={routes.timerHistorylink(':timerId')} children={<TimerHistory useParams={useParams} useHistory={useHistory} styles={styles} />} />
                         <Route path={routes.timerTrashlink(':projectId')} children={<TimerTrash useParams={useParams} useHistory={useHistory} styles={styles} />} />
                         <Route path={routes.runninglink()} children={<Running useParams={useParams} useHistory={useHistory} styles={styles} />} />
+                        <Route path={routes.settingslink()} children={<Settings useParams={useParams} useHistory={useHistory} styles={styles} />} />
                     </Switch>
                 </BackButton>
             </NativeRouter >

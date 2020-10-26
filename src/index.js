@@ -24,4 +24,5 @@ if (Platform.OS === 'web') {
   require('./state/projectWeb')
   require('./state/projectsStateWeb')
   require('./state/projectEditWeb')
+  require('./state/settingsWeb')
 }

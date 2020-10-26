@@ -2,7 +2,7 @@ import React from 'react';
 import { View, SafeAreaView, Button, } from 'react-native';
 import Text from '../components/Text'
 import TimelineList from '../components/TimelineList'
-import { projectsListLink } from '../routes';
+import { projectsListLink, settingslink } from '../routes';
 
 export default function Timeline({ useHistory, styles }) {
     let history = useHistory()
@@ -17,6 +17,7 @@ export default function Timeline({ useHistory, styles }) {
         <View style={styles.footer}>
             <View style={styles.footerbuttons}>
             <Button title='Projects' onPress={() => history.push(projectsListLink())} />
+            <Button title='Settings' onPress={() => history.push(settingslink())} />
             </View>
         </View>
     )

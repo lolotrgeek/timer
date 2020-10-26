@@ -355,10 +355,8 @@ const recursiveCall = (key, final) => {
 const Export = () => {
     let final = {}
     recursiveCall('app', final).then(() => {
-        debug && console.log('done.')
+        console.log('Export!')
     });
-    // root promise will resolve before the children promises resolve, not sure how to await recursive promises...
-
 }
 
 module.exports = {
@@ -373,6 +371,6 @@ module.exports = {
     set: setAll,
     unset: unsetAll,
     off: offAll,
-    export: Export,
+    Export: Export,
 };
 

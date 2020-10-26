@@ -281,6 +281,13 @@ const offAll = msg => {
     chain.off()
 }
 
+/**
+ * TODO: choose to dump localstorage and send msg to have a node run an export
+ */
+const Export = () => {
+    console.log('Export!')
+}
+
 messenger.on('get', msg => {
     debug && console.log('[React node] incoming get: ' + typeof msg, msg)
     try {
@@ -345,6 +352,7 @@ export {
     setAll as set,
     unsetAll as unset,
     offAll as off,
+    Export,
     messenger as channel,
 };
 
