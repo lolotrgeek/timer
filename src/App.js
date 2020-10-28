@@ -36,7 +36,7 @@ export default function App() {
         <SafeAreaView style={styles.app}>
             <AlertProvider template={AlertTemplate} {...alertOptions}>
                 <Router>
-                    <Navigation useHistory={useHistory} useLocation={useLocation} />
+                    <Navigation useHistory={useHistory} useLocation={useLocation} styles={styles} />
                     <Switch >
                         <Route exact path="/" children={<Timeline useParams={useParams} useHistory={useHistory} styles={styles} />} />
                         <Route path={routes.projectsListLink()} children={<Projects useParams={useParams} useHistory={useHistory} styles={styles} />} />

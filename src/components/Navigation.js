@@ -5,7 +5,7 @@ import messenger from '../constants/Messenger'
 import SideMenu from './SideMenu'
 
 
-export default function Navigation({ useHistory, useLocation }) {
+export default function Navigation({ useHistory, useLocation, styles }) {
     const [online, setOnline] = useState('offline')
     let history = useHistory()
     let location = useLocation()
@@ -18,8 +18,8 @@ export default function Navigation({ useHistory, useLocation }) {
     })
 
     return (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, height: 50, }}>
-            <View style={{ margin: 10, }}>
+        <View style={styles.navigation}>
+            <View style={{ margin: 10,}}>
                 {location && typeof location === 'object' && location.pathname === "/" ?
                     <View></View> : <Button title="back" onPress={() => history.length > 0  ? history.goBack() : history.push('/') } />
                 }

@@ -6,7 +6,7 @@ import {
 
 const
     titlefont = 30,
-    navpadding = 10,
+    navpadding = 5,
     footerpadding = 10,
     headerpadding = 10,
     navheight = 50
@@ -16,6 +16,7 @@ let
     footerheight = 55,
     windowheight = Dimensions.get('window').height,
     listheight = windowheight - (navheight + headerheight + footerheight + navpadding),
+    listmargin = navheight + navpadding,
     bodyheight = windowheight - (navheight + headerheight)
 
 if (Platform.OS === 'web') {
@@ -30,13 +31,23 @@ export const Colors = {
     lightfont: 'black'
 }
 
+// TODO: compute CSS to inject as body styles for Web
+
 const baseStyles = StyleSheet.create({
     app: {
         flex: 1,
     },
+    body: {
+        width: '100%',
+        aspectRatio: 1.5,
+    }
 })
 
 const lightStyleSheet = StyleSheet.create({
+    body: {
+        ...baseStyles.body,
+        backgroundColor: Colors.light,
+    },
     app: {
         ...baseStyles.app,
         backgroundColor: Colors.light,
@@ -47,6 +58,10 @@ const lightStyleSheet = StyleSheet.create({
 });
 
 const darkStyleSheet = StyleSheet.create({
+    body: {
+        ...baseStyles.body,
+        backgroundColor: Colors.dark,
+    },
     app: {
         ...baseStyles.app,
         backgroundColor: Colors.dark,
@@ -56,21 +71,26 @@ const darkStyleSheet = StyleSheet.create({
     }
 });
 
-export const mainStyles = StyleSheet.create({
-    body: {
-        width: '100%',
-        // flex: Platform.OS === 'web' ? -1 : 1,
-        // height: Platform.OS === 'web' ? bodyheight : 'auto',
-        aspectRatio: 1.5,
-    },
+const mainStyles = StyleSheet.create({
+
     navigation: {
         flexDirection: 'row',
         width: '100%',
+        position: Platform.OS === 'web' ? 'fixed' : 'relative',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: navpadding,
+        height: navheight,
+        top: 0,
+        zIndex: 99999
     },
     header: {
         width: '100%',
-        maxWidth: Platform.OS === 'web' ? 400 : '100%',
         padding: headerpadding,
+        maxWidth: Platform.OS === 'web' ? 400 : '100%',
+        position: Platform.OS === 'web' ? 'fixed' : 'relative',
+        marginTop: Platform.OS === 'web' ? listmargin : 0,
+        top: 0
     },
     title: {
         fontSize: titlefont
@@ -82,11 +102,14 @@ export const mainStyles = StyleSheet.create({
         flex: 1,
         alignItems: 'flex-start',
         justifyContent: 'center',
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
     },
     containercenter: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
+
     },
     containerwidth: {
         maxWidth: Platform.OS === 'web' ? 400 : '100%',
@@ -95,7 +118,7 @@ export const mainStyles = StyleSheet.create({
     list: {
         flex: Platform.OS === 'web' ? -1 : 1,
         width: '100%',
-        height: Platform.OS === 'web' ? listheight : 'auto',
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
     },
     listtitle: {
         marginTop: 10,
@@ -135,7 +158,8 @@ export const mainStyles = StyleSheet.create({
         width: '100%',
         padding: footerpadding,
         backgroundColor: '#292929',
-        height: Platform.OS === 'web' ? footerheight : 'auto',
+        position: Platform.OS === 'web' ? 'fixed' : 'relative',
+        bottom: 0
     },
     footerbuttons: {
         maxWidth: Platform.OS === 'web' ? 400 : '100%',
