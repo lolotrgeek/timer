@@ -282,11 +282,31 @@ const offAll = msg => {
 }
 
 /**
- * TODO: choose to dump localstorage and send msg to have a node run an export
+ * Downloads content as a file
+ * @param {*} content 
+ * @param {string} filename 
+ * @param {string} contentType 'text/plain'
+ * @ref https://robkendal.co.uk/blog/2020-04-17-saving-text-to-client-side-file-using-vanilla-js
+ */
+const downloadToFile = (content, filename, contentType) => {
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: contentType });
+
+    a.href = URL.createObjectURL(file);
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(a.href);
+};
+
+/**
+ * Exports Graph to JSON file
  */
 const Export = () => {
     console.log('Export!')
-    messenger.emit('alert', ['Success','Export done!'])
+    let data = localStorage.getItem('gun/')
+    downloadToFile(data, 'export.json', 'text/plain')
+    messenger.emit('alert', ['Success', 'Export done!'])
 }
 
 messenger.on('get', msg => {
