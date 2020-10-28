@@ -387,6 +387,7 @@ export const newEntryPerDay = (started, ended) => {
 /**
  * Utility function to add CSS in multiple passes.
  * @param {string} styleString
+ * @reference https://stackoverflow.com/a/15506705
  */
 export function addStyle(styleString) {
     const style = document.createElement('style');

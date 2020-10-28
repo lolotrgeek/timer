@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { addStyle } from '../constants/Functions'
 
+// OPTIMIZE: cleanup and consider separate stylesheet for web
 
 const
     titlefont = 30,
@@ -32,8 +33,6 @@ export const Colors = {
     light: 'white',
     lightfont: 'black'
 }
-
-// TODO: compute CSS to inject as body styles for Web
 
 const baseStyles = StyleSheet.create({
     app: {
@@ -186,11 +185,11 @@ const mainStyles = StyleSheet.create({
  */
 export default function getStyleSheet(useTheme) {
     if (useTheme === 'dark') {
-        addStyle(`body {background: ${Colors.dark}; }`)
+        if(Platform.OS === 'web') addStyle(`body {background: ${Colors.dark}; }`)
         return { ...mainStyles, ...darkStyleSheet }
     }
     else {
-        addStyle(`body {background: ${Colors.light}; }`)
+        if(Platform.OS === 'web') addStyle(`body {background: ${Colors.light}; }`)
         return { ...mainStyles, ...lightStyleSheet }
     }
 
