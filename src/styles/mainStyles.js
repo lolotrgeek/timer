@@ -3,6 +3,8 @@ import {
     Dimensions,
     Platform,
 } from 'react-native'
+import { addStyle } from '../constants/Functions'
+
 
 const
     titlefont = 30,
@@ -102,13 +104,13 @@ const mainStyles = StyleSheet.create({
         flex: 1,
         alignItems: 'flex-start',
         justifyContent: 'center',
-        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont : 0,
     },
     containercenter: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont : 0,
 
     },
     containerwidth: {
@@ -118,7 +120,7 @@ const mainStyles = StyleSheet.create({
     list: {
         flex: Platform.OS === 'web' ? -1 : 1,
         width: '100%',
-        marginTop: Platform.OS === 'web' ? listmargin + titlefont: 0,
+        marginTop: Platform.OS === 'web' ? listmargin + titlefont : 0,
     },
     listtitle: {
         marginTop: 10,
@@ -183,7 +185,13 @@ const mainStyles = StyleSheet.create({
  * @param {String} useTheme `dark` or `light` (default)
  */
 export default function getStyleSheet(useTheme) {
-    if (useTheme === 'dark') return { ...mainStyles, ...darkStyleSheet }
-    else return { ...mainStyles, ...lightStyleSheet }
+    if (useTheme === 'dark') {
+        addStyle(`body {background: ${Colors.dark}; }`)
+        return { ...mainStyles, ...darkStyleSheet }
+    }
+    else {
+        addStyle(`body {background: ${Colors.light}; }`)
+        return { ...mainStyles, ...lightStyleSheet }
+    }
 
 }
