@@ -323,22 +323,23 @@ const save = (file, entry) => fs.writeFile(file, entry, "utf8", () => { })
  */
 const recursiveCall = (key, final) => {
     return new Promise((resolve) => {
-        
         gun.get(key).once((current, currentkey) => {
             if (current && current !== null && current !== undefined) {
+                // console.log('export: ', current)
                 current = trimSoul(current)
                 final[key] = current
-                let entry = `${JSON.stringify(key)}:${JSON.stringify(current)}`
+                // let entry = `${JSON.stringify(key)}:${JSON.stringify(current)}`
                 // final.push(entry)
                 // log(`[Updating] ${JSON.stringify(entry)}`)
                 let values = Object.values(current)
                 if (iskeyset(values) === true) {
-                    values.forEach( async value => {
+                    values.forEach(async value => {
                         resolve(recursiveCall(value['#'], final))
                     })
                 }
                 else {
-                    save(output, JSON.stringify(final))
+                    // save(output, JSON.stringify(final))
+                    console.log('exported: ', currentkey)
                     return resolve()
                 }
             }
@@ -352,11 +353,12 @@ const recursiveCall = (key, final) => {
 /**
  * Convert radata into JSON and save it
  */
-const Export = () => {
+function Export() {
     let final = {}
-    recursiveCall('app', final).then(() => {
-        console.log('Export!')
-    });
+    console.log('Export Started...')
+    recursiveCall('app', final)
+        .then(() => messenger.emit('alert', ['Success', 'Export done.']))
+        .catch(err => messenger.emit('alert', ['Error', 'Export failed.']))
 }
 
 module.exports = {

@@ -10,6 +10,7 @@ require('./state/timerTrashNode')
 require('./state/projectNode')
 require('./state/projectsNode')
 require('./state/projectEditNode')
+require('./state/settingsNode')
 
 const { updateStatus } = require('./src/Store')
 const messenger = require('./src/Messenger')

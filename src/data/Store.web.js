@@ -286,6 +286,7 @@ const offAll = msg => {
  */
 const Export = () => {
     console.log('Export!')
+    messenger.emit('alert', ['Success','Export done!'])
 }
 
 messenger.on('get', msg => {
